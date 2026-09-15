@@ -37,6 +37,13 @@ failure mode, not a style preference:
 - **axe throws the build**, and CI's `deploy` job runs its own `pnpm build`.
   An accessibility regression takes the live site down — 20% of the mark —
   while a failing `spec/` test does not. Caution belongs on the axe side.
+- **The broken-links checker also throws**, in `astro:build:done`. A nav link
+  in `site-config.ts` pointing at a page that does not exist yet fails every
+  page at once, since the nav renders site-wide. Config referencing a page and
+  the page itself land in the same change.
+- **There is no image generation.** The provisioned gateway authenticates but
+  reports `mode: "chat"` for every model. The site commits to a type-and-CSS
+  treatment; all four starter images are deleted, not replaced.
 - **`{/* embed: <ref> */}` in a body silently creates a graph edge.** Edges
   are symmetrised, so declare each once. Self-refs throw.
 - **The starter sweep is `git grep -- src`: tracked files only.** An

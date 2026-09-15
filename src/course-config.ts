@@ -43,20 +43,19 @@ export const slopCourseMetaSchema = z
 // Replace every placeholder value, but keep the shape: the catalogue ingests
 // this API contract when the course is published.
 //
-// The code's last three digits were assigned to this repo when it was
-// provisioned, and no other course in the cohort has them. Change the first
-// digit to your course's level (and `level` to match); keep the other three.
-// STARTER_CONTENT: replace this course record, then remove this comment.
+// The last three digits were assigned to this repo when it was provisioned;
+// the leading 3 is the course's level, and `level` below must match it.
 export const courseMeta = slopCourseMetaSchema.parse({
-  code: "SLOP1841",
-  title: "Course Title Goes Here",
+  code: "SLOP3841",
+  title: "Professional Identity Performance",
   session: "Semester 1",
   year: 2027,
-  level: 1,
+  level: 3,
   startDate: "2027-02-22",
   endDate: "2027-05-28",
   description:
-    "One concise paragraph explaining what this course is, who it is for, " +
-    "and why somebody would choose to spend a semester taking it.",
-  tags: ["replace me"],
+    "Fluency in a role you do not yet hold. Every professional identity is " +
+    "performed before it is inhabited; this course teaches you to do it " +
+    "deliberately, name what you are doing, and get hired anyway.",
+  tags: ["career practice", "performance", "applied"],
 }) satisfies CourseMetaInput;

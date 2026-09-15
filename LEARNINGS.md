@@ -5,7 +5,35 @@ not removed; patterns stay even if unused for a while.
 
 ## Bugs / gotchas
 
-_(none yet)_
+### A nav link to a page that does not exist yet fails the whole build
+
+**Mitigated.** `astro-broken-links-checker` runs in `astro:build:done` and
+throws. Adding `/glossary/` to `site-config.ts`'s `links` before writing
+`src/pages/glossary/index.mdx` broke **every one of the 16 pages at once**,
+because the nav renders site-wide — the error output lists 16 "found in"
+locations for a single missing target, which reads far worse than it is.
+
+This was not in the platform-facts list, which had catalogued axe as the
+build-failing gate and missed this one. Two consequences worth keeping:
+config that references a page and the page itself must land in the same
+change, and CI's `deploy` job runs its own build, so this class of error
+takes the live site down rather than just failing a test. Now recorded in
+`CLAUDE.md`.
+
+### The Anthropic gateway this course provisions cannot generate images
+
+**Mitigated.** `$ANTHROPIC_BASE_URL` is reachable and authenticates fine,
+but `/v1/models` reports `mode: "chat"` for every entry and
+`/v1/images/generations` returns HTTP 500. There is no image generation
+here, so "the course has given provision for image generation" does not
+hold for artwork. The site commits to a deliberate type-and-CSS treatment
+and all four starter images are deleted rather than replaced — which also
+clears the `check:evidence` SHA fingerprint gate, since a deleted file
+passes its `existsSync` guard.
+
+Cost five minutes to establish by probing, against the alternative of
+discovering it on the last build day with the layout already assuming
+hero images.
 
 ## Patterns that worked
 
