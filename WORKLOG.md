@@ -321,3 +321,54 @@ only half of it. An uncommitted log is invisible to the marker, invisible to
 CI's starter sweep — which greps tracked files only — and one `git checkout`
 away from gone. Commit the entry with the decision, not at a tidier moment
 later.
+
+---
+
+## 2026-09-16 — The wide wave written in parallel, then verified at both viewports
+
+- **Decision:** six agents wrote concurrently against disjoint exclusive write
+  scopes — four voice-writers (weeks 1–4, 5–8, 9–12, and
+  assessments/people/policies), `surface` for components and the deck,
+  `sensors` for `spec/` — with the approved week-1 session as the single
+  register reference. Main built, committed and integrated; no agent ran git
+  or `pnpm`. Landed as six commits (`a6f31ab`, `a989b31`, `bb17884`,
+  `2fcf232`, `d63d1da`, `601c878`) rather than one, so the history shows
+  tranches arriving.
+- **Why the exemplar gate paid for itself:** register drift is what parallel
+  writing costs, and four writers each holding one approved page produced a
+  consistent voice across 33 files with no rewrite round. The cost was one
+  serial sign-off.
+- **Three real faults found by agents reporting rather than editing.** Writer D
+  found `people/[slug].astro` looking `role` up in a four-value table with no
+  fallback, so four of five Role rows silently vanished, and a `contact` field
+  that was never rendered. `surface` found `MdxPageLayout` emitting the lead
+  paragraph *above* the body's `h1` on every MDX page — visible on `/policies/`
+  and `/assessments/`. Fixed once in `PageLayout.astro` and once in
+  `[slug].astro`, both main-owned files outside every agent's scope, which is
+  the ownership rule working as intended.
+- **Two agent claims were wrong and were tested rather than actioned.**
+  `surface` reported `404.md` would fail axe's `page-has-heading-one`; the rule
+  is not enabled in this theme and a cold build proved it. Writer C reported
+  duplicated stream `focus:` strings "may" affect other weeks; an audit of all
+  twelve found only the two it had already fixed. Report-then-verify is now a
+  `LEARNINGS.md` pattern.
+- **Verified at both marking viewports, and the phone half changed what I
+  know.** Zero horizontal overflow and exactly one `h1` on all six marker
+  pages at 390px; the semester tracker collapses to a single vertical column
+  with per-week text state, never a horizontal scrubber. The deck, though,
+  renders body prose at an effective **8.5px** at 390px, because reveal scales
+  a fixed 1280×720 canvas and astromotion disables reveal's mobile scroll view
+  upstream. Accepted and logged rather than patched — the levers are in
+  `node_modules` and the only one we own risks the axe gate that fails the
+  deploy.
+- **Measured, not assumed:** every marker target is **one** click from home,
+  not the two the plan promised, with lectures at two. Now sensored from the
+  rendered link graph rather than asserted.
+- **Rejected:** letting agents run their own builds (concurrent `astro build`
+  corrupts `dist/` and the a11y cache); one monolithic wave commit; overriding
+  astromotion's deck scaling with custom media queries during a verification
+  pass.
+- **Encoded as:** `src/content/**` and the five index pages;
+  `src/components/SemesterTracker.astro` and `GlossaryList.astro`; two new
+  checks in `spec/course-design.test.ts`, both mutation-tested.
+- **Commit:** the six above, then `2347288`

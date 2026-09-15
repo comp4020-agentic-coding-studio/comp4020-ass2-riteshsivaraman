@@ -48,7 +48,65 @@ compiles to rather than what it looks like in source. The rule generalises to
 anything hidden-but-focusable: notes fences take prose only, and any URL a
 presenter needs goes on the slide or in a ` ```comment ` fence instead.
 
+### The axe cache survives `rm -rf dist`, so a green build can be a stale green
+
+**Mitigated by habit, not by code.** The accessibility results live in
+`node_modules/.astro/astro-theme-university/a11y-check.json`, outside `dist/`.
+Delete `dist/`, rebuild, and the build prints "N unchanged, reused from cache"
+— it has *not* re-checked those pages. So the local build that matters least
+(warm) is the one you keep running, and the build that gates the deploy (cold,
+in CI, with no `node_modules` cache) is the one never exercised.
+
+Found while disproving a subagent's claim that `404.md` would fail axe's
+`page-has-heading-one`: the build was green, but green from cache, so the
+green proved nothing either way. Deleting the cache and rebuilding checked all
+42 pages and was genuinely green — **and established separately that
+`page-has-heading-one` is not among the rules this theme enables**, so the
+claim was wrong on the consequence even though the missing `h1` was real.
+
+Every verification build from here deletes that file first. A cached pass is
+not a pass.
+
+### A reveal deck is unreadable at 390px and the platform has decided that for us
+
+**Open — accepted, not fixed.** At a 390px viewport the deck's 1280×720 canvas
+scales to 0.3047, so 28px body prose renders at an effective **8.5px** and a
+46.8px heading at 14.3px. Measured, not eyeballed. The deck is one of the five
+pages a marker opens, and the brief marks at 390×844, so this is a real
+weakness on a flagship page.
+
+It is not ours to fix cleanly. `astromotion/pages/[...slug].astro` hardcodes
+`width: 1280, height: 720` and sets `scrollActivationWidth: null`, which
+explicitly disables reveal's own mobile scroll view — the one feature that
+would solve this. Both live in `node_modules`. The only lever we own is CSS
+inside the slide canvas, and bumping font sizes under a media query fights a
+deliberate upstream decision while risking the axe gate that takes the live
+site down.
+
+Recorded rather than patched: the deck is legible at 1920×1080, which is how a
+deck is used, and matching the platform's intended behaviour is defensible in
+a way that overriding a vendor's scaling model mid-verification is not.
+
 ## Patterns that worked
+
+### To see a real mobile viewport when the window will not resize, use an iframe
+
+`resize_window` returned success three times and `window.innerWidth` stayed
+1512 — the window silently refused every geometry change, including after
+leaving fullscreen. Screenshots kept coming back desktop-shaped while
+reporting the requested size, which is the dangerous failure: it looks like
+verification happened.
+
+The fix is to make a viewport instead of asking for one. Inject a same-origin
+iframe sized exactly 390×844 and point it at the page: media queries resolve
+against the *iframe's* viewport, so the layout inside is the genuine 390px
+layout, and `contentDocument` is scriptable for overflow measurement. That
+turned the look from "squint at a screenshot" into numbers — zero horizontal
+overflow and exactly one `h1` across all six marker pages, and the 8.5px deck
+prose above, none of which a screenshot would have told me.
+
+Confirm the viewport you think you are testing before trusting what you see in
+it. `innerWidth` is one line and the tool's success message is not evidence.
 
 ### Verify a subagent's factual claims against the package, not its confidence
 

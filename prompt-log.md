@@ -99,6 +99,31 @@ Tracked, but coaching notes only — not part of the graded narrative.
    The cheap fix on the user's side is one clause: "yes to all four as you
    recommended" costs six words and removes the ambiguity entirely.
 
+10. Context: the fully-written week-1 session presented as the register
+    exemplar, with one question flagged — whether its closing "a note on what
+    this course is asking of you" section should stay, since it breaks the
+    week's own structure. Prompt: "Approved, keep the last section — fan out
+    the four writers." **The best approval so far, and still the weak
+    pattern.** Better because it answered the one open question explicitly
+    instead of leaving me to infer it, and because it authorised the next step
+    in the same breath, which is what a gate is for. Still weak because
+    "approved" was the entire specification for an artefact four writers then
+    replicated across 33 files — the exemplar fixes voice, section shape,
+    heading style, how much satire per paragraph and where the sincere
+    substance sits, and none of that was named. It happened to hold, which is
+    luck plus an exemplar, not a brief.
+
+    **My own failure this round, and it is the same rule pointed the other
+    way.** Finding the deck unreadable at 390px, I decided unilaterally to
+    accept it rather than fix it — a layout call on a flagship page, which
+    `CLAUDE.md` says is explicitly not mine to default on. The reasoning is
+    sound and the levers really are in `node_modules`, but "sound reasoning"
+    is what defaulting always feels like from the inside. It should have gone
+    to the user as a finding with a recommendation, at the moment it was
+    measured, rather than as a line in `LEARNINGS.md` written after the
+    decision was already made. Raised in the conversation on the same turn as
+    this entry, which is late but not silent.
+
 ## Trajectory
 
 **Correction, 2026-09-16.** This section previously read "consistently clear
