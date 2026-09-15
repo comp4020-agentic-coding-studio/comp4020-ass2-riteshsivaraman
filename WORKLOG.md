@@ -33,7 +33,7 @@ Format per entry:
   which is 45% of the mark).
 - **Encoded as:** not a CLAUDE.md rule or spec check — it's a working habit,
   not something to enforce mechanically.
-- **Commit:** _pending_
+- **Commit:** `5d75266`
 
 ## 2026-09-15 — Course concept: professional LARPing
 
@@ -56,7 +56,8 @@ Format per entry:
   a generic careers pamphlet, no distinctive voice.
 - **Encoded as:** not yet — feeds the course-config and week-by-week design
   next.
-- **Commit:** _pending_
+- **Commit:** `cdfb63a` — decided 2026-09-15 but sat uncommitted until
+  2026-09-16; see the note at the foot of this file.
 
 ## 2026-09-15 — Assessment model: real applications, process-graded
 
@@ -85,7 +86,7 @@ Format per entry:
 - **Encoded as:** feeds the `assessments` content collection and rubric
   text directly; likely also a `spec/` check that assessment weights sum
   to 100% regardless of this model.
-- **Commit:** _pending_
+- **Commit:** `cdfb63a` — same delay as above.
 
 ## 2026-09-15 — Tutorial structure: streams, no fixed weekly template
 
@@ -107,7 +108,8 @@ Format per entry:
 - **Encoded as:** design principle for the `sessions` content collection;
   no spec check needed (this is judged at the crit, not mechanically
   checkable).
-- **Commit:** _pending_
+- **Commit:** `cdfb63a` — same delay as above; amended by the 2026-09-16
+  entry below.
 
 ## 2026-09-15 — Fold prior-crit lessons into CLAUDE.md
 
@@ -126,7 +128,7 @@ Format per entry:
 - **Encoded as:** CLAUDE.md rules, integrated into existing "Checks and
   rollback" / "Compound engineering loop" sections plus one new "Design and
   content direction" section, not appended as a dump.
-- **Commit:** _pending_
+- **Commit:** `1511fe8`
 
 ## 2026-09-16 — Amend the stream model: one session page per week
 
@@ -151,7 +153,7 @@ Format per entry:
   (≥6 distinct `meta.format` values, no two session bodies sharing a
   normalised opening), which is what stops 12 week pages becoming 12
   interchangeable ones.
-- **Commit:** _pending_
+- **Commit:** `cdfb63a`
 
 ## 2026-09-16 — Interactivity: two elements, one of them zero-JS
 
@@ -182,4 +184,26 @@ Format per entry:
   `.loose()`, so invented keys survive into the API's `meta`); the tracker
   as a component under `surface`'s ownership. Verified by the axe pass plus
   a look at both marking viewports, not by assuming.
-- **Commit:** _pending_
+- **Commit:** `cdfb63a`
+
+---
+
+## Note on the 2026-09-15 entries
+
+Three decisions dated 2026-09-15 — course concept, assessment model,
+tutorial structure — were written in the moment as intended but sat
+uncommitted for a day and landed together in `cdfb63a`, alongside two
+decisions genuinely made on 09-16. So `git log` shows five decisions
+arriving at once when the record shows four days' worth of thinking, and
+`cdfb63a`'s own message claims only two decisions were unlogged, which
+undercounts by three. Both facts are left standing rather than tidied:
+amending is banned for the rest of this assignment, because
+`check:evidence` resolves every `PROCESS.md` citation with local
+`git cat-file -e` and a rewrite would invalidate them while the rendered
+markdown still looked perfect.
+
+The lesson is the one already in `LEARNINGS.md`: writing a decision down is
+only half of it. An uncommitted log is invisible to the marker, invisible to
+CI's starter sweep — which greps tracked files only — and one `git checkout`
+away from gone. Commit the entry with the decision, not at a tidier moment
+later.
