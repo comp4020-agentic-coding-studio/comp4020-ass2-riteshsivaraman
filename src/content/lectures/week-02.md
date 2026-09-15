@@ -1,23 +1,10 @@
 ---
-title: Second lecture
-description:
-  Week 2 — the first substantive material, and the run-up to the first review
+title: "Reqspeak: A Field Guide to the Dialect of the Job Ad"
+description: "A job advertisement is four documents stapled together, and only one of them describes the work. Learning to read the fourth is the whole lecture."
 week: 2
 date: 2027-03-01
 teachers:
-  - idris-fenn
-related:
-  - sessions/02-first-review
-  - assessments/assignment-1
+  - anselm-pike
 ---
 
-<!-- STARTER_CONTENT: replace this lecture, then remove this comment. -->
-
-Replace this page. It exists so the lectures listing sorts by week and the
-related block has more than one edge to draw.
-
-## Outline
-
-- the first substantive material, and where it shows up in practice
-- what the first review is looking for
-- reading before next week
+Stub. Shared lecture for week 2.
