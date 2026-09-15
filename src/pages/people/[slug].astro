@@ -12,15 +12,16 @@ export async function getStaticPaths() {
 const { person } = Astro.props;
 const { Content } = await render(person);
 
-// Map the role enum (convenor|tutor|guest|other) to display labels rather than
-// rendering the raw lowercase value.
+// `role` is a free string in our schema, not the enum this lookup was written
+// for, so the map is a nicety for the four bare values and the raw string is
+// the fallback. Without the fallback, every role we actually use except
+// "convenor" resolved to undefined and the Role row silently vanished.
 const roleLabels: Record<string, string> = {
   convenor: "Convenor",
   tutor: "Tutor",
   guest: "Guest lecturer",
-  other: "",
 };
-const roleLabel = person.data.role ? roleLabels[person.data.role] : undefined;
+const roleLabel = person.data.role ? (roleLabels[person.data.role] ?? person.data.role) : undefined;
 // Astro's generated type does not retain the image/alt refinement relationship,
 // so narrow the alt at the rendering boundary as well.
 const rawPhotoAlt = (person.data as { photoAlt?: unknown }).photoAlt;
@@ -66,8 +67,12 @@ const description = person.data.description;
         </dd>
       </>
     )}
-    <dt>Contact</dt>
-    <dd>{person.data.contact}</dd>
+    {person.data.contact && (
+      <>
+        <dt>Contact</dt>
+        <dd>{person.data.contact}</dd>
+      </>
+    )}
   </dl>
 
   <Content />
