@@ -235,12 +235,18 @@ const streams = [
     list-style: none;
   }
 
+  /* Filing tags, not pills --- the one hardcoded radius on the site, and it
+     survived the rebrand because it never read `--at-border-radius`. Typed and
+     boxed to match the rest of the institutional apparatus. */
   .course-tags li {
-    padding: 0.25rem 0.65rem;
-    border-radius: 999px;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--at-border);
     color: var(--at-text-secondary);
-    background: var(--at-bg-alt);
-    font-size: 0.9rem;
+    background: transparent;
+    font-family: var(--at-font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
   .premise {

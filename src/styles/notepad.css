@@ -1,0 +1,480 @@
+/* SLOP3841's visual identity: a working notepad.
+ *
+ * WHY THIS FILE EXISTS. The theme ships with a re-branding API — the --at-*
+ * tokens in astro-theme-university/styles/tokens.css — and a brand CSS file is
+ * imported *after* the theme styles. Two consequences the rest of this file
+ * leans on:
+ *
+ *   1. Overriding a token re-derives everything downstream of it, including
+ *      the deck's tint scales, so colour is set once here and nowhere else.
+ *   2. The theme's own rules live in `@layer at.base` / `@layer at.components`,
+ *      and unlayered CSS beats layered CSS regardless of specificity. So the
+ *      structural half of this file needs no `!important` and no specificity
+ *      games: a plain `.at-nav { ... }` here outranks the theme's, including
+ *      its media-query variants, because cascade layers are decided before
+ *      specificity ever comes up.
+ *
+ * WHY A NOTEPAD. The course asks students to rehearse a professional identity
+ * they do not hold yet. The artefact of that work is a notebook — drafts,
+ * crossings-out, terms copied down, a margin you write beside the thing you
+ * are annotating. A polished institutional portal would be the course's own
+ * subject matter presented without irony. So: ink on cream, a red margin rule,
+ * typewriter headings, dashed index cards, and no rounded corners anywhere,
+ * because paper does not have rounded corners.
+ *
+ * WHAT IS DELIBERATELY NOT HERE. No page-level layout is rewritten — the
+ * theme's grid, nav mechanics, search dialog and focus handling are all
+ * axe-tested upstream, and axe *throws the build*, which CI's deploy job
+ * re-runs. Rebranding the surface is cheap; reimplementing an accessible nav
+ * to look like paper is how 20% of the mark goes offline. Every colour pair
+ * below was checked against the WCAG AA 4.5:1 body-text floor by hand before
+ * the build ever saw it; the numbers are in the comments. */
+
+:root {
+  /* ---- Notepad-private tokens ------------------------------------------
+   * Prefixed --np- so they never collide with a theme token, and so a reader
+   * can tell at a glance which values are ours and which are the theme's. */
+
+  /* Paper and ink. Cream rather than white because white paper with ruled
+     lines reads as a spreadsheet; cream reads as a pad. */
+  --np-paper: #fbf7ec;
+  --np-paper-shade: #f4efe0;
+  --np-paper-card: #fffdf6;
+  --np-ink: #1c1b17; /* 15.8:1 on paper */
+  --np-ink-soft: #3b3831; /* 10.7:1 on paper */
+  --np-ink-faint: #5a564a; /* 6.8:1 on paper — solid, see note below */
+
+  /* Three pens, which is all a notepad ever has. */
+  --np-pen-blue: #1e4b6d; /* 8.4:1 on paper — links, structure */
+  --np-pen-red: #a8281f; /* 6.4:1 on paper — the margin rule, corrections */
+  --np-pen-green: #2f6b4f; /* 5.6:1 on paper — asides */
+
+  /* Carbon copy: the dark-mode paper. Same document, worse photocopier. */
+  --np-carbon: #191813;
+  --np-carbon-shade: #201f19;
+  --np-carbon-card: #24231c;
+  --np-carbon-ink: #e8e2d2; /* 13.7:1 on carbon */
+  --np-carbon-ink-soft: #cfc9b8;
+  --np-carbon-ink-faint: #a9a394; /* 7.1:1 on carbon */
+  --np-carbon-blue: #8fb8dd; /* 8.6:1 on carbon */
+  --np-carbon-red: #e08d84; /* 7.1:1 on carbon */
+
+  /* The ruled lines. Faint on purpose: at this weight they read as the
+     texture of the page, so nothing has to sit exactly on them — which is
+     the one thing a CSS notepad cannot promise, because headings break the
+     rhythm that prose keeps. Pitch matches the body line box exactly
+     (1.125rem x 1.6 = 1.8rem), so within a run of paragraphs they do line
+     up, and they drift only across a heading. */
+  --np-rule-pitch: 1.8rem;
+  /* The dark arm is the higher alpha, which looks backwards and is not: a
+     light line on near-black reads as a smaller step than a dark line on
+     cream, so matching the *numbers* would have made the carbon page look
+     unruled. Checked by looking at both. */
+  --np-rule: light-dark(rgb(30 75 109 / 10%), rgb(143 184 221 / 14%));
+  --np-margin-rule: light-dark(var(--np-pen-red), var(--np-carbon-red));
+
+  /* ---- Theme tokens: palette ------------------------------------------- */
+
+  /* Blue is the brand colour because it is the pen you write with; everything
+     the theme derives from --at-primary (links, table headers, accents, the
+     deck's tint scales) becomes ballpoint. Red is --at-secondary so the
+     theme reaches for it where it wants emphasis, which is where a red pen
+     goes anyway. */
+  --at-primary: var(--np-pen-blue);
+  --at-secondary: var(--np-pen-red);
+  --at-tertiary: var(--np-pen-green);
+
+  /* Surfaces are set literally rather than left to derive. The theme derives
+     them as `oklch(from var(--at-primary) 99.4% ...)` — a near-white tinted
+     toward the brand hue — and cream is both darker and warmer than any hue
+     rotation of a blue can reach. */
+  --at-bg: light-dark(var(--np-paper), var(--np-carbon));
+  --at-bg-alt: light-dark(var(--np-paper-shade), var(--np-carbon-shade));
+  --at-bg-elevated: light-dark(var(--np-paper-card), var(--np-carbon-card));
+
+  --at-text: light-dark(var(--np-ink), var(--np-carbon-ink));
+  --at-text-secondary: light-dark(var(--np-ink-soft), var(--np-carbon-ink-soft));
+
+  /* Muted text is pinned to a solid colour instead of the theme's
+     translucent ink, and this one is a real bug fix rather than taste. The
+     theme composites muted text as ink at 62% alpha and its comment records
+     4.9:1 — measured against its own 99.4%-lightness surface. Cream sits
+     near 96%, which drops that pairing to roughly 3.8:1 and under the AA
+     floor for body text. Darkening a surface silently darkens every
+     translucent thing standing on it, so alpha inks do not survive a
+     re-paper. Solid, and 6.8:1. */
+  --at-text-muted: light-dark(var(--np-ink-faint), var(--np-carbon-ink-faint));
+
+  /* Headings are ink, not brand: a typewriter had one ribbon. This is the
+     single biggest departure from the stock theme, where headings carry the
+     brand colour and every page reads as branded. */
+  --at-heading: light-dark(var(--np-ink), var(--np-carbon-ink));
+
+  /* Links keep the theme's darken-in-light / lighten-in-dark logic, but dark
+     mode cannot use --at-primary as the theme does: ballpoint blue on carbon
+     is 1.9:1. */
+  --at-link: light-dark(var(--np-pen-blue), var(--np-carbon-blue));
+  --at-link-hover: light-dark(var(--np-pen-red), var(--np-carbon-red));
+
+  --at-border: light-dark(rgb(28 27 23 / 28%), rgb(232 226 210 / 26%));
+  --at-divider: light-dark(rgb(28 27 23 / 14%), rgb(232 226 210 / 14%));
+  --at-code-bg: light-dark(rgb(30 75 109 / 7%), rgb(143 184 221 / 10%));
+  --at-accent-soft: light-dark(rgb(30 75 109 / 8%), rgb(143 184 221 / 12%));
+
+  /* Table headers: ruled, not filled. A solid brand band across the top of
+     every table is the most recognisably "institutional template" element in
+     the stock theme, and a table on paper is ruled instead. */
+  --at-table-header-bg: transparent;
+  --at-table-header-text: light-dark(var(--np-ink), var(--np-carbon-ink));
+  --at-table-stripe: light-dark(rgb(30 75 109 / 4%), rgb(143 184 221 / 5%));
+
+  /* ---- Theme tokens: type ---------------------------------------------- */
+
+  /* Newsreader for prose: a text serif that holds up at 18px over the long
+     reading a session page asks for. Courier Prime everywhere structural —
+     headings, nav, buttons, labels, code — so every piece of institutional
+     apparatus on the site looks typed rather than designed. */
+  --at-font-body: var(--font-newsreader, "Newsreader"), georgia, "Times New Roman", serif;
+  --at-font-mono: var(--font-courier-prime, "Courier Prime"), "Courier New", courier, monospace;
+
+  /* Courier is a wide face at a given point size and Newsreader is a small
+     one, so both ends move: prose up slightly for x-height, headings down
+     hard so a typed h1 does not run off a 390px viewport. */
+  --at-font-size-base: 1.1875rem;
+  --at-font-size-h1: 2.125rem;
+  --at-font-size-h2: 1.5rem;
+  --at-font-size-h3: 1.1875rem;
+  --at-font-size-h4: 1rem;
+  --at-line-height: 1.6;
+
+  /* ---- Theme tokens: geometry ------------------------------------------ */
+
+  /* Paper has corners. This one token removes the rounded-card look from
+     cards, callouts, buttons, inputs, badges, the search dialog and the deck
+     in one line. */
+  --at-border-radius: 0px;
+
+  /* The nav is a printed header rule rather than a bar, so it needs less
+     height than the stock 6.5rem. --at-nav-height also backs .at-main's
+     min-height, so it has to move with the padding below. */
+  --at-nav-height: 4.5rem;
+
+  /* Paper does not float. Elevation becomes a hairline everywhere except the
+     search dialog, which genuinely overlays the page and needs to separate
+     from it. */
+  --at-shadow-sm: 0 1px 0 0 var(--at-divider);
+  --at-shadow-md: 0 1px 0 0 var(--at-border);
+  --at-shadow-lg: light-dark(0 10px 28px rgb(28 27 23 / 22%), 0 10px 28px rgb(0 0 0 / 66%));
+}
+
+/* ---- The page itself ---------------------------------------------------
+ * Everything below is structural and therefore scoped to `body:has(.at-nav)`
+ * — the site pages. Deck pages render a bare `.reveal` with no nav and pull
+ * in this same brand file for its tokens, so an unscoped `body` rule here
+ * would paper over the slides as a side effect. The deck gets its paper
+ * deliberately, in src/decks/theme.css, not by accident from here. */
+
+html {
+  background: var(--at-bg);
+}
+
+body:has(.at-nav) {
+  /* The ruled page. One gradient, repeated, at the body line pitch. */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--np-rule-pitch) - 1px),
+    var(--np-rule) calc(var(--np-rule-pitch) - 1px),
+    var(--np-rule) var(--np-rule-pitch)
+  );
+  background-position: 0 calc(var(--np-rule-pitch) * -0.35);
+}
+
+/* The margin rule. The theme already draws a 1px accent line down the
+ * content-column edge — it calls it the content rule — so this is a recolour
+ * and a doubling rather than a new element: 1px red, plus a second 1px red
+ * hairline 4px to its right via box-shadow, which is how a pad is printed.
+ *
+ * The theme hides this line below 640px. We show it, because the margin rule
+ * is the single most legible piece of the identity and the brief marks at
+ * 390px. No media query is needed to win that fight: this rule is unlayered
+ * and the theme's `display: none` is inside `@layer at.base`. */
+body:has(.at-nav)::after {
+  display: block;
+  width: 1px;
+  background: var(--np-margin-rule);
+  box-shadow: 4px 0 0 0 var(--np-margin-rule);
+  opacity: 0.75;
+}
+
+/* ---- Nav: a typed header, not a chrome bar ---------------------------- */
+
+.at-nav {
+  border-block-end: 1px solid var(--at-border);
+}
+
+.at-nav-inner {
+  padding-block: var(--at-spacing-md);
+}
+
+/* No crest and no lockup: site-config.ts stops passing the Slop logo images,
+ * so the theme falls back to a text wordmark, and the wordmark gets typed. */
+.at-nav-wordmark {
+  font-family: var(--at-font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.at-nav-links a {
+  font-family: var(--at-font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Current page is marked the way you mark a page: underlined in red. */
+.at-nav-links a[aria-current="page"] {
+  color: var(--at-text);
+  box-shadow: inset 0 -2px 0 0 var(--np-margin-rule);
+}
+
+/* ---- Headings: typed, and ruled off ---------------------------------- */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--at-font-mono);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+h1 {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  /* A typed title with a rule under it, which is what a course code on a
+     cover page looks like. */
+  padding-block-end: var(--at-spacing-sm);
+  border-block-end: 2px solid var(--at-text);
+}
+
+/* Section headings carry the dotted rule — the one that reads as the ruled
+ * page without having to sit behind the prose. */
+.at-main h2 {
+  padding-block-end: 0.35em;
+  border-block-end: 1px dashed var(--at-border);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: var(--at-font-size-h2);
+}
+
+.at-main h3 {
+  letter-spacing: 0.02em;
+}
+
+h4,
+h5,
+h6 {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* The frontmatter lead sentence, rendered by src/layouts/PageLayout.astro —
+ * set as a typed subtitle under the title rule rather than as large prose. */
+.at-main p.lead {
+  font-family: var(--at-font-mono);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--at-text-secondary);
+  margin-block-end: var(--at-spacing-xl);
+}
+
+/* ---- Index cards -----------------------------------------------------
+ * Callouts become the cut-out card you paste into a notebook: dashed on all
+ * four sides rather than the theme's coloured left border, and a typed
+ * label. The status hue still comes through on the border and the label, so
+ * an info card and a warning card stay distinguishable without colour being
+ * the only signal — the dashes carry it too. */
+
+.at-callout {
+  border: 1px dashed var(--at-border);
+  border-inline-start-width: 1px;
+  background: var(--at-bg-elevated);
+  padding: var(--at-spacing-lg);
+}
+
+.at-callout__title {
+  font-family: var(--at-font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.at-callout--info {
+  border-color: light-dark(var(--np-pen-green), #7fbf9a);
+}
+
+.at-callout--tip {
+  border-color: light-dark(var(--np-pen-blue), var(--np-carbon-blue));
+}
+
+.at-callout--warning,
+.at-callout--error {
+  border-color: light-dark(var(--np-pen-red), var(--np-carbon-red));
+}
+
+/* ---- Cards: filed, not floating -------------------------------------- */
+
+.at-card {
+  border: 1px solid var(--at-border);
+  background: var(--at-bg-elevated);
+  box-shadow: none;
+}
+
+a.at-card:hover {
+  background: var(--at-accent-soft);
+  box-shadow: none;
+  border-color: var(--np-margin-rule);
+}
+
+.at-card-title {
+  font-family: var(--at-font-mono);
+  letter-spacing: 0.02em;
+}
+
+.at-card-badge {
+  font-family: var(--at-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid var(--at-border);
+  background: transparent;
+  color: var(--at-text-secondary);
+}
+
+/* ---- Stamped controls ------------------------------------------------- */
+
+.at-button {
+  font-family: var(--at-font-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: none;
+}
+
+.at-button--outline,
+.at-button--ghost {
+  border: 1px solid var(--at-text);
+}
+
+.at-icon-button {
+  border: 1px solid var(--at-border);
+}
+
+.at-card-filter-input,
+.at-search-input,
+input:not([type="checkbox"], [type="radio"]),
+select,
+textarea {
+  font-family: var(--at-font-mono);
+  font-size: 0.875rem;
+}
+
+.at-card-filter-kbd,
+.at-search-kbd {
+  font-family: var(--at-font-mono);
+  border: 1px solid var(--at-border);
+  background: transparent;
+}
+
+/* ---- Prose furniture -------------------------------------------------- */
+
+/* A quote in a notebook is a thing you have copied out, so it gets the red
+ * pen down its edge and loses the theme's decorative quote glyph. */
+blockquote {
+  border-inline-start: 2px solid var(--np-margin-rule);
+  padding-inline-start: var(--at-spacing-lg);
+  font-style: italic;
+}
+
+blockquote::before {
+  content: none;
+}
+
+/* A rule between sections is a tear line. */
+hr {
+  border: 0;
+  border-block-start: 1px dashed var(--at-border);
+  background: none;
+  height: 0;
+}
+
+/* Ruled table, per the header tokens above. */
+thead {
+  border-block-end: 2px solid var(--at-text);
+}
+
+th {
+  font-family: var(--at-font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Underlines on prose links stay — this is a page of ink, and a link that
+ * announces itself only by hue is the first thing to fail for a reader who
+ * cannot separate the hues. */
+.at-main p a,
+.at-main li a {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+}
+
+/* ---- Footer: the small print at the bottom of the form ---------------- */
+
+.at-footer {
+  border-block-start: 1px dashed var(--at-border);
+}
+
+.at-footer-inner,
+.at-footer-legal,
+.at-footer-meta {
+  font-family: var(--at-font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+.at-footer-inner h2 {
+  border-block-end: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+}
+
+/* ---- 390px ------------------------------------------------------------
+ * One marking viewport, one adjustment. At narrow widths the theme collapses
+ * its content inset to zero, which would leave the margin rule sitting
+ * exactly under the first character of every line. Widening the inset and
+ * narrowing the gutter moves the rule into a real margin: the rule lands at
+ * ~12px and text starts at ~34px, which is the proportion a pad actually
+ * has. */
+@media (width < 640px) {
+  body:has(.at-nav) {
+    --at-gutter: 0.75rem;
+    --at-content-inset: 1.375rem;
+  }
+
+  h1 {
+    font-size: 1.625rem;
+  }
+
+  .at-main h2 {
+    font-size: 1.3125rem;
+  }
+}

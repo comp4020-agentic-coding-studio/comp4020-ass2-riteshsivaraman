@@ -1,13 +1,92 @@
-/* The deck stylesheet. It is one import on purpose.
+/* The deck stylesheet. It is one import plus one decision.
  *
  * astro-theme-university's deck.css derives every colour it uses from the
  * same --at-* brand tokens the site's own styles derive from, and
- * `brandCss: "astro-theme-slop/slop.css"` in astro.config.ts puts the Slop
- * palette behind those tokens. So a deck already matches the site, and
- * restating a colour here is how the two start to disagree.
+ * `brandCss: "/src/styles/notepad.css"` in astro.config.ts puts the notepad
+ * palette behind those tokens. So a deck arrives already wearing the right
+ * ink, and restating a colour here is how the two start to disagree.
  *
- * Deck pages are dark surfaces and they don't load the site's stylesheets ---
- * only the brand CSS and this file. Add your own rules below the import: a
- * slide class you reach for (`_class: quote`), a code-heavy layout, a
- * background. */
+ * The decision: deck.css assumes a dark surface. It declares
+ * `color-scheme: dark` so that brand tokens written with `light-dark()`
+ * resolve to their dark arm on slides, and it paints the stage with
+ * `--at-dark-grey`. This deck is paper instead — the same page the site is
+ * printed on, projected. Two reasons, and neither is decorative:
+ *
+ *   1. Coherence. The site's whole identity is ink on cream; a black deck
+ *      linked from a cream week page reads as a different site, which is the
+ *      exact failure the rebrand exists to fix.
+ *   2. Contrast, which is the load-bearing one. deck.css's standalone
+ *      contract hard-codes dark-surface values for the tokens it consumes
+ *      itself — `--at-text-secondary` as near-white ink at 78% alpha, for
+ *      instance. Left alone on a light stage those would be invisible, and
+ *      axe *throws the build*, which CI's deploy job re-runs. Flipping the
+ *      scheme rather than repainting piecemeal means every `light-dark()`
+ *      token in the brand file resolves to the arm that was checked against
+ *      this background.
+ *
+ * Everything below is scoped to `html:has(.reveal)` — higher specificity
+ * than the `:root` these tokens are declared on, so the result does not
+ * depend on import order. */
 @import url("astro-theme-university/styles/deck.css");
+
+html:has(.reveal) {
+  /* Resolve every light-dark() brand token to its light arm. deck.css sets
+     `dark` inside @layer at.tokens; this is unlayered, so it wins. */
+  color-scheme: light;
+
+  /* The faces. deck.css does *not* derive these from --at-font-body /
+     --at-font-mono the way it derives its colours from the brand tokens: it
+     hardcodes `var(--font-public-sans, "Public Sans")` for both body and
+     headings, and a system mono stack for code. The theme's `fonts` option is
+     off, so --font-public-sans is never defined and Public Sans is never
+     loaded — which means an unpatched deck renders its prose in whatever
+     generic sans-serif the browser picks, on a site whose entire identity is
+     a serif and a typewriter. Restated here because the upstream default
+     cannot see our tokens, not because we are second-guessing it. */
+  --r-main-font: var(--at-font-body);
+  --r-heading-font: var(--at-font-mono);
+  --r-code-font: var(--at-font-mono);
+
+  /* The stage. Reveal's own variables, set from the notepad palette rather
+     than from deck.css's greys. */
+  --r-background-color: var(--np-paper);
+  --r-main-color: var(--np-ink);
+  --r-heading-color: var(--np-ink);
+  --r-link-color: var(--np-pen-blue);
+  --r-link-color-hover: var(--np-pen-red);
+
+  /* deck.css consumes these two directly for blockquotes and table rules,
+     with dark-surface values baked in for standalone use. */
+  --at-text-secondary: var(--np-ink-soft);
+  --at-divider: rgb(28 27 23 / 16%);
+
+  /* The whiteboard overlay and the greys deck.css paints with. Inverted so
+     any rule reaching for them lands on paper rather than punching a black
+     hole in a cream slide. */
+  --at-dark-grey: var(--np-ink);
+  --at-light-grey: var(--np-ink);
+  --astromotion-wb-bg: var(--np-paper-card);
+}
+
+/* Code blocks: deck.css washes them with white at 5% alpha, which is a
+ * dark-surface idiom and invisible on cream. Ink at 5% instead, plus the
+ * hairline the site's own cards use, so a code slide reads as a pasted-in
+ * printout. */
+html:has(.reveal) .reveal pre {
+  background: rgb(30 75 109 / 6%);
+  border: 1px solid rgb(28 27 23 / 20%);
+}
+
+/* Slide headings are typed, matching the site. deck.css sets the h1 as an
+ * inline brand-filled block — kept, because a blue-stamped title on cream is
+ * the strongest thing on the page and the fill/ink pair is contrast-checked
+ * by the theme's own --at-on-primary switch. */
+html:has(.reveal) .reveal :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--at-font-mono);
+  letter-spacing: 0.01em;
+}
+
+/* The progress bar and controls read as pen marks on the page edge. */
+html:has(.reveal) .reveal .progress {
+  color: var(--np-pen-red);
+}

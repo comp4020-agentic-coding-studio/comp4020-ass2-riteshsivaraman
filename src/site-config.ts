@@ -18,7 +18,16 @@ export const courseApiCollections = [
 ];
 
 export const siteConfig = defineSiteConfig({
-  ...slopBranding,
+  // The branding package is deliberately *not* spread. It carries the Slop
+  // horizontal lockup and crest, and the theme renders a logo image in the nav
+  // whenever one is supplied --- which is the single most recognisable piece of
+  // the institutional template this site is trying not to look like. Omitting
+  // `logo` makes the theme fall back to a text wordmark, which
+  // src/styles/notepad.css then types out.
+  //
+  // The favicon is kept: it is a 16px institutional mark in a browser tab, and
+  // the fiction is still that Slop University published this.
+  favicon: slopBranding.favicon,
   name: "Slop University",
 
   // Flat and complete on purpose: this alone guarantees every page a marker
