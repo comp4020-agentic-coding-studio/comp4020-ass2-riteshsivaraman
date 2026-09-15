@@ -84,6 +84,21 @@ Tracked, but coaching notes only — not part of the graded narrative.
    separate interruptions during the build. Asking "what else are you
    assuming" is cheaper than waiting to be told.
 
+9. Context: W0 curriculum spec presented, eleven flagged decisions plus an
+   open label question. Prompt: "I approve the anove 4 changes, and would
+   like to call them Sessions instead of Rehearsals." Mixed. The rename is
+   the good half — decisive, a real correction, and it reversed a call I had
+   made without asking, which is exactly what the gate is for. The approval
+   half is the weak pattern again, and this is its fourth appearance: "the
+   above 4" referred to four numbered items on which I had given four
+   *different* recommendations — keep, keep, change, change — so "approve"
+   had to be read as "adopt your recommendations", not "approve the spec as
+   written". That reading is probably right but it is a reading. I said it
+   back before acting rather than guessing silently, which is the new harness
+   rule doing its job, but the rule should not have to fire at every gate.
+   The cheap fix on the user's side is one clause: "yes to all four as you
+   recommended" costs six words and removes the ambiguity entirely.
+
 ## Trajectory
 
 **Correction, 2026-09-16.** This section previously read "consistently clear

@@ -1,13 +1,13 @@
 import { defineSiteConfig } from "astro-theme-university/types";
 import { slopBranding } from "astro-theme-slop";
 
-// The underlying collection and URL remain `sessions`; these labels are the
-// language students see. A course about performing a role runs rehearsals,
-// not tutorials — but a marker hunting for the weekly schedule must not have
-// to guess, so the nav link below keeps the word "weekly" alongside it.
+// Plain labels, matching the collection and the URL. An in-voice renaming was
+// considered and dropped: the satire in this course is carried by the content,
+// and a marker hunting for the weekly schedule should never have to translate
+// the navigation to find it.
 export const sessionLabels = {
-  singular: "Rehearsal",
-  plural: "Rehearsals",
+  singular: "Session",
+  plural: "Sessions",
 } as const;
 
 export const graphCollections = ["sessions", "assessments", "lectures", "people"];

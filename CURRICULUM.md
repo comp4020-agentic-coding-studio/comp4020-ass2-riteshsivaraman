@@ -196,11 +196,15 @@ learn their own conventions are conventions.
 **Week 7 — The Pre-Warmed Stranger.** Outreach, with the honesty constraint
 stated in the lecture: never misrepresent who you are or why you are writing.
 Tutorial is an `outreach sprint` — three messages drafted in the room, peers
-score each for answerability in one line, and **at least one is actually sent
-that week**. *Technical* — maintainers, engineering-blog authors, meetup
-organisers. *Creative* — practitioners whose specific piece you can speak about.
-*Commercial* — alumni, industry-body contacts, graduate-program liaisons.
-Silence is taught as the standard reply, not a verdict. (**⚠ decision 9**.)
+score each for answerability in one line. **Sending is the student's choice**:
+the Outreach Log records what was drafted, what was sent or deliberately not
+sent, and why, and it is graded identically either way. *Technical* —
+maintainers, engineering-blog authors, meetup organisers. *Creative* —
+practitioners whose specific piece you can speak about. *Commercial* — alumni,
+industry-body contacts, graduate-program liaisons. Silence is taught as the
+standard reply, not a verdict. (**⚠ decision 9**, resolved: an earlier draft
+required at least one real send, which conscripts a non-consenting stranger
+into an assessment — the same objection that shaped the week-9 pool.)
 
 **Week 8 — The Plausibility Budget.** The budget is shared: one indefensible
 buzzword discredits the true sentence beside it. Tutorial is a `red-team
@@ -485,21 +489,14 @@ Every ref is fully prefixed. No bare slugs. No self-refs. No `published: false`.
 | `sessions/week-10` | `sessions/week-11` |
 | `sessions/week-11` | `sessions/week-12` |
 
-### C. Lecture spine, week N → week N+1 (11)
+### C. Lecture spine — **cut, do not write these** (0)
 
-| from | to |
-|---|---|
-| `lectures/week-01` | `lectures/week-02` |
-| `lectures/week-02` | `lectures/week-03` |
-| `lectures/week-03` | `lectures/week-04` |
-| `lectures/week-04` | `lectures/week-05` |
-| `lectures/week-05` | `lectures/week-06` |
-| `lectures/week-06` | `lectures/week-07` |
-| `lectures/week-07` | `lectures/week-08` |
-| `lectures/week-08` | `lectures/week-09` |
-| `lectures/week-09` | `lectures/week-10` |
-| `lectures/week-10` | `lectures/week-11` |
-| `lectures/week-11` | `lectures/week-12` |
+Eleven `lectures/week-N` → `lectures/week-N+1` edges were specified here and
+removed at the W0 gate. Two spines pointing the same direction made the graph
+read as a ladder rather than a network, and the session spine (B) already
+carries week-to-week navigation for the pages a marker actually opens. Lectures
+keep their week-mates via A and their staff via E. The letter is retained so
+the group labels below do not shift.
 
 ### D. Session → assessment (6)
 
@@ -539,21 +536,22 @@ Every ref is fully prefixed. No bare slugs. No self-refs. No `published: false`.
 
 ### Totals and invariants
 
-**A 12 + B 11 + C 11 + D 6 + E 5 + F 3 + G 2 = 50 declared edges.**
+**A 12 + B 11 + C 0 + D 6 + E 5 + F 3 + G 2 = 39 declared edges.**
 
 Isolation audit — every one of the 34 nodes has at least one edge:
 
 - 12 sessions: all via A (and B)
-- 12 lectures: all via A inbound (and C)
+- 12 lectures: all via A inbound (five also via E)
 - `01-role-teardown` via D/F/G · `02-performance-materials` via D/F ·
   `03-peer-critique` via D/F · `04-capstone-applications` via D/F/G
 - all 5 people via E
 - `policies/index` via G
 
-No `(from, to)` pair repeats, and no row has `from == to`. **⚠ decision 7:** the
-22 spine edges (B and C) exist for lateral navigation, not because week 5 has
-anything special to say about week 6. If the graph visualisation reads as a
-ladder rather than a network, those are the rows to cut first.
+No `(from, to)` pair repeats, and no row has `from == to`. **⚠ decision 7,
+resolved:** the lecture spine is cut and the session spine kept — spine edges
+exist for lateral navigation, not because week 5 has anything to say about week
+6, and one spine is enough to carry that without the graph collapsing into a
+ladder.
 
 ## 8. The flagship deck — week 6
 
@@ -661,23 +659,27 @@ None of these is existing internet slang relabelled.
 
 ## 10. Every ⚠ decision in one place
 
-1. Flagship deck on **week 6**, not week 9 (§8).
+All eleven went to the user at the W0 sign-off gate. Four were ruled on
+explicitly (1, 3+4, 7, 9); the rest stand as specified. Two were changed.
+
+1. Flagship deck on **week 6**, not week 9 (§8). **Confirmed at the gate.**
 2. `week-NN` slugs for **both** sessions and lectures, mitigated by the
    always-fully-prefix-refs rule (§0, §6).
 3. **Four** assessments rather than three, to keep the capstone under 50 without
-   inflating A1 (§4).
+   inflating A1 (§4). **Confirmed at the gate.**
 4. **Peer critique graded** at 10% — participation-adjacent marking, graded on
-   submitted written critiques only (§4).
+   submitted written critiques only (§4). **Confirmed at the gate.**
 5. Guest lectures **split across two weeks in two modes** — shared relay in W10,
    in-tutorial per-stream guests in W11 (§3).
 6. Streams partition by **how a field screens candidates**, not by discipline
    (§1).
-7. The **22 spine edges** (B and C) exist for navigation, not meaning; cut these
-   first if the graph reads as a ladder (§7).
+7. **Changed at the gate.** The lecture spine (C, 11 edges) is cut; the session
+   spine (B) is kept. 39 declared edges, not 50 (§7).
 8. Terms built as **one cross-referencing lexicon**; truthfloor and seamwork are
    bookends and should not be swapped independently (§9).
-9. Week 7 requires **actually sending** one outreach message — real-world action
-   inside a tutorial (§3).
+9. **Changed at the gate.** Week 7 no longer requires a real send; drafting is
+   compulsory, sending is the student's choice, and the Outreach Log is graded
+   identically either way (§3).
 10. Capstone due **2027-05-26**, nine days after the last teaching week and two
     days inside the course window (§4).
 11. Deck slug `week-06-varnish` rather than `week-06` (§8).

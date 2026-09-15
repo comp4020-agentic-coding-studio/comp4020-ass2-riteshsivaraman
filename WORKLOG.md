@@ -265,6 +265,43 @@ Format per entry:
 
 ---
 
+## 2026-09-16 — Curriculum spec signed off, with two changes and a rename
+
+- **Decision:** `CURRICULUM.md` is the frozen W0 spec every builder derives
+  from — twelve weeks, three streams, the Dossier, a 20/25/10/45 ladder, 33
+  content files, 34 nodes. Eleven flagged judgement calls went to the user at
+  the gate. Nine stand as specified; two changed. Separately, the weekly
+  sessions are called **Sessions**, not Rehearsals.
+- **Why (week 7):** the specified tutorial required every student to actually
+  send one outreach message to a real practitioner for marks. That conscripts a
+  non-consenting stranger into an assessment, which is the same objection that
+  produced the week-9 consent-based interview pool — the course cannot hold
+  that line in one week and breach it in another. Drafting stays compulsory,
+  sending is the student's choice, and the Outreach Log is graded identically
+  either way, so the week loses nothing it was actually teaching.
+- **Why (lecture spine):** the edge table declared two parallel week-N →
+  week-N+1 spines, 22 of 50 edges. Two spines pointing the same way render as a
+  ladder rather than a network, and lateral browsing is a promise the graph
+  visualisation has to actually deliver. The session spine is kept because week
+  pages are what a marker opens; the lecture spine is cut. **39 edges, not 50.**
+- **Why (Sessions):** "Rehearsals" was my invention, not the user's, and it put
+  satire in the navigation — the one surface where a marker with ten minutes
+  must not have to translate anything. The satire belongs in the content; the
+  nav's only job is findability. Caught while it was a two-file change rather
+  than twelve page bodies.
+- **Confirmed unchanged at the gate:** flagship deck on week 6 rather than 9;
+  four assessments rather than three; peer critique graded at 10%. All twelve
+  brainrot terms stand as drafted.
+- **Rejected:** keeping the real-send requirement with an opt-out (an opt-out
+  students must invoke is still pressure); cutting both spines (leaves week
+  pages with no next-week link); renaming the collection and URL along with the
+  label (churns every ref for no gain).
+- **Encoded as:** §3, §7 and §10 of `CURRICULUM.md`; `sessionLabels` in
+  `src/site-config.ts`; one line in `src/pages/glossary/index.mdx`.
+- **Commit:** `aca1320` (spec as written), then this change
+
+---
+
 ## Note on the 2026-09-15 entries
 
 Three decisions dated 2026-09-15 — course concept, assessment model,
