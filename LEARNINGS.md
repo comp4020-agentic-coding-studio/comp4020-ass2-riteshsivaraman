@@ -35,7 +35,34 @@ Cost five minutes to establish by probing, against the alternative of
 discovering it on the last build day with the layout already assuming
 hero images.
 
+### A link inside deck speaker notes is an axe violation
+
+**Mitigated.** astromotion renders a ` ```notes ` fence into
+`<aside class="notes" aria-hidden="true">`. A focusable `<a>` inside an
+`aria-hidden` container trips axe's `aria-hidden-focus` rule, and axe throws
+the build — which CI's `deploy` job re-runs, so it takes the live site down
+rather than failing a test.
+
+Caught while authoring, before a build, by reasoning about what the fence
+compiles to rather than what it looks like in source. The rule generalises to
+anything hidden-but-focusable: notes fences take prose only, and any URL a
+presenter needs goes on the slide or in a ` ```comment ` fence instead.
+
 ## Patterns that worked
+
+### Verify a subagent's factual claims against the package, not its confidence
+
+The deck agent reported using four astromotion features, two of which
+(`_animate: id` scoping, ` ```comment ` fences) I had never seen in this
+codebase. Grepping the README and the theme's `deck.css` confirmed all four
+exist and behave as described — but the check cost one command, and a
+hallucinated directive would have compiled to visible junk on the flagship
+page a marker opens. The README itself says an unrecognised directive is
+passed through, so the failure mode is silent-and-visible, the worst pair.
+
+Report-then-verify is cheap enough to be unconditional for any agent claim
+about an API surface, and it is separate from running the build: the build
+would not have flagged a passed-through directive at all.
 
 ### Challenge the claim of completeness before accepting it
 

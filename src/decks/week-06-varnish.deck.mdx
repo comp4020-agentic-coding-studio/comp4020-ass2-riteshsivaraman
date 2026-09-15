@@ -7,44 +7,249 @@ description:
 
 # Varnish, and How Much Is Too Much
 
-{/* STARTER_CONTENT: replace this deck, then remove this comment. */}
+## SLOP3841 · Week 6 · Nadia Ferrante
 
-Replace this deck. It is here to show that slides are part of the site, built
-from the same markdown as everything else.
+```notes
+Name the bit in the first thirty seconds. Everything already in their Dossier is
+varnished — the CV font, the order of the portfolio, the fact that the failed
+project is on page two. The question for the next fifty minutes is thickness,
+never whether.
 
----
+I am also varnished. Say so. It buys the rest of the hour.
+```
 
-## Slides are markdown
-
-A `---` starts a new slide. Everything else is ordinary markdown: headings,
-lists, links, tables, images, fenced code.
-
-- one idea per slide
-- the fewest words that carry it
-- the deck is a performance artefact, so it can say things a page wouldn't
+```comment
+Opening slide deliberately carries the convenor's name: the week is delivered by
+one person in a voice, and the deck should sound like her from slide one.
+```
 
 ---
 
 {/* _class: impact */}
 
-# A slide class
+## Nobody assesses your work. They assess your work as presented.
 
-`{/* _class: impact */}` fills the slide with the brand colour. `quote`,
-`banner` and `centered` are the others the theme styles.
+```notes
+The uncomfortable premise, and the reason this week exists. Presentation is not
+an optional layer sitting on top of the work — it is the only channel the work
+has. Nobody is going to sit beside you while you explain the commit history.
+
+Do not soften this. The rest of the lecture is only useful if they accept it.
+```
 
 ---
 
-## What else is here
+## The same project, twice
 
-```sh
-pnpm dev
-pnpm check
+<div class="columns">
+
+<div>
+
+### Bare
+
+`rostering-tool`
+
+No description. Fourteen commits. The most recent one says `fix`.
+
+</div>
+
+<div>
+
+### Framed
+
+**Shift-clash checker for a 40-person volunteer roster.**
+
+Live on a free tier. I wrote the clash logic; the interface is a template.
+
+</div>
+
+</div>
+
+```notes
+Nothing about the underlying work differs between these two panels. Same repo,
+same fourteen commits, same template interface.
+
+Ask the room which one they would open at four o'clock on a Friday. Then ask
+which one they would trust more, and sit with the gap between those answers.
 ```
 
-The second command proves the deck compiles with the rest of the site. Use the
-first to inspect every slide at the desktop and phone marking viewports; slide
-fit and legibility are visual judgements.
+---
 
-The [astromotion](https://github.com/ANUcybernetics/astromotion) README has the
-rest of the syntax: speaker notes, backgrounds, QR codes, fragments, and
-components hydrated per slide.
+## The ninety-second read
+
+An assessor runs four questions, in this order:
+
+1. What is it
+2. Does it work
+3. Did you do it
+4. Do I care
+
+```notes
+Present this as observed behaviour rather than folklore — it is what shortlisting
+looks like when you have forty tabs open and an hour.
+
+The point for them: these four questions are the specification their artefact is
+written against. Anything on the page not answering one of them is decoration.
+```
+
+---
+
+{/* _animate: varnish */}
+
+## Thin varnish: four moves
+
+- Name the problem
+- Show the thing running
+- State your part
+- State the constraint
+
+```notes
+Each move is one sentence, not a redesign. Demonstrate all four live on the
+rostering tool from earlier so they see it take ninety seconds, not a weekend.
+
+The constraint is the move everyone skips and the one that does the most work:
+"one week, no budget, borrowed data" makes a modest thing legible as a choice.
+```
+
+---
+
+{/* _animate: varnish */}
+
+## Thick varnish: four tells
+
+- Adjectives where an outcome should be
+- No constraint named anywhere
+- Passive voice arriving at the exact moment of ownership
+- Finish inversely proportional to depth
+
+```notes
+Mirrors the previous slide on purpose — same shape, opposite direction. Let the
+auto-animate carry that; do not explain the parallel, they will see it.
+
+Flag forward: week 8 red-teams these four tells in their own materials, and times
+how long it takes a peer to find the weakest claim. Nobody wants to be timed.
+```
+
+---
+
+## Three surfaces, the same four moves
+
+| Move           | Repo front page  | Case study          | Capability brief    |
+| -------------- | ---------------- | ------------------- | ------------------- |
+| The problem    | First line       | The brief, verbatim | Who has the problem |
+| It works       | A link that runs | Before and after    | A number            |
+| Your part      | Commits          | Your role, named    | Your decision       |
+| The constraint | Scope note       | Time and budget     | What you declined   |
+
+```notes
+The gallery walk is organised as these three columns, one per wall. Technical
+Practice starts at the repo wall, Creative at the case-study wall, Commercial at
+the brief wall, and everyone rotates.
+
+Say plainly that the moves are identical and only the evidence changes. Students
+arrive believing their field's conventions are standards.
+```
+
+---
+
+## Live teardown
+
+> A passionate, detail-oriented creative who leveraged best-in-class tooling to
+> deliver a seamless end-to-end brand experience for a high-profile client.
+
+Twenty-three words. Four tells. No receipts.
+
+```notes
+Do this slowly on screen. Ask the room to call the tell before naming it myself —
+they find three of the four unaided, and finding it is what makes it stick.
+
+"High-profile client" is the one they miss: it borrows the client's standing
+instead of stating the work, and it cannot be verified by anybody.
+```
+
+---
+
+## Whose work was it
+
+"We" is accurate on a team and useless in an application.
+
+Name your part. Name the parts that were not yours.
+
+Framing what is true is professional practice. Claiming what is not is fraud.
+
+```notes
+The integrity boundary, said once and then moved past. Overclaiming a team output
+is the most common portfolio failure and among the easiest to detect, because the
+detail runs out one question in.
+
+No sermon here. State it, take a breath, go to the next slide.
+```
+
+---
+
+## The Varnish Note
+
+Dossier §7. Every presentational decision, what it reveals, and what it conceals.
+
+> I moved the group project to the top because it is the only thing with a user
+> count, which pushes my solo work below the fold.
+
+"Improved layout" is not an entry.
+
+```notes
+Show the good entry and the useless one side by side and let the contrast do it.
+The note is graded on honesty and specificity, never on the materials being
+unvarnished.
+
+This is 25% of Assessment 2. Say the number.
+```
+
+---
+
+## Gallery-walk mechanics
+
+- Work on the walls in the first ten minutes
+- Written critique on the sheet beside it, not spoken across the room
+- You do not defend your own piece until the final lap
+- Last twenty minutes: the cross-stream lap
+
+```notes
+Enforce written critique. Verbal critique leaves no receipt, and the sheets are
+the evidence a student cites in their Peer Critique Contribution — Assessment 3,
+and the sheet they wrote on today is the artefact.
+
+The no-defending rule is the one that needs restating twice. A defended artefact
+stops being read.
+```
+
+---
+
+## Where this lands
+
+- [Performance Materials](/assessments/02-performance-materials/) — due Friday of
+  week 8
+- [Week 8](/sessions/week-08/) red-teams these exact four tells
+- The teaching break sits in between
+
+Spend the break building, not polishing.
+
+```notes
+Say the last line twice, once here and once on the way out the door. Thick
+varnish is what a fortnight with nothing to build produces.
+
+The break is the only two uninterrupted weeks they get all semester, and it is
+directly upstream of the 25% assessment.
+```
+
+---
+
+{/* _class: impact */}
+
+## Varnish is not a lie. It is a claim about where to look.
+
+```notes
+Close on the sincere point inside the satirical frame, and stop. No coda, no
+recap, no moralising.
+
+If there are questions, take them after the slide is down.
+```
