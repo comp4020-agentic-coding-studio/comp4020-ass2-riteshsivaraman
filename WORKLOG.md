@@ -372,3 +372,63 @@ later.
   `src/components/SemesterTracker.astro` and `GlossaryList.astro`; two new
   checks in `spec/course-design.test.ts`, both mutation-tested.
 - **Commit:** the six above, then `2347288`
+
+---
+
+## 2026-09-16 — The site was a recolour of the template, and the rebrand that fixed it
+
+- **The fault, which the user caught and I had not:** "the UI of the whole
+  website quite literally mimics the comp4020 website". Correct, and the cause
+  was structural rather than aesthetic — `brandCss` pointed at
+  `astro-theme-slop/slop.css`, three colour tokens and a crest offset, the
+  same branding package the real course site wears. No custom visual treatment
+  had ever been built, so every page was the institutional template with the
+  hue turned. That is a direct hit on the 35% response-to-brief mark, and it
+  had survived every green build because nothing in the suite can assert
+  "looks like its own thing".
+- **Decision:** a notepad identity, chosen by the user from four options. Ink
+  on cream, faint ruled lines, a doubled red margin rule, Newsreader for prose
+  and Courier Prime for everything structural, `--at-border-radius: 0`
+  squaring cards, callouts, buttons, inputs and badges from one token. The
+  course is about rehearsing a role before you hold it; the artefact of
+  rehearsal is a notebook. The whole identity is one file,
+  `src/styles/notepad.css`.
+- **Why it needed no theme fork:** `brandCss` is injected after the theme's
+  own styles and is **unlayered**, while theme rules live in `@layer at.base` /
+  `at.components` / `at.tokens`. Unlayered CSS beats layered CSS regardless of
+  specificity, and layers are decided before specificity — so a plain
+  `.at-nav { … }` in the brand file outranks the theme's, including its
+  media-query variants, with no `!important`. That mattered because the nav,
+  search and focus behaviour are axe-tested upstream and reimplementing them
+  is how the deploy gate breaks.
+- **I proposed the wrong direction first.** The user suggested a notepad theme
+  in the previous session and I steered to a theatre metaphor instead. The
+  notepad is the better answer, and for a reason available at the time: a
+  theatre skin would have been another dark-surface institutional site, while
+  the pad reframes every page as a working document, which is what the course
+  actually asks a student to keep.
+- **Three faults the rebrand surfaced, none of which a diff would have shown.**
+  The theme's `--at-text-muted` is ink at 62% alpha with its contrast claim
+  measured against a 99.4%-lightness surface, so darkening the paper drops it
+  to roughly 3.8:1 — under the AA floor, and axe throws the build that CI's
+  deploy job re-runs. `deck.css` hardcodes `var(--font-public-sans, …)` for
+  slide body text and a system stack for code rather than reading the brand
+  tokens, and the theme's `fonts` option is off, so slides silently rendered
+  prose in a generic sans until `src/decks/theme.css` set `--r-main-font` and
+  `--r-code-font` explicitly. And `.course-tags li` hardcoded
+  `border-radius: 999px` instead of reading the token, so rounded pills
+  survived a token-level rebrand.
+- **The deck flips `color-scheme` rather than repainting piecemeal**, so every
+  `light-dark()` brand token resolves to the arm that was contrast-checked
+  against the cream stage. The two `_class: impact` slides stay blue — a
+  stamped interstitial on paper, same device as the title block.
+- **Rejected:** forking the theme package; `!important` overrides; keeping the
+  Slop crest in the nav (omitting `logo` makes the theme fall back to a text
+  wordmark, which the brand file then types out — the favicon stays, since the
+  fiction is still that Slop University published this).
+- **Verified by looking, not only by building.** Cold build with the axe cache
+  deleted: 42 pages no accessibility violations, 1 deck clean, no broken
+  links, 11/11 tests. Then home, weeks 1 and 9, the capstone, the deck and
+  policies at 1920×1080 and 390×844 — no horizontal overflow anywhere, and the
+  margin rule clears the text column at 390px via a widened content inset.
+- **Commit:** `d7fe9a8`

@@ -87,6 +87,53 @@ Recorded rather than patched: the deck is legible at 1920×1080, which is how a
 deck is used, and matching the platform's intended behaviour is defensible in
 a way that overriding a vendor's scaling model mid-verification is not.
 
+### A translucent token does not survive a re-paint, and neither does a hardcoded radius
+
+`astro-theme-university` defines `--at-text-muted` as ink at **62% alpha**, and
+its AA contrast claim is measured against the theme's own surface at
+99.4% lightness. Repainting the site onto cream darkened the surface, which
+silently darkened every translucent ink sitting on it: that token computes to
+roughly **3.8:1** on paper, under the 4.5:1 body-text floor. axe throws the
+build and CI's `deploy` job runs its own build, so the failure mode is a live
+site outage, not a red test.
+
+The general rule: **alpha-based tokens carry an invisible dependency on the
+surface they were measured against.** Changing a background is therefore never
+a one-token change — every translucent thing above it has to be re-derived or
+pinned solid. Muted and secondary inks here are now solid colours for exactly
+this reason.
+
+The mirror-image failure is a value that ignores the token system. Every radius
+on the site read `--at-border-radius`, so setting it to `0` squared the whole
+site in one line — except `.course-tags li`, which hardcoded
+`border-radius: 999px`. Rounded pills survived a rebrand that squared
+everything else. Found with `grep -rn "border-radius" src/`, which is the
+cheap check worth running before believing a token-level restyle is complete.
+
+Status: **mitigated.** Both fixed in `d7fe9a8`. The class is open — any future
+surface change needs the same alpha audit.
+
+### A deck stylesheet can derive colour from your tokens and still hardcode your fonts
+
+`deck.css` derives every colour it uses from the `--at-*` brand tokens, which
+makes it reasonable to assume it derives everything that way. It does not: it
+hardcodes `--r-main-font: var(--font-public-sans, "Public Sans")` for body and
+headings, and a system mono stack for code. With the theme's `fonts` option
+switched off, `--font-public-sans` is never defined and Public Sans is never
+loaded, so slides rendered prose in whatever generic `sans-serif` the browser
+picked — on a site whose entire identity is a serif and a typewriter.
+
+It passed every gate. axe does not check that a font is the one you intended,
+and the deck's own structural check does not either. It was found by looking at
+a slide and noticing the prose was not a serif.
+
+The lesson is narrower than "read the packages": **a package being
+token-driven in one dimension is not evidence it is token-driven in another.**
+Check each axis — colour, type, spacing — separately.
+
+Status: **mitigated** in `d7fe9a8`; `src/decks/theme.css` now sets
+`--r-main-font`, `--r-heading-font` and `--r-code-font` from the brand tokens.
+
 ## Patterns that worked
 
 ### To see a real mobile viewport when the window will not resize, use an iframe
@@ -218,3 +265,41 @@ It also measures, which a list cannot: the walk showed every marker target is
 **one** click from home, not two, with lectures at two. A promise enumerated
 from the artefact tells you your actual margin, and a margin you know is a
 margin you can spend.
+
+### Unlayered brand CSS is a whole-identity lever, not a colour hook
+
+`brandCss` looks like a small hook for swapping three colours, and that is how
+it was used for most of this build — which is why the site spent weeks as a
+recolour of the institutional template. The mechanism is much stronger than
+the name suggests. The brand file is injected *after* the theme's styles and
+is **unlayered**, while theme rules live in `@layer at.base` /
+`at.components` / `at.tokens`. Cascade layers are resolved **before**
+specificity, and unlayered CSS beats layered CSS outright, so a plain
+`.at-nav { … }` in the brand file overrides the theme's nav rules — including
+its media-query variants — with no `!important` and no fork.
+
+That is the difference between "restyling means forking the theme" and
+"restyling is one file". It also preserves what you must not reimplement: the
+nav, search and focus behaviour are axe-tested upstream, and axe throws the
+build the deploy job re-runs. Radical visual change, zero risk to the tested
+behaviour underneath.
+
+Two things make it safe in practice. Scope structural rules to something the
+target actually has — here `body:has(.at-nav)`, so decks, which load the brand
+file for its tokens but have no nav, are not papered over as a side effect.
+And re-derive rather than override where the theme computes a value from
+another token, because overriding the output leaves the inputs disagreeing.
+
+### Look at the artefact for the thing no check can assert
+
+The site being a visual clone of the course template survived every gate:
+42 pages of clean axe, no broken links, 11 passing spec tests, full green.
+Nothing in the suite can assert "this looks like its own work", and 35% of the
+mark is response to the brief. The user caught it by opening the page.
+
+Checks cover what was thought to test. Design coherence, register and
+whether an artefact reads as designed are outside that set by construction,
+so they need a pass of looking that is scheduled rather than hoped for. During
+this rebrand, looking is what found the grotesque on the slides and the
+rounded pills — both invisible to a green build, one of them in the deck a
+marker is guaranteed to open.
