@@ -158,3 +158,63 @@ schema-valid stubs first makes it impossible for an edge to dangle, turns
 graph wiring into one reviewable commit with one owner, and — the real
 payoff — lets many authors write into the graph concurrently without any of
 them being able to break the build for the others.
+
+### Fan out authoring on disjoint scopes; keep one committer and one build-runner
+
+Six agents wrote concurrently into 33 content files plus components, the deck
+and `spec/`, and nothing collided — because every brief named an exclusive
+write scope, no file had two owners in the wave, and main was the only process
+allowed to run git or `pnpm`. Two agents running `git add` stage each other's
+half-written files; two concurrent `astro build` runs corrupt `dist/` and the
+a11y cache. Removing the whole class costs nothing, because authoring is the
+parallel part and the build is the merge point.
+
+The unexpected payoff was the *report, do not edit* half of the rule. Three
+real faults — a `role` lookup with no fallback that silently dropped four of
+five Role rows, a `contact` field never rendered, and a layout emitting the
+lead paragraph above the body's `h1` on every MDX page — were all found by
+agents whose scope excluded the file. An agent that cannot fix a thing
+describes it precisely instead, and a described fault gets fixed once by the
+owner rather than three times in conflict.
+
+Commit per tranche as reports arrive rather than once at the end: six commits
+instead of one, incremental history a marker can follow, each cleanly
+revertable.
+
+### Calibrate parallel authors with one approved exemplar, not a style guide
+
+Register drift is the specific thing parallel writing costs, and it cannot be
+fixed afterwards — 33 files in four slightly different voices reads worse than
+33 files in one mediocre voice. What worked was writing **one page fully**,
+taking it to the user, and handing the approved artefact to all four writers as
+their calibration reference. Consistent voice across 33 files with no rewrite
+round, for the price of one serial sign-off.
+
+An exemplar carries what a style guide cannot state: section shape, how much
+satire per paragraph, where the sincere substance sits, how long a heading
+runs. Write the prose brief as well, but the artefact is what actually
+transfers.
+
+### A mutation test that did not mutate looks exactly like a passing check
+
+Stripping a link to prove the two-click sensor could fail, the
+`grep --include=*.html` glob was eaten by zsh, the command mutated **zero**
+files, and the suite printed 11 passed. Read carelessly that is "the check is
+fine". It actually means "the check was never tested" — the same shape as the
+green-checkpoint-that-proved-nothing this harness exists to defend against.
+
+So a mutation test carries two assertions, not one: that the mutation applied
+(41 files rewritten), and that the check then went red naming the right thing.
+Print the first before believing the second.
+
+### Enumerate a promise from the artefact, never from a list
+
+The two-click promise could have been a list of routes asserted to exist.
+Instead the check walks hrefs out of `dist/index.html` breadth-first to depth
+two. A list keeps passing after the nav that satisfied it is deleted; an
+enumeration cannot.
+
+It also measures, which a list cannot: the walk showed every marker target is
+**one** click from home, not two, with lectures at two. A promise enumerated
+from the artefact tells you your actual margin, and a margin you know is a
+margin you can spend.

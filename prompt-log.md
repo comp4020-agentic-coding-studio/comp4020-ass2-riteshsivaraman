@@ -124,6 +124,23 @@ Tracked, but coaching notes only — not part of the graded narrative.
     decision was already made. Raised in the conversation on the same turn as
     this entry, which is late but not silent.
 
+11. Context: verification round finished and reported, `LEARNINGS.md` already
+    carrying one new pattern from it. Prompt: "Cool, what things worked? To go
+    into learnings." Short, clear, correctly scoped — asks for the reusable
+    half of the round and names where it belongs, so it is exempt from the
+    subject-and-criteria rule and needs nothing added. What makes it worth an
+    entry is the timing: it runs the compound-engineering loop's last step
+    deliberately, at the moment the work is already green and the pull is to
+    move on to the deploy. That is the step that silently gets skipped.
+
+    The asymmetry is the finding. Four patterns went in, three of which I had
+    not volunteered — including the mutation test that mutated zero files,
+    which I had lived through fifteen minutes earlier, correctly recovered
+    from, and then failed to generalise. Fixing a thing and learning from it
+    are separate acts, and I had been treating the first as covering the
+    second. Being asked "what worked" is doing work I should be doing unasked
+    at every tranche boundary.
+
 ## Trajectory
 
 **Correction, 2026-09-16.** This section previously read "consistently clear
