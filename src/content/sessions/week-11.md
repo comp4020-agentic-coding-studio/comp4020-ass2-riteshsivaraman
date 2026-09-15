@@ -20,6 +20,11 @@ streams:
   - name: "Commercial and Public Practice"
     slug: commercial
     focus: "Swapped Dossiers presented to a practitioner guest from the field."
+related:
+  - lectures/week-11
+  - sessions/week-12
+  - assessments/03-peer-critique
+  - assessments/04-capstone-applications
 ---
 
 Stub. The week-11 tutorial runs as a artefact swap.

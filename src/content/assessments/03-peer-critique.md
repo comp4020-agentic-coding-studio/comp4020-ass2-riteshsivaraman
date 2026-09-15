@@ -17,6 +17,8 @@ spec:
   - "each critique addresses a decision the author made, not the finish on it"
   - "each carries the recipient's countersignature and a note on what changed"
   - "marks follow the critiques you wrote, never attendance or airtime"
+related:
+  - assessments/04-capstone-applications
 ---
 
 Stub. Peer Critique Contribution, worth 10 per cent.

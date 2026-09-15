@@ -20,6 +20,9 @@ streams:
   - name: "Commercial and Public Practice"
     slug: commercial
     focus: "Examined by your own stream on what became true."
+related:
+  - lectures/week-12
+  - assessments/04-capstone-applications
 ---
 
 Stub. The week-12 tutorial runs as a closing viva.

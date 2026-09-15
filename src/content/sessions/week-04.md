@@ -20,6 +20,10 @@ streams:
   - name: "Commercial and Public Practice"
     slug: commercial
     focus: "A receipt is a number, a decision, or a named stakeholder."
+related:
+  - lectures/week-04
+  - sessions/week-05
+  - assessments/01-role-teardown
 ---
 
 Stub. The week-04 tutorial runs as a claims tribunal.

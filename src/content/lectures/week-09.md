@@ -5,6 +5,8 @@ week: 9
 date: 2027-04-26
 teachers:
   - margot-tse
+related:
+  - people/margot-tse
 ---
 
 Stub. Shared lecture for week 9.

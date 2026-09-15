@@ -5,6 +5,8 @@ week: 1
 date: 2027-02-22
 teachers:
   - wren-halloway
+related:
+  - people/wren-halloway
 ---
 
 Stub. Shared lecture for week 1.

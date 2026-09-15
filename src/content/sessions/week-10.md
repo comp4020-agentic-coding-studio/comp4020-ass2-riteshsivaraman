@@ -20,6 +20,9 @@ streams:
   - name: "Commercial and Public Practice"
     slug: commercial
     focus: "Start date, rotation preference, grad-stream choice."
+related:
+  - lectures/week-10
+  - sessions/week-11
 ---
 
 Stub. The week-10 tutorial runs as a negotiation simulation.

@@ -19,6 +19,8 @@ spec:
   - "the materials name their target and are demonstrably fitted to it"
   - "the Varnish Note records what each presentational decision conceals as well as what it reveals"
   - "no claim in the pack exceeds the evidence you can produce for it"
+related:
+  - assessments/04-capstone-applications
 ---
 
 Stub. Performance Materials, worth 25 per cent.

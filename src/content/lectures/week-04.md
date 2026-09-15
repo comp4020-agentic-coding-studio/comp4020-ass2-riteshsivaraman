@@ -5,6 +5,8 @@ week: 4
 date: 2027-03-15
 teachers:
   - sunil-raman
+related:
+  - people/sunil-raman
 ---
 
 Stub. Shared lecture for week 4.

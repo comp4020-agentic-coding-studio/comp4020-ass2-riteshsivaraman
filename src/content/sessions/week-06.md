@@ -20,6 +20,9 @@ streams:
   - name: "Commercial and Public Practice"
     slug: commercial
     focus: "One-page capability brief."
+related:
+  - lectures/week-06
+  - sessions/week-07
 ---
 
 Stub. The week-06 tutorial runs as a gallery walk.

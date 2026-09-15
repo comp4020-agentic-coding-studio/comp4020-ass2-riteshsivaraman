@@ -22,6 +22,8 @@ spec:
   - "the process record is complete and honest, including what did not work"
   - "the audit distinguishes what was performed from what became true, with reasons"
   - "this is graded on your process artefacts only — never on outcome, offer, or the prestige of the organisation"
+related:
+  - policies/index
 ---
 
 Stub. Capstone: Applications in the Wild, worth 45 per cent.

@@ -20,6 +20,9 @@ streams:
   - name: "Commercial and Public Practice"
     slug: commercial
     focus: "Audit a LinkedIn and a cover letter; mark which claims survive a single show me."
+related:
+  - lectures/week-01
+  - sessions/week-02
 ---
 
 Stub. The week-01 tutorial runs as a self-audit clinic.

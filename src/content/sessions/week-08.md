@@ -20,6 +20,10 @@ streams:
   - name: "Commercial and Public Practice"
     slug: commercial
     focus: "Probe for the numbers behind the stated outcome."
+related:
+  - lectures/week-08
+  - sessions/week-09
+  - assessments/02-performance-materials
 ---
 
 Stub. The week-08 tutorial runs as a red-team session.

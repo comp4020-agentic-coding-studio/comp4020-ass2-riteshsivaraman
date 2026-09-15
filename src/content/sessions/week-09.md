@@ -21,6 +21,10 @@ streams:
   - name: "Commercial and Public Practice"
     slug: commercial
     focus: "Competency panel against written selection criteria."
+related:
+  - lectures/week-09
+  - sessions/week-10
+  - assessments/04-capstone-applications
 ---
 
 Stub. The week-09 tutorial runs as a mock panel.

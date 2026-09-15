@@ -19,6 +19,9 @@ spec:
   - "every claim in the baseline inventory points at evidence you could produce in ninety seconds"
   - "the teardown separates boilerplate, wishlist, actual work and accidental confession"
   - "each gap is tiered, specific, and stated without apology or bluff"
+related:
+  - assessments/02-performance-materials
+  - policies/index
 ---
 
 Stub. Role Teardown and Gap Map, worth 20 per cent.

@@ -20,6 +20,9 @@ streams:
   - name: "Commercial and Public Practice"
     slug: commercial
     focus: "Judgement-and-context gaps."
+related:
+  - lectures/week-03
+  - sessions/week-04
 ---
 
 Stub. The week-03 tutorial runs as a blind review.

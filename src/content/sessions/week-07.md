@@ -20,6 +20,9 @@ streams:
   - name: "Commercial and Public Practice"
     slug: commercial
     focus: "Alumni, industry-body contacts, graduate-program liaisons."
+related:
+  - lectures/week-07
+  - sessions/week-08
 ---
 
 Stub. The week-07 tutorial runs as a outreach sprint.

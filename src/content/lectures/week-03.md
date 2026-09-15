@@ -5,6 +5,8 @@ week: 3
 date: 2027-03-08
 teachers:
   - anselm-pike
+related:
+  - people/anselm-pike
 ---
 
 Stub. Shared lecture for week 3.

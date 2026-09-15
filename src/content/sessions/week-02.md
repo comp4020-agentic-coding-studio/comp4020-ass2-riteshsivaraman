@@ -20,6 +20,9 @@ streams:
   - name: "Commercial and Public Practice"
     slug: commercial
     focus: "A selection-criteria document, mapped to the answer shapes it is fishing for."
+related:
+  - lectures/week-02
+  - sessions/week-03
 ---
 
 Stub. The week-02 tutorial runs as a teardown.

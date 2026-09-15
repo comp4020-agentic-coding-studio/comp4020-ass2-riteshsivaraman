@@ -20,6 +20,9 @@ streams:
   - name: "Commercial and Public Practice"
     slug: commercial
     focus: "A decision made with insufficient information, and who it affected."
+related:
+  - lectures/week-05
+  - sessions/week-06
 ---
 
 Stub. The week-05 tutorial runs as a roleplay.

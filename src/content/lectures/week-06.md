@@ -6,6 +6,8 @@ date: 2027-03-29
 teachers:
   - nadia-ferrante
 slides: /decks/week-06-varnish/
+related:
+  - people/nadia-ferrante
 ---
 
 Stub. Shared lecture for week 6.
