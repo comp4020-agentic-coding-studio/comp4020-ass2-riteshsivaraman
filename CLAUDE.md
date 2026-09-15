@@ -30,7 +30,9 @@ No plugin installed here, so the workflow is adopted manually, not invoked
 as slash commands. For non-trivial work: brainstorm the requirement, write
 a plan, execute it, simplify the result, review it against the plan, then
 capture the lesson in `LEARNINGS.md` before moving on. Front-load the rigor
-into plan and review, not execution.
+into plan and review, not execution. Checkpoint and clear context
+deliberately at natural task boundaries rather than letting the context
+window run out mid-task and decide it instead.
 
 ## Permanent learnings log
 
@@ -58,7 +60,24 @@ confirmation every time; that default is unchanged.
 
 - Every change is verified with `pnpm check` before it's considered done;
   `pnpm check:evidence` before anything ships.
+- A green suite is not proof of correctness, only proof the work matches
+  whatever was thought to test. After checks pass, look at the actual
+  rendered pages at both marking viewports (1920×1080, 390×844) and say
+  what's seen, even before knowing why.
+- Before trusting a new check, mutation-test it: break the thing it's meant
+  to catch, confirm it goes red for that reason, then restore. A check that
+  can't fail is the bug.
 - Keep commits small and atomic so any one is cleanly revertable with
   `git revert`.
 - A failing check gets logged in `LEARNINGS.md` as a bug, not silently
   patched and forgotten.
+
+## Design and content direction
+
+- Curricular and creative decisions (voice, palette, layout, what a week
+  actually teaches) are not the agent's to default on. Ask for direction
+  rather than filling gaps with agent-shaped chunks — steering away from an
+  already-built wrong idea costs more than asking up front.
+- Verify built pages against actual intent by looking at them, not by
+  assuming a diff matches the description. No placeholder links or content
+  standing in for the real thing; it undermines the artefact's integrity.
