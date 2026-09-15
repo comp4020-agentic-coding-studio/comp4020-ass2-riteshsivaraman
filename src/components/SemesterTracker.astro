@@ -1,0 +1,327 @@
+---
+/**
+ * The semester spine: all twelve teaching weeks, in order, with the current
+ * one marked.
+ *
+ * A static build cannot know what day it is when somebody opens the page, so
+ * the marking is done twice. The frontmatter computes it once at build time —
+ * which is accurate the moment the site deploys and never renders as empty —
+ * and the inline script recomputes it against the reader's own clock and
+ * corrects the attributes in place. Everything the list is *for* (the twelve
+ * links, the dates, the titles) is server-rendered, so with JavaScript off the
+ * page loses only the freshness of one sentence.
+ *
+ * Dates are read from each session's own frontmatter, never hardcoded, so the
+ * teaching break between weeks 6 and 7 falls out of the data rather than being
+ * special-cased.
+ */
+import { getPublishedCollection } from "astro-course-university/content";
+import { withBase } from "astro-theme-university/url";
+import { formatCourseDate } from "../lib/dates";
+
+const DAY = 86_400_000;
+const WEEK = 7 * DAY;
+
+type State = "past" | "current" | "upcoming";
+
+const FLAGS: Record<State, string> = {
+  past: "Taught",
+  current: "This week",
+  upcoming: "To come",
+};
+
+const sessions = (await getPublishedCollection("sessions")).sort(
+  (a, b) => a.data.week - b.data.week,
+);
+
+// Session dates are date-only strings, so they parse to UTC midnight. Compare
+// them against the *local* calendar day, floored the same way, rather than
+// against a timestamp — otherwise the current week flips over at whatever hour
+// the reader's offset happens to be.
+const now = new Date();
+const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+
+const stateFor = (start: number): State =>
+  today >= start + WEEK ? "past" : today >= start ? "current" : "upcoming";
+
+const weeks = sessions.map((session) => {
+  const start = session.data.date.getTime();
+  return {
+    week: session.data.week,
+    href: withBase(`/sessions/${session.id}/`),
+    title: session.data.title,
+    isoDate: session.data.date.toISOString().slice(0, 10),
+    dateLabel: formatCourseDate(session.data.date),
+    state: stateFor(start),
+    start,
+  };
+});
+
+const first = weeks[0];
+const last = weeks[weeks.length - 1];
+const current = weeks.find((w) => w.state === "current");
+const taught = weeks.filter((w) => today >= w.start).length;
+const total = weeks.length;
+
+// Four phases, because the semester is in 2027 and a reader today sits outside
+// it: before it starts, inside a teaching week, inside the break between weeks
+// 6 and 7, and after the last week has run.
+const phase =
+  today < first.start
+    ? "before"
+    : today >= last.start + WEEK
+      ? "after"
+      : current
+        ? "during"
+        : "break";
+
+const next = weeks.find((w) => w.state === "upcoming");
+
+const meterLabel =
+  phase === "during" && current
+    ? `Week ${current.week} of ${total}`
+    : phase === "after"
+      ? `All ${total} teaching weeks taught`
+      : `${taught} of ${total} teaching weeks taught`;
+
+const statusText =
+  phase === "before"
+    ? `Teaching has not started. Week 1 runs from ${first.dateLabel}, and week ${total} is the week of ${last.dateLabel}.`
+    : phase === "during" && current
+      ? `Week ${current.week} is running now: ${current.title}.`
+      : phase === "break" && next
+        ? `Teaching break. Week ${next.week} resumes on ${next.dateLabel}.`
+        : `Teaching has finished. All ${total} weeks are below, in the order they ran.`;
+---
+
+<section class="tracker" aria-labelledby="tracker-heading" data-semester-tracker>
+  <h2 id="tracker-heading">Where the semester is</h2>
+
+  <p class="tracker-status" data-tracker-status>{statusText}</p>
+
+  <div class="tracker-meter">
+    <label class="tracker-meter-label" for="semester-progress" data-tracker-label>
+      {meterLabel}
+    </label>
+    <progress id="semester-progress" max={total} value={taught} data-tracker-progress></progress>
+  </div>
+
+  <ol class="tracker-list">
+    {
+      weeks.map((w) => (
+        <li
+          class="tracker-item"
+          data-week={w.week}
+          data-date={w.isoDate}
+          data-date-label={w.dateLabel}
+          data-state={w.state}
+        >
+          <a class="tracker-link" href={w.href}>
+            <span class="tracker-week">Week {w.week}</span>
+            <span class="tracker-title">{w.title}</span>
+            <span class="tracker-date">{w.dateLabel}</span>
+          </a>
+          <span class="tracker-flag" data-tracker-flag>
+            {FLAGS[w.state]}
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<script is:inline data-astro-rerun>
+  (function () {
+    var root = document.querySelector("[data-semester-tracker]");
+    if (!root) return;
+    var items = Array.prototype.slice.call(root.querySelectorAll(".tracker-item"));
+    if (!items.length) return;
+
+    var DAY = 86400000;
+    var WEEK = 7 * DAY;
+    var FLAGS = { past: "Taught", current: "This week", upcoming: "To come" };
+
+    var now = new Date();
+    var today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+
+    var weeks = items.map(function (el) {
+      var p = (el.getAttribute("data-date") || "").split("-");
+      return {
+        el: el,
+        state: "upcoming",
+        week: Number(el.getAttribute("data-week")),
+        title: (el.querySelector(".tracker-title") || {}).textContent || "",
+        dateLabel: el.getAttribute("data-date-label") || "",
+        start: Date.UTC(Number(p[0]), Number(p[1]) - 1, Number(p[2])),
+      };
+    });
+
+    var taught = 0;
+    var current = null;
+    weeks.forEach(function (w) {
+      w.state = today >= w.start + WEEK ? "past" : today >= w.start ? "current" : "upcoming";
+      if (today >= w.start) taught++;
+      if (w.state === "current") current = w;
+      w.el.setAttribute("data-state", w.state);
+      var flag = w.el.querySelector("[data-tracker-flag]");
+      if (flag) flag.textContent = FLAGS[w.state];
+    });
+
+    var first = weeks[0];
+    var last = weeks[weeks.length - 1];
+    var total = weeks.length;
+    var next = null;
+    for (var i = 0; i < weeks.length; i++) {
+      if (weeks[i].state === "upcoming") {
+        next = weeks[i];
+        break;
+      }
+    }
+
+    var label;
+    var status;
+    if (today < first.start) {
+      label = taught + " of " + total + " teaching weeks taught";
+      status =
+        "Teaching has not started. Week 1 runs from " +
+        first.dateLabel +
+        ", and week " +
+        total +
+        " is the week of " +
+        last.dateLabel +
+        ".";
+    } else if (today >= last.start + WEEK) {
+      label = "All " + total + " teaching weeks taught";
+      status = "Teaching has finished. All " + total + " weeks are below, in the order they ran.";
+    } else if (current) {
+      label = "Week " + current.week + " of " + total;
+      status = "Week " + current.week + " is running now: " + current.title.trim() + ".";
+    } else {
+      label = taught + " of " + total + " teaching weeks taught";
+      status = next
+        ? "Teaching break. Week " + next.week + " resumes on " + next.dateLabel + "."
+        : "Teaching break.";
+    }
+
+    var progress = root.querySelector("[data-tracker-progress]");
+    if (progress) progress.value = taught;
+    var labelEl = root.querySelector("[data-tracker-label]");
+    if (labelEl) labelEl.textContent = label;
+    var statusEl = root.querySelector("[data-tracker-status]");
+    if (statusEl) statusEl.textContent = status;
+  })();
+</script>
+
+<style>
+  .tracker {
+    margin-block: var(--at-spacing-2xl);
+    padding: var(--at-spacing-lg);
+    border: 1px solid var(--at-divider);
+    border-radius: var(--at-border-radius);
+    background: var(--at-bg-alt);
+  }
+
+  .tracker h2 {
+    margin-block-start: 0;
+  }
+
+  .tracker-status {
+    margin-block: 0 var(--at-spacing-lg);
+    color: var(--at-text-secondary);
+  }
+
+  .tracker-meter {
+    display: grid;
+    gap: var(--at-spacing-xs);
+    margin-block-end: var(--at-spacing-lg);
+  }
+
+  .tracker-meter-label {
+    font-size: var(--at-font-size-sm);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--at-text);
+  }
+
+  .tracker-meter progress {
+    inline-size: 100%;
+    block-size: 0.5rem;
+    accent-color: var(--at-accent);
+  }
+
+  .tracker-list {
+    display: grid;
+    gap: var(--at-spacing-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* One column by default — the 390px case — widening to two only when there
+     is room for a week title to sit beside its date. Never a horizontal
+     scrubber: twelve weeks laid across a 48rem column would be twelve
+     illegible stubs. */
+  @media (width >= 34rem) {
+    .tracker-list {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--at-spacing-xs) var(--at-spacing-md);
+    }
+  }
+
+  .tracker-item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--at-spacing-sm);
+    padding: var(--at-spacing-xs) var(--at-spacing-sm);
+    border-inline-start: 3px solid var(--at-divider);
+    border-radius: 0 var(--at-border-radius) var(--at-border-radius) 0;
+  }
+
+  .tracker-item[data-state="past"] {
+    border-inline-start-color: var(--at-border);
+  }
+
+  .tracker-item[data-state="current"] {
+    border-inline-start-color: var(--at-accent);
+    background: var(--at-accent-soft);
+  }
+
+  .tracker-link {
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 var(--at-spacing-sm);
+    min-inline-size: 0;
+  }
+
+  .tracker-week {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .tracker-title {
+    flex: 1 1 auto;
+  }
+
+  .tracker-date {
+    flex: 0 0 100%;
+    font-size: var(--at-font-size-xs);
+    color: var(--at-text-muted);
+  }
+
+  /* The state is never carried by colour alone: every item also says it. */
+  .tracker-flag {
+    flex: 0 0 auto;
+    font-size: var(--at-font-size-xs);
+    color: var(--at-text-muted);
+    white-space: nowrap;
+  }
+
+  .tracker-item[data-state="current"] .tracker-flag {
+    font-weight: 600;
+    color: var(--at-text);
+  }
+</style>

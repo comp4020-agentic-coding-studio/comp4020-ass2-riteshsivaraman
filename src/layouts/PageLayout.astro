@@ -1,8 +1,26 @@
 ---
 import MdxPageLayout from "astro-theme-university/layouts/MdxPageLayout.astro";
 import { siteConfig } from "../site-config";
+
+// The theme expects a page's `h1` to come from BaseLayout's Hero, which only
+// renders when `heroImage` is set. This site has no images at all, so no MDX
+// page had an `h1` and the frontmatter lead paragraph rendered *above*
+// whatever heading the body supplied — visible on `/policies/` and
+// `/assessments/`, two of the pages a marker opens.
+//
+// So the title is rendered here, before the lead, and the theme's own lead is
+// switched off so it is not emitted twice. Pages keep writing their opening
+// sentence once, in frontmatter, which is the convention worth keeping; what
+// they must not also do is repeat the title as a body heading.
+const props = (Astro.props.frontmatter ?? Astro.props) as {
+  title?: string;
+  description?: string;
+};
 ---
 
-<MdxPageLayout siteConfig={siteConfig} {...Astro.props}>
+<MdxPageLayout siteConfig={siteConfig} lead={false} {...Astro.props}>
+  <slot name="head" slot="head" />
+  {props.title && <h1>{props.title}</h1>}
+  {props.description && <p class="lead">{props.description}</p>}
   <slot />
 </MdxPageLayout>

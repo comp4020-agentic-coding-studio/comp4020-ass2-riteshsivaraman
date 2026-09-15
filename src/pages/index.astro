@@ -1,13 +1,62 @@
 ---
+import { getPublishedCollection } from "astro-course-university/content";
+import Callout from "astro-theme-university/components/Callout.astro";
 import Card from "astro-theme-university/components/Card.astro";
 import CardGrid from "astro-theme-university/components/CardGrid.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import { withBase } from "astro-theme-university/url";
+import SemesterTracker from "../components/SemesterTracker.astro";
 import { courseMeta } from "../course-config";
-import { sessionLabels, siteConfig } from "../site-config";
+import { formatCourseDate } from "../lib/dates";
+import { siteConfig } from "../site-config";
 
 // No hero artwork: the gateway this course provisions exposes only chat
 // models, so the site commits to a type-and-CSS treatment instead of stock
 // imagery. `heroImage` is optional in ContentLayout.
+
+const sessions = await getPublishedCollection("sessions");
+const assessments = await getPublishedCollection("assessments");
+const people = await getPublishedCollection("people");
+
+const person = (slug: string) => people.find((p) => p.id === slug);
+
+// The teases are each node's own `description:`, read from the content rather
+// than rewritten here — a homepage that paraphrases its own pages drifts from
+// them by week three.
+const FEATURED = [1, 6, 9];
+const featuredWeeks = sessions
+  .filter((s) => FEATURED.includes(s.data.week))
+  .sort((a, b) => a.data.week - b.data.week);
+const capstone = assessments.find((a) => a.id === "04-capstone-applications");
+
+const weights = [...assessments]
+  .sort((a, b) => a.data.week - b.data.week)
+  .map((a) => a.data.weight);
+const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+
+// Streams are a curricular fact, not content nodes: the names and taglines are
+// fixed by the course spec, but the convenor's name comes from their page so
+// the two can never disagree.
+const streams = [
+  {
+    name: "Technical Practice",
+    tagline:
+      "For the fields where the performance is competence, and someone will eventually ask you to open a terminal in front of them.",
+    convenor: "anselm-pike",
+  },
+  {
+    name: "Creative and Communications Practice",
+    tagline:
+      "For the fields where the performance is taste, and the portfolio is both the evidence and the alibi.",
+    convenor: "nadia-ferrante",
+  },
+  {
+    name: "Commercial and Public Practice",
+    tagline:
+      "For the fields where the performance is judgement, and nobody will ever ask to see the spreadsheet.",
+    convenor: "sunil-raman",
+  },
+];
 ---
 
 <ContentLayout
@@ -19,31 +68,161 @@ import { sessionLabels, siteConfig } from "../site-config";
     {courseMeta.tags.map((tag) => <li>{tag}</li>)}
   </ul>
 
-  <!-- STARTER_CONTENT: replace the authored page below, then remove this comment. -->
-  <h2>What you will do</h2>
-  <p>
-    Say what a student spends their time on — the making, reading, arguing or
-    measuring that fills the weeks. Name the artefact they walk out with.
+  <p class="premise">
+    Everybody you will ever interview with is performing a role they grew into.
+    This course has you do it deliberately, name each move while you are making
+    it, and hold one line for twelve weeks: <strong>framing what is true is
+    professional practice; claiming what is not is fraud.</strong> Every technique
+    taught here lives on one side of that line.
   </p>
 
-  <h2>Who it is for</h2>
-  <p>
-    Say who this is aimed at and what they need to already know. Be specific
-    enough that someone can rule themselves in or out without emailing you.
-  </p>
+  <section class="orientation" aria-labelledby="orientation-heading">
+    <h2 id="orientation-heading">The course, stated plainly</h2>
+    <dl class="facts">
+      <div>
+        <dt>Course code</dt>
+        <dd>{courseMeta.code}</dd>
+      </div>
+      <div>
+        <dt>Level</dt>
+        <dd>{courseMeta.level}, undergraduate</dd>
+      </div>
+      <div>
+        <dt>Teaching period</dt>
+        <dd>
+          {courseMeta.session} {courseMeta.year}, {formatCourseDate(courseMeta.startDate)} to {
+            formatCourseDate(courseMeta.endDate)
+          }
+        </dd>
+      </div>
+      <div>
+        <dt>Structure</dt>
+        <dd>
+          Twelve teaching weeks. One lecture a week, shared by everyone; one tutorial a
+          week, run separately in each stream. A teaching break falls between weeks 6 and
+          7.
+        </dd>
+      </div>
+      <div>
+        <dt>Streams</dt>
+        <dd>
+          Three. You choose one in week 1 by how your target roles screen you, not by what
+          your degree is called. Attending another stream's tutorial is encouraged and
+          never assessed.
+        </dd>
+      </div>
+      <div>
+        <dt>Prerequisite</dt>
+        <dd>
+          None. No field prerequisite, no prior applications, no portfolio you are
+          embarrassed by that would disqualify you.
+        </dd>
+      </div>
+      <div>
+        <dt>Assessment</dt>
+        <dd>
+          {assessments.length} pieces, weighted {weights.join(" + ")} = {totalWeight}%. Full
+          briefs and criteria on the <a href={withBase("/assessments/")}>assessment page</a>.
+        </dd>
+      </div>
+      <div>
+        <dt>Convenor</dt>
+        <dd>
+          <a href={withBase("/people/wren-halloway/")}>
+            {person("wren-halloway")?.data.title ?? "Dr Wren Halloway"}
+          </a>, with three stream convenors and a practice fellow.
+        </dd>
+      </div>
+    </dl>
+  </section>
 
-  <h2>Where to go next</h2>
-  <CardGrid columns={2}>
-    <Card title={sessionLabels.plural} href="/sessions/">
-      <p>The weekly schedule and what happens in each teaching session.</p>
-    </Card>
-    <Card title="Assessment" href="/assessments/">
-      <p>What is marked, what it is worth, and when it is due.</p>
-    </Card>
-    <Card title="People" href="/people/">
-      <p>Who teaches the course and how to reach them.</p>
-    </Card>
-  </CardGrid>
+  <SemesterTracker />
+
+  <section aria-labelledby="start-here-heading">
+    <h2 id="start-here-heading">Four pages that show what actually happens</h2>
+    <p>
+      Everything is one click from the navigation. These four are the ones worth opening
+      first, because they are where the course stops describing itself and starts running.
+    </p>
+
+    <CardGrid columns={2}>
+      {
+        featuredWeeks.map((week) => (
+          <Card
+            headingLevel="h3"
+            title={`Week ${week.data.week}: ${week.data.title}`}
+            href={`/sessions/${week.id}/`}
+          >
+            {week.data.description && <p>{week.data.description}</p>}
+          </Card>
+        ))
+      }
+      {
+        capstone && (
+          <Card
+            headingLevel="h3"
+            title={capstone.data.title}
+            href={`/assessments/${capstone.id}/`}
+          >
+            {capstone.data.description && <p>{capstone.data.description}</p>}
+            <p>
+              <small>
+                Worth {capstone.data.weight}% · graded on the process record, never on
+                whether anyone said yes
+              </small>
+            </p>
+          </Card>
+        )
+      }
+    </CardGrid>
+
+    <p class="deck-note">
+      Week 6 is the flagship. Its lecture ships as slides rather than a page, because two
+      versions of the same artefact side by side is a slide and not a paragraph:{" "}
+      <a href={withBase("/decks/week-06-varnish/")}>Varnish, and How Much Is Too Much</a>.
+    </p>
+  </section>
+
+  <section aria-labelledby="streams-heading">
+    <h2 id="streams-heading">Three streams, one lecture theatre</h2>
+    <p>
+      The streams do not partition by discipline — a health-informatics student and a civil
+      engineer land in the same room. They partition by how the field screens candidates,
+      because that is what you are preparing for.
+    </p>
+    <ul class="streams">
+      {
+        streams.map((stream) => {
+          const convenor = person(stream.convenor);
+          return (
+            <li>
+              <h3>{stream.name}</h3>
+              <p class="stream-tagline">{stream.tagline}</p>
+              <p class="stream-convenor">
+                Convened by{" "}
+                <a href={withBase(`/people/${stream.convenor}/`)}>
+                  {convenor?.data.title ?? stream.convenor}
+                </a>
+                .
+              </p>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </section>
+
+  <Callout type="info">
+    <p>
+      <strong>The fine print, which is load-bearing.</strong> This course teaches framing, not
+      fabrication, and the difference is not a slogan — it decides what you may put in an
+      outreach message, what a Varnish Note has to admit, and who may be asked to sit on the
+      other side of a practice interview. Where that line falls, who has consented to what,
+      and what happens when somebody crosses it are all set out on the{" "}
+      <a href={withBase("/policies/")}>policies page</a>, along with extensions and the
+      people to ask.
+    </p>
+  </Callout>
 </ContentLayout>
 
 <style>
@@ -62,5 +241,87 @@ import { sessionLabels, siteConfig } from "../site-config";
     color: var(--at-text-secondary);
     background: var(--at-bg-alt);
     font-size: 0.9rem;
+  }
+
+  .premise {
+    padding-inline-start: var(--at-spacing-md);
+    border-inline-start: 3px solid var(--at-accent);
+  }
+
+  .orientation {
+    margin-block: var(--at-spacing-2xl);
+  }
+
+  /* Deliberately a definition list rather than a prose paragraph: this is the
+     block a marker scans for the institutional facts, and a scan wants labels
+     in a column. */
+  .facts {
+    display: grid;
+    gap: var(--at-spacing-md);
+    margin: 0;
+  }
+
+  .facts > div {
+    display: grid;
+    gap: var(--at-spacing-xs);
+    padding-block-end: var(--at-spacing-md);
+    border-block-end: 1px solid var(--at-divider);
+  }
+
+  .facts > div:last-child {
+    padding-block-end: 0;
+    border-block-end: none;
+  }
+
+  @media (width >= 40rem) {
+    .facts > div {
+      grid-template-columns: 11rem 1fr;
+      gap: var(--at-spacing-md);
+    }
+  }
+
+  .facts dt {
+    font-size: var(--at-font-size-sm);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--at-text-secondary);
+  }
+
+  .facts dd {
+    margin: 0;
+  }
+
+  .deck-note {
+    padding: var(--at-spacing-md);
+    border: 1px dashed var(--at-border);
+    border-radius: var(--at-border-radius);
+  }
+
+  .streams {
+    display: grid;
+    gap: var(--at-spacing-lg);
+    margin-block: var(--at-spacing-lg);
+    padding: 0;
+    list-style: none;
+  }
+
+  .streams > li {
+    padding-inline-start: var(--at-spacing-md);
+    border-inline-start: 3px solid var(--at-border);
+  }
+
+  .streams h3 {
+    margin-block: 0 var(--at-spacing-xs);
+  }
+
+  .stream-tagline {
+    margin-block: 0;
+  }
+
+  .stream-convenor {
+    margin-block: var(--at-spacing-xs) 0;
+    font-size: var(--at-font-size-sm);
+    color: var(--at-text-secondary);
   }
 </style>

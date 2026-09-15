@@ -1,0 +1,97 @@
+---
+/**
+ * The course lexicon, aggregated rather than retyped: `term:` and `termGloss:`
+ * are authored once on the session that teaches the term, and this reads them
+ * back out. Nothing here can drift from the week pages, because there is only
+ * one copy.
+ *
+ * Both keys ride the session schema's `.loose()` passthrough, so they arrive
+ * untyped and are read through a narrow string accessor.
+ */
+import { getPublishedCollection } from "astro-course-university/content";
+import { withBase } from "astro-theme-university/url";
+
+function readString(data: unknown, key: string): string | undefined {
+  const value = (data as Record<string, unknown>)[key];
+  return typeof value === "string" && value.trim() !== "" ? value : undefined;
+}
+
+const sessions = (await getPublishedCollection("sessions")).sort(
+  (a, b) => a.data.week - b.data.week,
+);
+
+// Ordered by the week that coins the term, not alphabetically: the lexicon
+// cross-references itself forwards (receipt debt is what the plausibility
+// budget is spent on), so reading it in teaching order is reading it in the
+// order it makes sense.
+const entries = sessions.flatMap((session) => {
+  const term = readString(session.data, "term");
+  const gloss = readString(session.data, "termGloss");
+  if (!term || !gloss) return [];
+  return [
+    {
+      term,
+      gloss,
+      week: session.data.week,
+      title: session.data.title,
+      href: withBase(`/sessions/${session.id}/`),
+      anchor: term.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+    },
+  ];
+});
+---
+
+<dl class="glossary">
+  {
+    entries.map((entry) => (
+      <div class="glossary-entry">
+        <dt id={entry.anchor}>{entry.term}</dt>
+        <dd>
+          <p class="glossary-gloss">{entry.gloss}</p>
+          <p class="glossary-source">
+            <a href={entry.href}>
+              Week {entry.week}: {entry.title}
+            </a>
+          </p>
+        </dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .glossary {
+    display: grid;
+    gap: var(--at-spacing-lg);
+    margin-block: var(--at-spacing-xl);
+  }
+
+  .glossary-entry {
+    padding-block-end: var(--at-spacing-lg);
+    border-block-end: 1px solid var(--at-divider);
+  }
+
+  .glossary-entry:last-child {
+    padding-block-end: 0;
+    border-block-end: none;
+  }
+
+  .glossary dt {
+    font-size: var(--at-font-size-h3);
+    font-weight: 600;
+    color: var(--at-heading);
+  }
+
+  .glossary dd {
+    margin: 0;
+  }
+
+  .glossary-gloss {
+    margin-block: var(--at-spacing-xs) var(--at-spacing-xs);
+  }
+
+  .glossary-source {
+    margin: 0;
+    font-size: var(--at-font-size-sm);
+  }
+</style>
