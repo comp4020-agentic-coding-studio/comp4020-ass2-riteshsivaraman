@@ -67,6 +67,23 @@ Tracked, but coaching notes only — not part of the graded narrative.
    repo, five WORKLOG entries were uncommitted, and two decisions made in
    conversation had never been written down at all.
 
+8. Context: handoff committed, build about to start. Prompt: "before we
+   start the build, i want to say i havent received any feedbacks on my
+   prompting so far." → then, given the feedback: "You're right, best to
+   make that part in the harness more robust. Regarding how much time I
+   have, realistically only tonight and saturday. I am aiming for top
+   marks. Are there any other assumptions or ambiguities you would like
+   cleared?" The best prompt of the session, and it is a fourth
+   challenge-prompt — this time aimed at me rather than at the work. It was
+   correct: seven entries logged, zero feedback delivered, and a trajectory
+   section I had written that said the prompts were all fine. The second
+   half is the part worth copying: rather than arguing the critique, it
+   fixed the rule, supplied the two numbers that had been missing (two
+   working blocks, top marks), and then asked what *else* I was assuming —
+   which surfaced four live ambiguities in one pass instead of four
+   separate interruptions during the build. Asking "what else are you
+   assuming" is cheaper than waiting to be told.
+
 ## Trajectory
 
 **Correction, 2026-09-16.** This section previously read "consistently clear

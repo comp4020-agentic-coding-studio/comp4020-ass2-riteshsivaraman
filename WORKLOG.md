@@ -186,6 +186,83 @@ Format per entry:
   a look at both marking viewports, not by assuming.
 - **Commit:** `cdfb63a`
 
+## 2026-09-16 — Prompting feedback was owed and never given
+
+- **Decision:** `CLAUDE.md`'s prompt discipline gains three clauses — a short
+  approval of a large artefact counts as a vague prompt and gets read back
+  before I act on it; a vague constraint ("quick", "soon") gets quantified
+  before anything is planned around it; and the trajectory review is spoken
+  in the conversation, not filed. `prompt-log.md`'s trajectory is corrected
+  with the old text kept below a line.
+- **Why:** the user pointed out they had received no prompting feedback in
+  seven logged entries, despite the rule saying the discipline is symmetric.
+  The trajectory section read "consistently clear and appropriately scoped —
+  no vague asks yet", which was false: "let's go with this" approved an
+  entire information architecture and "plan looks good" approved 388 lines.
+  It stayed unexamined because I wrote it in a file the user had no reason
+  to read back, which is the worst failure mode available to a self-review —
+  it looks like the rule was followed.
+- **Rejected:** rewriting the trajectory silently (hides that the review
+  itself failed, which is the more useful finding); leaving the rule as-is
+  and just being more diligent (the rule genuinely didn't cover vague
+  *approvals*, only vague *requests*, so diligence wasn't the gap).
+- **Encoded as:** three `CLAUDE.md` clauses under Prompt discipline, plus a
+  `LEARNINGS.md` pattern on challenge-prompts. Not machine-checkable.
+- **Commit:** `06c6f7c`
+
+## 2026-09-16 — Four direction decisions locked, and the real time budget
+
+- **Decision:** (1) Course title signed off as *Professional Identity
+  Performance* / *fluency in a role you do not yet hold*. (2) Streams get a
+  plain institutional name for navigation plus one satirical tagline where
+  each is defined. (3) The twelve brainrot terms are drafted with the
+  curriculum spec for the user to approve or swap individually. (4) Imagery
+  gets a five-minute reachability spike with the image-free treatment
+  pre-approved as fallback. Working budget: **tonight and Saturday only**,
+  aiming for **top marks**.
+- **Why:** all four were assumptions the plan had been quietly carrying, and
+  three of them touch every page — the title, the stream labels a marker
+  sees twelve times, and the terms that are the highest-visibility voice
+  artefact in the build. Streams-as-institutional-names keeps satire in the
+  body copy, which is where it survives repetition; a satirical *label* seen
+  twelve times is exactly where the register flattens. The time budget
+  confirms the plan's wave structure rather than changing it: two working
+  blocks is what "one long session, or two" meant, but it forces both user
+  gates (curriculum spec, voice exemplar) to close tonight, or Saturday
+  opens blocked on the user and the parallel fan-out cannot start.
+- **Rejected:** satirical stream names (flatten fastest at twelve
+  repetitions); the user supplying all twelve terms (best voice fidelity but
+  a blocking ask on the one night both gates must close); breadth traded for
+  depth on the twelve weeks — rejected because the marker samples
+  non-adjacent weeks at random, so a weak week is a coin flip from being
+  read.
+- **Encoded as:** `src/course-config.ts` (code, level, title, description,
+  tags) and `src/site-config.ts` (labels, flat nav). Both files now frozen —
+  main owns them, no agent writes them.
+- **Commit:** `fec9ac3`
+
+## 2026-09-16 — No image generation exists; commit to type and CSS
+
+- **Decision:** delete all four starter images rather than replace them, and
+  build a deliberate type-and-CSS treatment with no photography or
+  illustration anywhere. No social card either.
+- **Why:** the course was understood to provision image generation. Probing
+  took five minutes and disproved it — `$ANTHROPIC_BASE_URL` authenticates,
+  but `/v1/models` reports `mode: "chat"` for every entry and
+  `/v1/images/generations` returns HTTP 500. Deleting rather than replacing
+  also clears the `check:evidence` fingerprint gate, since a deleted file
+  passes its `existsSync` guard, and an image-free treatment suits a
+  bureaucratic-satire register better than stock art would.
+- **Rejected:** sourcing stock imagery (off-register, and licensing is a
+  problem in a submitted artefact); keeping the starter images (they *are*
+  the gate — matching their hashes is the failure condition); deferring the
+  question to Saturday (the layout would have been built assuming heroes).
+- **Encoded as:** the deletions plus three coupled edits — the hero import
+  and props in `index.astro`, `socialImage` in `site-config.ts`, and
+  `photo`/`photoAlt` on both starter people. Logged in `LEARNINGS.md` as a
+  gotcha with the probe commands.
+- **Commit:** `fec9ac3`
+
 ---
 
 ## Note on the 2026-09-15 entries
