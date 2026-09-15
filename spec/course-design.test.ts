@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { gitOrigin, resolveDeployment } from "../scripts/pages-base.ts";
 
 // These checks sensor the design promises SLOP3841 makes that the build does
 // not already enforce. The build owns compilation, accessibility, base-path
@@ -109,6 +110,80 @@ describe("no fixed weekly tutorial template", () => {
       const clash = openings.get(opening);
       expect(clash, `${node.id} opens identically to ${clash}`).toBeUndefined();
       openings.set(opening, node.id);
+    }
+  });
+});
+
+describe("the artefact a marker actually opens", () => {
+  // These two read `dist/**.html`, so they are the checks that could not be
+  // written until the HTML existed. Both are guarded with `existsSync`: these
+  // files are read inside the test rather than at module top level, so a
+  // missing build fails as the check it is instead of taking the suite down.
+
+  it("resolves the flagship deck to a real page on disk", () => {
+    // `content.config.ts` validates the *shape* of `slides:`. Nothing checks
+    // that the path it names was actually built, and a deck that 404s is the
+    // one broken link a marker is guaranteed to click.
+    const decked = byType("lectures").filter((node) => /^\/decks\/[a-z0-9-]+\/$/.test(String(node.meta?.slides ?? "")));
+    expect(decked.length, "no lecture carries a well-formed `slides:` path").toBeGreaterThanOrEqual(1);
+
+    for (const node of decked) {
+      const path = resolve(`dist${node.meta?.slides}index.html`);
+      expect(existsSync(path), `${node.id} points slides: at ${node.meta?.slides}, which did not build`).toBe(true);
+    }
+  });
+
+  it("puts a session, an assessment, the deck and policies within two clicks of home", () => {
+    // Enumerated from the rendered link graph, never from a hand-kept list --- a
+    // list would keep passing after the nav that satisfies it was removed. The
+    // base path is derived the same way the build derives it, so this check
+    // means the same thing locally and under Pages.
+    const base = resolveDeployment(process.env, gitOrigin).base.replace(/\/$/, "");
+    const fileFor = (route: string) =>
+      resolve("dist", `${route.slice(base.length)}/index.html`.replace(/\/+/g, "/").replace(/^\//, ""));
+
+    const home = `${base}/`;
+    expect(existsSync(fileFor(home)), "the home page did not build").toBe(true);
+
+    const linksFrom = (route: string): string[] => {
+      const file = fileFor(route);
+      if (!existsSync(file)) return [];
+      return [...readFileSync(file, "utf8").matchAll(/href="([^"]+)"/g)]
+        .map((match) => match[1].split(/[#?]/)[0])
+        .filter((href) => href.startsWith(`${base}/`))
+        .map((href) => (href.endsWith("/") ? href : `${href}/`))
+        .filter((href) => !/\.[a-z0-9]{2,5}\/$/i.test(href));
+    };
+
+    // Breadth-first to depth 2, which is the promise --- not "somewhere in the
+    // site", which a flat nav would satisfy trivially from any page.
+    const depth = new Map<string, number>([[home, 0]]);
+    let frontier = [home];
+    for (let level = 1; level <= 2; level += 1) {
+      const next: string[] = [];
+      for (const route of frontier) {
+        for (const link of linksFrom(route)) {
+          if (!depth.has(link)) {
+            depth.set(link, level);
+            next.push(link);
+          }
+        }
+      }
+      frontier = next;
+    }
+
+    const reachable = [...depth.keys()];
+    const targets: Record<string, RegExp> = {
+      "a week's session page": /\/sessions\/week-\d\d\/$/,
+      "an individual assessment": /\/assessments\/[^/]+\/$/,
+      "the slide deck": /\/decks\/[^/]+\/$/,
+      "the policies page": /\/policies\/$/,
+    };
+    for (const [what, pattern] of Object.entries(targets)) {
+      expect(
+        reachable.some((route) => pattern.test(route)),
+        `${what} is more than two clicks from the home page`,
+      ).toBe(true);
     }
   });
 });
