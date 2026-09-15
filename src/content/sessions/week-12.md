@@ -1,5 +1,5 @@
 ---
-title: "Week 12: Closing Viva"
+title: "Closing Viva"
 description: "Eight minutes each, examined by your own stream on one question: which part of your performance became true, and how do you know."
 week: 12
 date: 2027-05-17

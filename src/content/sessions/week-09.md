@@ -1,5 +1,5 @@
 ---
-title: "Week 9: Mock Panel"
+title: "Mock Panel"
 description: "A mock panel run to your field's actual convention, ending with every student declaring their interview route."
 week: 9
 date: 2027-04-26

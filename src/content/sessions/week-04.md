@@ -1,5 +1,5 @@
 ---
-title: "Week 4: Claims Tribunal"
+title: "Claims Tribunal"
 description: "You read your claims aloud, peers demand a receipt for each, and anything unevidenced is struck from the record on the spot."
 week: 4
 date: 2027-03-15

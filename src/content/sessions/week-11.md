@@ -1,5 +1,5 @@
 ---
-title: "Week 11: Artefact Swap"
+title: "Artefact Swap"
 description: "Complete Dossiers are exchanged and you present someone else's case to a visiting practitioner, who responds to the case rather than the person."
 week: 11
 date: 2027-05-10

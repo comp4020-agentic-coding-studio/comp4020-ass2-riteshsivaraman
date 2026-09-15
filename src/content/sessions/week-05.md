@@ -1,5 +1,5 @@
 ---
-title: "Week 5: Anecdote Roleplay"
+title: "Anecdote Roleplay"
 description: "Paired question-and-answer, rotating, with an observer scoring whether the story answered the question that was actually asked."
 week: 5
 date: 2027-03-22

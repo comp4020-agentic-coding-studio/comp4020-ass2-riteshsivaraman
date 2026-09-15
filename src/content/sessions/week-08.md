@@ -1,5 +1,5 @@
 ---
-title: "Week 8: Red Team"
+title: "Red Team"
 description: "Peers attack your submitted materials for the weakest claim, and time how long it takes them to find it."
 week: 8
 date: 2027-04-19

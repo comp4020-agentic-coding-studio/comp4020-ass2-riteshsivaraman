@@ -1,5 +1,5 @@
 ---
-title: "Week 3: Blind Review"
+title: "Blind Review"
 description: "Teardowns are anonymised and swapped inside your stream; you write someone else's gap map before you see what they wrote about yours."
 week: 3
 date: 2027-03-08

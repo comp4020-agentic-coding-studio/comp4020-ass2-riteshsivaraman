@@ -1,5 +1,5 @@
 ---
-title: "Week 2: Live Teardown"
+title: "Live Teardown"
 description: "One advertisement, taken apart live into four columns, until the fourth one — the accidental confession — is visible."
 week: 2
 date: 2027-03-01

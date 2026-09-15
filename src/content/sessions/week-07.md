@@ -1,5 +1,5 @@
 ---
-title: "Week 7: Outreach Sprint"
+title: "Outreach Sprint"
 description: "Three outreach messages drafted in the room and scored by peers for whether a stranger could answer them in one line."
 week: 7
 date: 2027-04-12

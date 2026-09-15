@@ -1,5 +1,5 @@
 ---
-title: "Week 10: Negotiation Simulation"
+title: "Negotiation Simulation"
 description: "Scripted negotiation rounds with a staff member playing the other side, and a hard rule that you say the number out loud."
 week: 10
 date: 2027-05-03

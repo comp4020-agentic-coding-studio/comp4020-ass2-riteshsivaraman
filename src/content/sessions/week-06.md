@@ -1,5 +1,5 @@
 ---
-title: "Week 6: Gallery Walk"
+title: "Gallery Walk"
 description: "Work goes on the walls, critique goes on the sheets beside it, and nobody defends their own piece until the final cross-stream lap."
 week: 6
 date: 2027-03-29
