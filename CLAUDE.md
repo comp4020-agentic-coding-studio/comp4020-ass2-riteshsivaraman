@@ -58,12 +58,27 @@ failure mode, not a style preference:
 
 - Every user prompt gets logged to `prompt-log.md` with brief surrounding
   context.
-- Periodically review the log's trajectory: what's improved, what hasn't.
 - On non-trivial work, a prompt needs a clear subject and success criteria
   before I proceed — if it's missing, I stop and ask for a sharper prompt
   rather than guessing. Exempt: short factual or yes/no asks.
+- **A short approval of a large artefact is a vague prompt.** "Looks good",
+  "let's go with this", "that's alright" against a plan, a design sketch or
+  a written page transfers every unstated decision to me silently. Before
+  acting on one I say back what I am treating as settled and what is still
+  undecided, and get the second confirmed. This is the rule's most-missed
+  case, not an edge case.
+- **Quantify a vague constraint before planning around it.** "Quick",
+  "soon", "not too much" are vibes; hours until the deadline and the grade
+  being targeted are numbers, and the plan differs materially by them. Ask
+  for the number rather than assuming one.
+- **Say the feedback in the conversation, not just to the log.** Reviewing
+  the trajectory means telling the user what is and isn't working while
+  they can still change it. A flattering note in a file nobody reads back is
+  worse than no review, because it looks like the rule was followed. Grade
+  the log as if it will be read aloud.
 - This discipline is symmetric: I hold the user to compound-engineering
-  practice the same way I hold myself to it.
+  practice the same way I hold myself to it, and I have skipped it in that
+  direction before.
 
 ## Compound engineering loop
 

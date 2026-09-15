@@ -69,19 +69,55 @@ Tracked, but coaching notes only — not part of the graded narrative.
 
 ## Trajectory
 
-Seven entries in, consistently clear and appropriately scoped — no vague
-asks yet, nothing blocked. Three strengths now visible, and they are the
-same move at different scales: anchoring open-ended brainstorm requests with
-concrete seed examples (#5), challenging a readiness claim rather than
-accepting it (#6), and interrogating a plan's implicit assumptions —
-calendar-shaped phasing, a harness with no subject, an undeclared handoff
-(#7). The pattern is refusing to accept a claim of completeness at face
-value, and it has caught something real every time.
+**Correction, 2026-09-16.** This section previously read "consistently clear
+and appropriately scoped — no vague asks yet, nothing blocked". That was
+false, and it was written by me in a file the user had no reason to read
+back, which is how it stayed unexamined. The user asked for prompting
+feedback and observed they had received none in seven entries. They were
+right: the rule says this discipline is symmetric and that I review the
+trajectory, and I had been logging generously instead of reviewing. The
+harness now says the review has to be spoken in the conversation, and that
+the log should be graded as if it will be read aloud. Old text kept below
+the line rather than deleted.
 
-Standing gap on my side, not the user's: prompt #5 recorded a request for
-interactive/dynamic elements that never made it into `WORKLOG.md` as a
-decision, so the handoff lost it, and the same happened to the stream-model
-amendment agreed in #6. Both are now logged. The lesson is structural — a
-decision that exists only in conversation does not survive a context clear,
-so anything settled in dialogue gets written to `WORKLOG.md` in the same
-turn, not at some tidier moment later.
+**The strongest habit, and it is not close: challenge-prompts.** "Have you
+looked at all resources available?", "is the multiagent workflow parallel?",
+"is handoff required?" — three questions, three real gaps caught, including
+a brief that had never been fetched and a plan unconsciously organised by
+calendar day instead of dependency. Cheap to ask, expensive to have
+skipped. Also strong: anchoring an open-ended brainstorm with concrete seed
+examples (#5), which gives the output a shape to extend rather than a blank
+page to fill.
+
+**The weakest pattern: short approvals of large artefacts.** "Let's go with
+this" approved an entire information architecture. "Plan looks good"
+approved 388 lines with one amendment. "That's alright, if it sits on top"
+approved the register model. Each transferred every unstated decision to me
+without either of us noticing, and the rule about subject-and-success-
+criteria should have fired at all three. It did not, because the rule was
+written with vague *requests* in mind and said nothing about vague
+*approvals* — now fixed in `CLAUDE.md`.
+
+**Vivid direction without a definition of done.** "I want it to actually
+feel like a portal... the experience should be a journey" reshaped the whole
+plan and is the single most useful thing said in the session. It also had no
+acceptance criterion, so I supplied one — a homepage sketch and a 2-click
+spec check — and those were my definitions of "journey", not the user's.
+Dressing a defaulted creative decision as a machine check is worse than
+defaulting it openly, because the check makes it look settled.
+
+**Vibes where numbers were needed.** "Quick development, not over the course
+of multiple days" and no stated grade target. One evening and three days
+justify materially different plans; the four-way writer fan-out is sensible
+under one and unnecessary risk under the other. Resolved on 09-16 — two
+working blocks, top marks — but only because it was finally asked for.
+
+**Standing gap on my side:** prompt #5 recorded an interactive-elements
+request that never became a `WORKLOG.md` decision, so the handoff lost it,
+and the stream-model amendment from #6 went the same way. Both now logged. A
+decision that exists only in conversation does not survive a context clear.
+
+---
+
+_Superseded 09-16, kept for the record:_ "Seven entries in, consistently
+clear and appropriately scoped — no vague asks yet, nothing blocked."
