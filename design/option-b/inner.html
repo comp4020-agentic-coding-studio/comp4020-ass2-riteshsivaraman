@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#06090E">
+<meta name="color-scheme" content="dark">
+<title>Week 07 — Drift and correction · Unit 3841</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Sans:wght@400..700&family=Spline+Sans+Mono:wght@300..700&display=swap" rel="stylesheet">
+<style>
+/* ═══ OPTION B · INSTRUMENT ═══ chassis tokens ═══════════════════════════ */
+:root{
+  --ink:#06090E; --ink2:#0A0F16; --panel:#0E141C; --panel-hi:#141C26;
+  --rule:#1E2A38; --rule-hi:#2F4256;
+  --bone:#DCE3EA; --dim:#96A4B3; --faint:#6E7C8B;
+  --sig:#57D9A3; --warn:#F2B24C; --chC:#C9D3DE;
+  --mod:96px; --gut:clamp(16px,3.2vw,56px);
+  --mono:"Spline Sans Mono",ui-monospace,monospace;
+  --sans:"Instrument Sans",system-ui,sans-serif;
+  --disp:"Archivo","Instrument Sans",system-ui,sans-serif;
+  --ease:cubic-bezier(.22,.61,.24,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%; color-scheme:dark; scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0; background:var(--ink); color:var(--bone); font-family:var(--sans);
+  font-size:16px; line-height:1.62; font-synthesis:none; -webkit-font-smoothing:antialiased;
+  padding-bottom:calc(34px + env(safe-area-inset-bottom)); overflow-x:hidden;
+  touch-action:manipulation; -webkit-tap-highlight-color:rgba(87,217,163,.18)}
+.skip{position:absolute; left:-9999px; top:0; z-index:99; background:var(--panel-hi);
+  border:1px solid var(--sig); color:var(--bone); padding:12px 18px; text-decoration:none;
+  font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase}
+.skip:focus{left:var(--gut); top:10px}
+#field{position:fixed; inset:0; width:100%; height:100%; z-index:0; display:block; background:var(--ink)}
+#field.dead{background:radial-gradient(120% 80% at 82% 4%, #101a26 0%, transparent 62%),
+  radial-gradient(90% 70% at 4% 96%, #0b1620 0%, transparent 58%), var(--ink)}
+#grid{position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.42; transition:opacity .35s var(--ease);
+  background:repeating-linear-gradient(to right, rgba(120,170,205,.07) 0 1px, transparent 1px var(--mod)),
+             repeating-linear-gradient(to bottom, rgba(120,170,205,.05) 0 1px, transparent 1px var(--mod));
+  mask-image:linear-gradient(to bottom, #000 0 16%, rgba(0,0,0,.28) 55%, rgba(0,0,0,.1) 100%)}
+body.nogrid #grid{opacity:0}
+.shell{position:relative; z-index:2}
+.mono{font-family:var(--mono); font-variant-numeric:tabular-nums; letter-spacing:.06em}
+.lbl{font-family:var(--mono); font-size:10.5px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--faint)}
+.lbl b{color:var(--dim); font-weight:500}
+h1,h2,h3,h4{font-family:var(--disp); font-weight:600; margin:0; line-height:1.0;
+  font-stretch:118%; letter-spacing:-.005em; text-wrap:balance}
+h2.lbl,h3.lbl,h4.lbl{font-family:var(--mono); font-size:10.5px; font-weight:500; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--faint); font-stretch:100%; line-height:1.5; text-wrap:initial}
+h1{font-size:clamp(38px,5.4vw,84px); font-weight:700; font-stretch:125%; letter-spacing:-.02em; line-height:.94}
+h2{font-size:clamp(25px,2.4vw,38px)}
+h3{font-size:clamp(18px,1.4vw,23px); font-stretch:112%; letter-spacing:0}
+h4{font-size:16px; font-stretch:112%}
+p{margin:0 0 1.05em}
+a{color:var(--bone)}
+:focus-visible{outline:2px solid var(--sig); outline-offset:3px; border-radius:1px}
+:target{scroll-margin-top:84px}
+
+/* ── nav (shared) ─────────────────────────────────────────────────────── */
+.nav{position:sticky; top:0; z-index:40; display:flex; align-items:stretch;
+  background:rgba(8,12,18,.9); backdrop-filter:blur(14px) saturate(120%);
+  border-bottom:1px solid var(--rule); min-height:54px}
+.nav__mark{display:flex; align-items:center; gap:11px; padding:0 18px 0 var(--gut); border-right:1px solid var(--rule)}
+/* stretch the anchor to the nav cell: centring collapsed it to a 19px
+   text box, which is not a thumb-sized target on a phone. */
+.nav__mark{align-items:stretch}
+.nav__mark a{text-decoration:none; display:flex; align-items:center; gap:11px}
+.dot{width:9px; height:9px; border-radius:50%; background:var(--sig); animation:pulse 3.4s var(--ease) infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(87,217,163,.10)}50%{box-shadow:0 0 0 6px rgba(87,217,163,.03)}}
+.nav__mark b{font-family:var(--disp); font-stretch:125%; font-weight:700; font-size:13px; letter-spacing:.1em; text-transform:uppercase}
+.nav__links{display:flex}
+.nav__links a{display:flex; align-items:center; padding:0 20px; border-right:1px solid var(--rule);
+  font-family:var(--mono); font-size:11px; letter-spacing:.17em; text-transform:uppercase;
+  color:var(--dim); text-decoration:none; position:relative; transition:color .2s, background .2s}
+.nav__links a:hover{color:var(--bone); background:rgba(87,217,163,.05)}
+.nav__links a[aria-current]{color:var(--bone)}
+.nav__links a[aria-current]::after{content:""; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--sig)}
+.nav__end{margin-left:auto; display:flex}
+.tgl{appearance:none; border:0; border-left:1px solid var(--rule); background:transparent; color:var(--faint);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
+  padding:0 15px; min-height:54px; cursor:pointer; transition:color .2s, background .2s}
+.tgl:hover{color:var(--bone); background:rgba(120,170,205,.06)}
+.tgl[aria-pressed="true"]{color:var(--sig)}
+.tgl[aria-pressed="true"] .led{background:var(--sig); box-shadow:0 0 6px rgba(87,217,163,.6)}
+.led{display:inline-block; width:6px; height:6px; border-radius:1px; background:var(--rule-hi); margin-right:7px; vertical-align:1px}
+.nav__vp{display:flex; align-items:center; padding:0 var(--gut) 0 15px; border-left:1px solid var(--rule);
+  color:var(--faint); font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; white-space:nowrap}
+.burger{display:none}
+
+/* ── page head band ──────────────────────────────────────────────────── */
+.head{padding:clamp(30px,4.5vh,62px) var(--gut) 0}
+.head__step{display:flex; align-items:center; gap:2px; margin-bottom:clamp(18px,3vh,30px); flex-wrap:wrap}
+.step{display:inline-flex; align-items:center; gap:9px; min-height:40px; padding:0 14px; text-decoration:none;
+  border:1px solid var(--rule); color:var(--dim); font-family:var(--mono); font-size:10.5px;
+  letter-spacing:.16em; text-transform:uppercase; transition:color .2s, border-color .2s, background .2s}
+.step:hover{color:var(--bone); border-color:var(--rule-hi); background:rgba(120,170,205,.05)}
+.step--now{border-color:rgba(87,217,163,.5); background:rgba(87,217,163,.09); color:var(--sig)}
+.head__grid{display:grid; grid-template-columns:minmax(0,1.5fr) minmax(300px,.8fr); gap:clamp(22px,4vw,64px);
+  align-items:end; padding-bottom:26px; border-bottom:1px solid var(--rule-hi)}
+.head h1{margin-bottom:16px}
+.head h1 small{display:block; font-size:.34em; font-stretch:100%; font-weight:500; letter-spacing:.16em;
+  text-transform:uppercase; font-family:var(--mono); color:var(--sig); margin-bottom:14px; line-height:1}
+.head__lede{font-size:clamp(16px,1.2vw,19.5px); line-height:1.58; color:#C3CCD6; max-width:52ch; margin:0}
+.tel{border:1px solid var(--rule); background:linear-gradient(180deg,rgba(20,28,38,.7),rgba(12,18,26,.82));
+  backdrop-filter:blur(6px)}
+.tel__hd{display:flex; justify-content:space-between; gap:10px; padding:10px 14px; border-bottom:1px solid var(--rule)}
+.tel .r{display:flex; justify-content:space-between; gap:14px; padding:8px 14px; border-bottom:1px solid rgba(30,42,56,.5)}
+.tel .r:last-child{border-bottom:0}
+.tel dt{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint)}
+.tel dd{margin:0; font-family:var(--mono); font-size:12px; color:var(--bone); font-variant-numeric:tabular-nums; text-align:right}
+.tel dd.g{color:var(--sig)} .tel dd.a{color:var(--warn)}
+.tel dl{margin:0}
+
+/* ── body: rail + flow ───────────────────────────────────────────────── */
+.body{display:grid; grid-template-columns:232px minmax(0,1fr); gap:clamp(24px,3.4vw,58px);
+  padding:0 var(--gut) 40px; align-items:start}
+.rail{position:sticky; top:74px; padding-top:32px}
+.rail__t{display:block; margin-bottom:12px}
+.rail ol{list-style:none; margin:0 0 26px; padding:0; position:relative; border-left:1px solid var(--rule)}
+.rail li{position:relative}
+.rail a{display:block; padding:9px 0 9px 16px; text-decoration:none; color:var(--faint);
+  font-family:var(--mono); font-size:11px; letter-spacing:.11em; text-transform:uppercase;
+  transition:color .2s; line-height:1.35}
+.rail a::before{content:""; position:absolute; left:-1px; top:50%; width:8px; height:1px; background:var(--rule-hi)}
+.rail a:hover{color:var(--dim)}
+.rail li.on a{color:var(--sig)}
+.rail li.on a::before{background:var(--sig); width:13px}
+.rail li.rail__scrub{position:absolute; left:-1px; top:0; width:2px; background:var(--sig); height:0;
+  transition:transform .25s var(--ease), height .25s var(--ease)}
+.rail__mtr{border-top:1px solid var(--rule); padding-top:16px}
+.rail__mtr .big{font-family:var(--disp); font-stretch:118%; font-weight:600; font-size:30px;
+  font-variant-numeric:tabular-nums; line-height:1; display:flex; align-items:baseline; gap:5px}
+.rail__mtr .big u{text-decoration:none; font-family:var(--mono); font-size:11px; color:var(--faint); letter-spacing:.1em}
+.rail__mtr .t{height:5px; background:var(--rule); position:relative; margin:12px 0 10px; overflow:hidden}
+.rail__mtr .t i{position:absolute; inset:0; background:var(--sig); transform:scaleX(0); transform-origin:left;
+  transition:transform .45s var(--ease)}
+
+/* ── flow blocks: hairlines, not cards ──────────────────────────────── */
+.flow{padding-top:32px; min-width:0}
+.blk{position:relative; padding:0 0 clamp(34px,5vh,58px)}
+.blk__hd{display:flex; align-items:baseline; gap:16px; padding:0 0 18px; margin-bottom:22px; border-bottom:1px solid var(--rule-hi)}
+.blk__hd .rulefill{flex:1; height:1px; background:linear-gradient(to right,var(--rule),transparent)}
+.blk__hd .coord{font-family:var(--mono); font-size:10px; letter-spacing:.14em; color:var(--faint); white-space:nowrap}
+.prose{max-width:70ch}
+.prose p{color:#C2CBD5; font-size:15.6px}
+.prose strong{color:var(--bone); font-weight:600}
+.prose h3{margin:26px 0 10px}
+/* annotation with leader line — instrument callout, not a blockquote card */
+.anno{display:grid; grid-template-columns:96px minmax(0,1fr); gap:0 18px; margin:26px 0; align-items:start; max-width:74ch}
+.anno__k{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--warn);
+  text-align:right; padding-top:7px; position:relative}
+.anno__k::after{content:""; position:absolute; right:-9px; top:12px; width:9px; height:1px; background:var(--warn)}
+.anno__v{border-left:1px solid var(--warn); padding:2px 0 2px 18px; font-size:16.5px; color:var(--bone); line-height:1.5}
+.anno__v em{font-style:normal; color:var(--warn)}
+
+/* channel band: vertical label + coloured rule, stacked not carded */
+.ch{display:grid; grid-template-columns:44px minmax(0,1fr); gap:0; border-top:1px solid var(--ch);
+  padding-top:0; margin-bottom:6px}
+.ch__side{border-right:1px solid rgba(47,66,86,.55); padding:16px 0 20px; display:flex; flex-direction:column;
+  align-items:center; gap:12px}
+.ch__side .sqr{width:9px; height:9px; background:var(--ch); flex:none}
+.ch__side .vert{writing-mode:vertical-rl; transform:rotate(180deg); font-family:var(--mono); font-size:10px;
+  letter-spacing:.3em; text-transform:uppercase; color:var(--ch); white-space:nowrap}
+.ch__main{padding:16px 0 26px 22px; min-width:0}
+.ch__main h3{margin-bottom:4px}
+.ch__main .who{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--faint); margin:0 0 14px}
+.ch__main p{font-size:15.2px; color:#C2CBD5; max-width:68ch}
+.ch__gain{display:flex; flex-wrap:wrap; gap:0 0; border-top:1px solid rgba(30,42,56,.7); margin-top:14px}
+.ch__gain div{padding:9px 16px 9px 0; margin-right:16px; border-right:1px solid rgba(30,42,56,.7)}
+.ch__gain div:last-child{border-right:0}
+.ch__gain dt{font-family:var(--mono); font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint)}
+.ch__gain dd{margin:3px 0 0; font-family:var(--mono); font-size:12px; color:var(--bone)}
+.ch--a{--ch:var(--sig)} .ch--b{--ch:var(--warn)} .ch--c{--ch:var(--chC)}
+
+/* readings table */
+.tbl{width:100%; border-collapse:collapse; font-size:14.5px}
+.tbl caption{text-align:left; padding:0 0 14px; color:var(--dim); font-size:14px; max-width:68ch}
+.tbl th,.tbl td{text-align:left; padding:11px 14px 11px 0; border-bottom:1px solid rgba(30,42,56,.7); vertical-align:top}
+.tbl thead th{font-family:var(--mono); font-size:9.5px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--faint); border-bottom:1px solid var(--rule-hi); font-weight:500; white-space:nowrap}
+.tbl td.id{font-family:var(--mono); font-size:11.5px; color:var(--dim); white-space:nowrap; letter-spacing:.06em}
+.tbl td.ttl{color:var(--bone)}
+.tbl td.ttl span{display:block; color:var(--dim); font-size:13px; margin-top:3px}
+.tbl td.st{white-space:nowrap; font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase}
+.tbl td.st.req{color:var(--sig)} .tbl td.st.opt{color:var(--faint)} .tbl td.st.cha{color:var(--warn)}
+.tbl tbody tr{transition:background .18s}
+.tbl tbody tr:hover{background:rgba(120,170,205,.045)}
+
+/* procedure — a real sequence, so numbering earns its place */
+.proc{list-style:none; margin:0; padding:0; counter-reset:p}
+.proc li{counter-increment:p; display:grid; grid-template-columns:50px minmax(0,1fr) 68px; gap:0 20px;
+  padding:16px 0; border-bottom:1px solid rgba(30,42,56,.65); align-items:start}
+.proc li::before{content:"T+" counter(p,decimal-leading-zero); font-family:var(--mono); font-size:10.5px;
+  letter-spacing:.08em; color:var(--faint); padding-top:4px}
+.proc h4{margin-bottom:5px}
+.proc p{margin:0; font-size:14.5px; color:#B9C3CE; max-width:62ch}
+.proc .dur{font-family:var(--mono); font-size:11px; color:var(--warn); text-align:right; padding-top:4px;
+  font-variant-numeric:tabular-nums}
+
+/* checklist — real inputs, drives the meter and the strip */
+.chk{list-style:none; margin:0; padding:0; border-top:1px solid var(--rule-hi); max-width:74ch}
+.chk li{border-bottom:1px solid rgba(30,42,56,.65)}
+.chk label{display:grid; grid-template-columns:22px minmax(0,1fr) auto; gap:0 14px; align-items:start;
+  padding:14px 4px; cursor:pointer; min-height:44px; transition:background .18s}
+.chk label:hover{background:rgba(120,170,205,.045)}
+.chk label:focus-within{background:rgba(87,217,163,.06)}
+.chk input{appearance:none; width:16px; height:16px; margin:3px 0 0; border:1px solid var(--rule-hi);
+  background:transparent; display:grid; place-content:center; cursor:pointer; flex:none}
+.chk input::after{content:""; width:8px; height:8px; background:var(--sig); transform:scale(0); transition:transform .16s var(--ease)}
+.chk input:checked{border-color:var(--sig)}
+.chk input:checked::after{transform:scale(1)}
+.chk .txt{font-size:15px; color:#C2CBD5}
+.chk .txt b{display:block; color:var(--bone); font-weight:600; font-size:15.2px; margin-bottom:2px}
+.chk input:checked ~ .txt{color:var(--faint)}
+.chk input:checked ~ .txt b{color:var(--dim); text-decoration:line-through; text-decoration-color:var(--rule-hi)}
+.chk .due{font-family:var(--mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--faint); padding-top:5px; white-space:nowrap}
+
+/* footer + strip */
+.plate{border-top:1px solid var(--rule-hi); background:linear-gradient(180deg,rgba(14,20,28,.7),rgba(6,9,14,.9));
+  padding:34px var(--gut) 44px; display:grid; grid-template-columns:repeat(4,1fr); gap:24px}
+.plate div .lbl{display:block; margin-bottom:8px}
+.plate p,.plate a{font-family:var(--mono); font-size:11.5px; color:var(--dim); margin:0 0 5px;
+  letter-spacing:.06em; display:block; text-decoration:none}
+.plate a:hover{color:var(--sig)}
+.plate__serial{grid-column:1/-1; display:flex; justify-content:space-between; gap:18px; flex-wrap:wrap;
+  border-top:1px solid var(--rule); padding-top:18px; margin-top:12px}
+.plate__serial span{font-family:var(--mono); font-size:10px; letter-spacing:.2em; color:var(--faint); text-transform:uppercase}
+.strip{position:fixed; left:0; right:0; bottom:0; z-index:50; height:34px; display:flex; align-items:stretch;
+  background:rgba(7,10,15,.94); backdrop-filter:blur(12px); border-top:1px solid var(--rule-hi);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint)}
+.strip div{display:flex; align-items:center; gap:8px; padding:0 14px; border-right:1px solid var(--rule); white-space:nowrap}
+.strip div:first-child{padding-left:var(--gut)}
+.strip .v{color:var(--bone); font-variant-numeric:tabular-nums}
+.strip .v.g{color:var(--sig)} .strip .v.a{color:var(--warn)}
+.strip .bar{width:76px; height:5px; background:var(--rule); position:relative; overflow:hidden}
+.strip .bar i{position:absolute; inset:0; background:var(--sig); transform:scaleX(0); transform-origin:left}
+.strip .spacer{flex:1; border-right:1px solid var(--rule)}
+.strip .last{border-right:0; padding-right:var(--gut)}
+
+html.js .rv{opacity:0; transform:translateY(12px); transition:opacity .65s var(--ease), transform .65s var(--ease)}
+.rv.in{opacity:1; transform:none}
+html.js body.reduced .rv{opacity:1; transform:none; transition:none}
+body.reduced *{animation-duration:.001ms !important; transition-duration:.001ms !important}
+
+/* ── 390×844 ─────────────────────────────────────────────────────────── */
+@media (max-width:1000px){
+  .body{grid-template-columns:1fr; gap:0}
+  .rail{position:static; padding:26px 0 30px; border-bottom:1px solid var(--rule)}
+  .rail ol{margin-bottom:22px; display:grid; grid-template-columns:repeat(2,1fr); border-left:0; gap:0}
+  .rail li{border-top:1px solid var(--rule)}
+  .rail a{padding:12px 0 12px 12px}
+  .rail a::before{left:0; width:6px}
+  .rail li.rail__scrub{display:none}
+  .head__grid{grid-template-columns:1fr; align-items:start}
+  .flow{padding-top:26px}
+}
+@media (max-width:900px){
+  /* stacked footer links need a thumb-sized row, not a 19px text line. */
+  .plate a{padding:11px 0; margin-bottom:0}
+  :root{--mod:48px}
+  body{font-size:15.5px}
+  .nav{flex-wrap:wrap; min-height:48px}
+  .nav__mark{padding-left:var(--gut); border-right:0; flex:1; min-height:48px}
+  .nav__links{order:3; width:100%; border-top:1px solid var(--rule); display:none}
+  body.menu .nav__links{display:grid; grid-template-columns:repeat(3,1fr)}
+  .nav__links a{justify-content:center; padding:15px 6px}
+  .nav__links a:last-child{border-right:0}
+  .nav__end{margin-left:0}
+  .tgl{min-height:48px; padding:0 12px}
+  .nav__vp{display:none}
+  .burger{display:flex; align-items:center; gap:7px; min-height:48px; padding:0 var(--gut) 0 12px;
+    border:0; border-left:1px solid var(--rule); background:transparent; color:var(--dim);
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; cursor:pointer}
+  h1{font-size:clamp(34px,10vw,50px); font-stretch:118%}
+  .anno{grid-template-columns:1fr; gap:8px}
+  .anno__k{text-align:left; padding-top:0}
+  .anno__k::after{display:none}
+  .ch{grid-template-columns:30px minmax(0,1fr)}
+  .ch__main{padding-left:16px}
+  .ch__gain div{padding-right:12px; margin-right:12px}
+  .proc li{grid-template-columns:46px minmax(0,1fr); grid-template-areas:". h" ". d"; gap:0 14px}
+  .proc li>div{grid-area:h} .proc .dur{grid-area:d; text-align:left; padding-top:6px}
+  /* readings table → stacked records, still a real <table> */
+  .tbl thead{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%)}
+  .tbl tr{display:grid; grid-template-columns:auto 1fr; gap:2px 12px; padding:14px 0;
+    border-bottom:1px solid rgba(30,42,56,.7)}
+  .tbl td{border:0; padding:0}
+  .tbl td.id{grid-column:1} .tbl td.st{grid-column:2; text-align:right}
+  .tbl td.ttl{grid-column:1/-1; margin-top:6px}
+  .plate{grid-template-columns:repeat(2,1fr)}
+  .strip div.hideS{display:none}
+  .strip .bar{width:44px}
+}
+/* ── narrow panel: single-row nav, and metadata stamps wrap instead of
+      pushing the page sideways ──────────────────────────────────────────── */
+@media (max-width:480px){
+  .nav__unit{display:none}
+  .nav__mark{gap:9px; padding-right:11px}
+  .nav__mark b{font-size:12px; letter-spacing:.07em}
+  .tgl{padding:0 9px; letter-spacing:.11em}
+  .led{margin-right:5px}
+  .burger{padding:0 var(--gut) 0 9px; letter-spacing:.11em}
+  .blk__hd{flex-wrap:wrap}
+  .blk__hd .coord{white-space:normal; letter-spacing:.1em; flex:1 1 100%}
+  .blk__hd .rulefill{display:none}
+  .strip .last{display:none}
+  .strip .spacer{border-right:0}
+}
+</style>
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<canvas id="field" aria-hidden="true"></canvas>
+<div id="grid" aria-hidden="true"></div>
+
+<div class="shell">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="nav__mark"><a href="index.html"><span class="dot" aria-hidden="true"></span><b translate="no">The&nbsp;Course</b><span class="lbl nav__unit" translate="no" style="margin-left:4px">3841</span></a></div>
+  <nav class="nav__links" id="navlinks" aria-label="Primary">
+    <a href="index.html">Overview</a>
+    <a href="inner.html" aria-current="page">Week&nbsp;07</a>
+    <a href="deck.html">Deck</a>
+  </nav>
+  <div class="nav__end">
+    <button class="tgl" id="t-grid" aria-pressed="true"><span class="led" aria-hidden="true"></span>Grid</button>
+    <button class="tgl" id="t-motion" aria-pressed="true"><span class="led" aria-hidden="true"></span>Motion</button>
+    <button class="burger" id="burger" aria-expanded="false" aria-controls="navlinks">Menu</button>
+  </div>
+  <div class="nav__vp mono" aria-hidden="true">VP&nbsp;<span id="vp-nav">—</span></div>
+</header>
+
+<div class="head">
+  <div class="head__step">
+    <a class="step" href="inner.html" rel="prev"><span aria-hidden="true">◄</span> Week 06 · Interference</a>
+    <span class="step step--now" aria-current="page">Week 07</span>
+    <a class="step" href="inner.html" rel="next">Week 08 · Calibration <span aria-hidden="true">►</span></a>
+  </div>
+  <div class="head__grid">
+    <div>
+      <h1><small>Week 07 / Session 07 of 12</small>Drift&nbsp;and correction</h1>
+      <p class="head__lede">Every instrument drifts. The useful question is not how to stop it but how
+        often you have to check, and what you are willing to accept between checks. This week the three
+        channels disagree productively for the first time.</p>
+    </div>
+    <div class="tel rv">
+      <div class="tel__hd"><span class="lbl">Session telemetry</span><span class="lbl">Wk 07</span></div>
+      <dl>
+        <div class="r"><dt>Common bus</dt><dd>Mon 11:00 · 60&nbsp;min</dd></div>
+        <div class="r"><dt>Channel session</dt><dd>See channel</dd></div>
+        <div class="r"><dt>Readings</dt><dd>2 required · 3 optional</dd></div>
+        <div class="r"><dt>Return due</dt><dd class="a">Sun 23:59</dd></div>
+        <div class="r"><dt>Est. load</dt><dd>5.5&nbsp;h</dd></div>
+        <div class="r"><dt>Recording</dt><dd class="g">Transcribed</dd></div>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<div class="body">
+  <!-- ── telemetry rail ─────────────────────────────────────────────── -->
+  <aside class="rail" aria-label="On this page">
+    <span class="lbl rail__t">Position</span>
+    <ol id="toc">
+      <li><a href="#b-bus">Common bus</a></li>
+      <li><a href="#b-chans">Channels A · B · C</a></li>
+      <li><a href="#b-read">Readings</a></li>
+      <li><a href="#b-proc">Activity</a></li>
+      <li><a href="#b-chk">Return checklist</a></li>
+      <li class="rail__scrub" aria-hidden="true"></li>
+    </ol>
+    <div class="rail__mtr">
+      <span class="lbl" style="display:block;margin-bottom:10px">Return progress</span>
+      <div class="big"><span id="pc">0</span><u>&nbsp;/ 6 done</u></div>
+      <div class="t" aria-hidden="true"><i id="pf"></i></div>
+      <span class="lbl" id="pnote">Nothing ticked yet. Start anywhere.</span>
+    </div>
+  </aside>
+
+  <!-- ── main flow ──────────────────────────────────────────────────── -->
+  <main class="flow" id="main">
+
+    <section class="blk" id="b-bus" data-sect="COMMON BUS">
+      <div class="blk__hd"><h2 class="lbl">01 / Common bus — shared lecture</h2><span class="rulefill" aria-hidden="true"></span><span class="coord">MON 11:00 · 60 MIN · ALL CH</span></div>
+      <div class="prose">
+        <p>Drift is the slow, directional error that accumulates while nothing appears to be going wrong.
+          It is not noise: noise is symmetrical and averages out, and drift does not. In the first
+          half of the lecture we separate the two by example, using three sets of readings taken across a
+          semester by students who did not know that one of their instruments had been recalibrated
+          halfway through.</p>
+        <p>The second half is about correction, which is where most of the interesting failures live.
+          Correcting drift means deciding, in advance, what your reference is. If the reference is itself
+          drifting, you get a method that is internally consistent and externally wrong — the most expensive
+          kind of mistake, because every internal check passes.</p>
+        <div class="anno">
+          <span class="anno__k">Key claim</span>
+          <p class="anno__v">A method that cannot detect its own drift is not a method. It is a habit with
+            <em>documentation</em>.</p>
+        </div>
+        <p>We close by writing the week’s reference statement together: one sentence naming what you are
+          holding fixed, and one naming what you expect to move. You will need both for the return, and
+          you will be asked in week eleven whether they held.</p>
+        <h3>What you should be able to do afterwards</h3>
+        <p>Name the reference in someone else’s method within two minutes of reading it. Say whether their
+          correction procedure would catch a drift in that reference. Where it would not, propose the
+          cheapest check that would — cheapest in their terms, not yours. <strong>Cheapness is part of the
+          answer; a correct procedure nobody will run is a wrong procedure.</strong></p>
+      </div>
+    </section>
+
+    <section class="blk" id="b-chans" data-sect="CHANNELS">
+      <div class="blk__hd"><h2 class="lbl">02 / Channels — parallel sessions</h2><span class="rulefill" aria-hidden="true"></span><span class="coord">3 CH · SAME BRIEF · DIFFERENT EVIDENCE</span></div>
+      <p class="prose" style="margin-bottom:26px">Each channel takes the same reference statement into its own
+        material. Read only your own channel to prepare, and read the other two before the week eleven
+        cross-examination — the objections you will face come from the columns you skipped.</p>
+
+      <article class="ch ch--a rv">
+        <div class="ch__side" aria-hidden="true"><span class="sqr"></span><span class="vert">Channel A</span></div>
+        <div class="ch__main">
+          <h3>Drift in the asking</h3>
+          <p class="who">Stream A · Field and interview · Tue 14:00</p>
+          <p>Your interview schedule drifts because you get better at the interview. By the eighth
+            conversation you are asking a sharper question than you asked in the first, which means your
+            early transcripts answer a question you no longer hold. This session we treat that as data
+            rather than contamination.</p>
+          <p>Bring transcript one and transcript seven. We read the opening ninety seconds of each aloud and
+            mark, live, every place the framing has moved. Then you write the reference statement you were
+            actually working from in each — not the one on your plan.</p>
+          <dl class="ch__gain">
+            <div><dt>Bring</dt><dd>2 transcripts</dd></div>
+            <div><dt>Output</dt><dd>Coded excerpt</dd></div>
+            <div><dt>Pairs</dt><dd>Yes, assigned</dd></div>
+          </dl>
+        </div>
+      </article>
+
+      <article class="ch ch--b rv">
+        <div class="ch__side" aria-hidden="true"><span class="sqr"></span><span class="vert">Channel B</span></div>
+        <div class="ch__main">
+          <h3>Drift in the instrument</h3>
+          <p class="who">Stream B · Build and instrument · Wed 10:00</p>
+          <p>Your build drifts because you keep fixing it. Each fix is locally correct and the accumulation
+            is not, which is why the log is the assessed artefact and the build is not. We spend the first
+            half reconstructing a timeline from three students’ logs and finding the exact commit where the
+            measurement stopped meaning what the earlier readings meant.</p>
+          <p>Second half is a tolerance exercise: you state the largest error you would accept without
+            re-running, in the unit your instrument actually reports, and defend the number. Round figures
+            get challenged hardest.</p>
+          <dl class="ch__gain">
+            <div><dt>Bring</dt><dd>Log, last 3&nbsp;wk</dd></div>
+            <div><dt>Output</dt><dd>Claim + error bar</dd></div>
+            <div><dt>Bench</dt><dd>Shared, 8 stations</dd></div>
+          </dl>
+        </div>
+      </article>
+
+      <article class="ch ch--c rv">
+        <div class="ch__side" aria-hidden="true"><span class="sqr"></span><span class="vert">Channel C</span></div>
+        <div class="ch__main">
+          <h3>Drift in the record</h3>
+          <p class="who">Stream C · Archive and reading · Thu 09:00</p>
+          <p>Archives drift because the categories do. A file series that meant one thing in its first
+            decade means something adjacent in its third, and nobody announces the change. This session
+            works from a single finding aid that was revised four times, and asks what a researcher using
+            only the current version would fail to find.</p>
+          <p>You will leave with one source note and one negative result: a claim the archive cannot
+            support, stated precisely enough that someone could disprove you by producing the document.</p>
+          <dl class="ch__gain">
+            <div><dt>Bring</dt><dd>Finding aid extract</dd></div>
+            <div><dt>Output</dt><dd>Source note ×1</dd></div>
+            <div><dt>Room</dt><dd>Reading room 1.08</dd></div>
+          </dl>
+        </div>
+      </article>
+    </section>
+
+    <section class="blk" id="b-read" data-sect="READINGS">
+      <div class="blk__hd"><h2 class="lbl">03 / Readings</h2><span class="rulefill" aria-hidden="true"></span><span class="coord">2 REQ · 3 OPT · ~90 MIN</span></div>
+      <table class="tbl">
+        <caption>Required readings are short by design. If a required item takes you longer than forty
+          minutes, stop and bring the sticking point to the lecture instead of finishing it.</caption>
+        <thead>
+          <tr><th scope="col">Ref</th><th scope="col">Source</th><th scope="col">Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="id">R07.1</td>
+            <td class="ttl">On holding something fixed<span>Chapter 4 only, 18 pages. The worked example in the middle is the part we use.</span></td>
+            <td class="st req">Required</td></tr>
+          <tr><td class="id">R07.2</td>
+            <td class="ttl">Three semesters of readings, annotated<span>A student folio released with permission. Read the annotations, not the results.</span></td>
+            <td class="st req">Required</td></tr>
+          <tr><td class="id">R07.3</td>
+            <td class="ttl">The recalibration memo<span>Two pages of internal correspondence. Note what is never written down.</span></td>
+            <td class="st cha">Challenge</td></tr>
+          <tr><td class="id">R07.4</td>
+            <td class="ttl">Tolerance in practice: a field guide<span>Skim. Useful mainly for its table of accepted error by discipline.</span></td>
+            <td class="st opt">Optional</td></tr>
+          <tr><td class="id">R07.5</td>
+            <td class="ttl">Against correction<span>A dissenting argument. Channel C will raise it whether you read it or not.</span></td>
+            <td class="st opt">Optional</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="blk" id="b-proc" data-sect="ACTIVITY">
+      <div class="blk__hd"><h2 class="lbl">04 / Activity — drift audit</h2><span class="rulefill" aria-hidden="true"></span><span class="coord">SEQUENCE · 55 MIN · IN SESSION</span></div>
+      <p class="prose" style="margin-bottom:22px">Run in pairs during your channel session. The steps are ordered
+        because each one consumes the previous one’s output; do not reorder them to save time.</p>
+      <ol class="proc">
+        <li><div><h4>State the reference</h4><p>Write one sentence naming what your method holds fixed. No hedging clauses. Your partner reads it back and tells you what they think it means.</p></div><span class="dur">5&nbsp;min</span></li>
+        <li><div><h4>Find the earliest artefact</h4><p>Pull the oldest item in your folio that was produced under that reference. Do not tidy it first.</p></div><span class="dur">5&nbsp;min</span></li>
+        <li><div><h4>Mark the movement</h4><p>Working on your partner’s material, not your own, mark every point where the working reference appears to have shifted. Mark generously; false positives cost nothing here.</p></div><span class="dur">15&nbsp;min</span></li>
+        <li><div><h4>Rank by consequence</h4><p>Swap back. Of the marks on your own material, order them by how much they change the conclusion. Most will change nothing, and saying so out loud is the point.</p></div><span class="dur">10&nbsp;min</span></li>
+        <li><div><h4>Design the cheapest check</h4><p>Take the top-ranked drift and design a check that would have caught it within one week, costing under thirty minutes to run.</p></div><span class="dur">15&nbsp;min</span></li>
+        <li><div><h4>Commit the check</h4><p>Write the check into your plan with a date. This is the line the marker will look for in your return.</p></div><span class="dur">5&nbsp;min</span></li>
+      </ol>
+    </section>
+
+    <section class="blk" id="b-chk" data-sect="CHECKLIST">
+      <div class="blk__hd"><h2 class="lbl">05 / Return checklist</h2><span class="rulefill" aria-hidden="true"></span><span class="coord">DUE SUN 23:59 · +72 H TOLERANCE</span></div>
+      <p class="prose" style="margin-bottom:22px">Tick these as you go. The list is stored in this browser only and
+        is not submitted anywhere; it exists so you can see what is left.</p>
+      <ul class="chk" id="chk">
+        <li><label><input type="checkbox"><span class="txt"><b>Read R07.1 and R07.2</b>Both required items, and one sentence on where they disagree.</span><span class="due">Before Mon</span></label></li>
+        <li><label><input type="checkbox"><span class="txt"><b>Write the reference statement</b>What you hold fixed, and what you expect to move. Two sentences, no more.</span><span class="due">In lecture</span></label></li>
+        <li><label><input type="checkbox"><span class="txt"><b>Bring your channel’s material</b>Transcripts, log extract, or finding aid, per Channel A / B / C above.</span><span class="due">Session</span></label></li>
+        <li><label><input type="checkbox"><span class="txt"><b>Complete the drift audit</b>All six steps, including the ranking you would rather skip.</span><span class="due">Session</span></label></li>
+        <li><label><input type="checkbox"><span class="txt"><b>Commit one check with a date</b>The check goes in your plan, not in your notes.</span><span class="due">Fri</span></label></li>
+        <li><label><input type="checkbox"><span class="txt"><b>Submit the weekly return</b>Roughly 300&nbsp;words, ending in a stated change. Length is not marked.</span><span class="due">Sun 23:59</span></label></li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+<footer class="plate">
+  <div><span class="lbl">Navigate</span><a href="index.html">Overview</a><a href="inner.html">Week 07</a><a href="deck.html">Lecture deck</a></div>
+  <div><span class="lbl">This week</span><a href="#b-bus">Common bus</a><a href="#b-read">Readings</a><a href="#b-chk">Return checklist</a></div>
+  <div><span class="lbl">If you are stuck</span><p>Consultation Mon 15:00</p><p>Channel forum, any hour</p><p>Ask before the due date</p></div>
+  <div><span class="lbl">Access</span><p>Lecture transcribed</p><p>Deck has a text version</p><p>Readings in large print</p></div>
+  <div class="plate__serial">
+    <span>Unit 3841 · Rev 2.4</span><span>Sheet 2 of 3</span><span>Design option B · Instrument</span><span>Placeholder content</span>
+  </div>
+</footer>
+</div>
+
+<div class="strip" id="strip" aria-hidden="true">
+  <div>Scroll <span class="bar"><i id="st-bar"></i></span> <span class="v" id="st-pct">0%</span></div>
+  <div>Mode <span class="v g" id="st-mode">COMMON BUS</span></div>
+  <div class="hideS">Tasks <span class="v a" id="st-task">0/6</span></div>
+  <div class="hideS">Field <span class="v" id="st-field">INIT</span></div>
+  <div class="spacer"></div>
+  <div class="last">VP <span class="v" id="st-vp">—</span></div>
+</div>
+
+<script>
+/* ═══ chassis state ═════════════════════════════════════════════════ */
+const mqReduce = matchMedia('(prefers-reduced-motion: reduce)');
+const store = { get(k,d){ try{ const v=localStorage.getItem(k); return v===null?d:v==='1'; }catch(e){ return d; } },
+                set(k,v){ try{ localStorage.setItem(k,v?'1':'0'); }catch(e){} } };
+let motionOn = store.get('ob-motion', !mqReduce.matches) && !mqReduce.matches;
+let gridOn = store.get('ob-grid', true);
+const body = document.body;
+const applyMotion = ()=>{ body.classList.toggle('reduced', !motionOn);
+  document.getElementById('t-motion').setAttribute('aria-pressed', String(motionOn)); };
+const applyGrid = ()=>{ body.classList.toggle('nogrid', !gridOn);
+  document.getElementById('t-grid').setAttribute('aria-pressed', String(gridOn)); };
+applyMotion(); applyGrid();
+document.getElementById('t-motion').addEventListener('click',()=>{ motionOn=!motionOn; store.set('ob-motion',motionOn); applyMotion(); field.setRun(motionOn); });
+document.getElementById('t-grid').addEventListener('click',()=>{ gridOn=!gridOn; store.set('ob-grid',gridOn); applyGrid(); });
+const burger=document.getElementById('burger');
+burger.addEventListener('click',()=>{ const o=body.classList.toggle('menu'); burger.setAttribute('aria-expanded',String(o)); });
+
+/* ═══ ambient contour field ═════════════════════════════════════════ */
+const FIELD_OUT='st-field';
+const field=(function(){
+  const cv=document.getElementById('field');
+  const isPhone=matchMedia('(max-width:900px)').matches;
+  const st=v=>{const e=document.getElementById(FIELD_OUT); if(e)e.textContent=v;};
+  /* pointer is stored screen-normalised, y DOWN */
+  const ptr={x:.24,y:.06,tx:.24,ty:.06,amt:0,tamt:0};
+  let kind='none',run=false,raf=0,frozen=false;
+  let gl=null,prog=null,loc={},glScale=isPhone?.6:.9;
+  let ctx=null,vg=null,cols=0,rows=0,cell=26,grad=null;
+
+  /* ── A · fast path: WebGL2 contour shader ───────────────────────── */
+  const VS=`#version 300 es
+in vec2 a; void main(){ gl_Position=vec4(a,0.,1.); }`;
+  const FS=`#version 300 es
+precision highp float;
+uniform vec2 uRes; uniform float uT; uniform vec2 uP; uniform float uA;
+out vec4 o;
+float h(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123); }
+float n(vec2 p){ vec2 i=floor(p),f=fract(p); f=f*f*(3.-2.*f);
+  return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y); }
+float fbm3(vec2 p){ float a=.5,s=0.; for(int k=0;k<3;k++){ s+=a*n(p); p=p*2.03+vec2(11.7,5.3); a*=.5; } return s; }
+float fbm5(vec2 p){ float a=.5,s=0.; for(int k=0;k<5;k++){ s+=a*n(p); p=p*2.02+vec2(17.3,9.1); a*=.5; } return s; }
+void main(){
+  vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;
+  vec2 p=uv*2.15; float t=uT*.032;
+  p+=(vec2(fbm3(p*.75+vec2(t,0.)),fbm3(p*.75+vec2(0.,-t)+5.2))-.5)*1.15;
+  vec2 d=uv-uP; float r=length(d);
+  float lens=exp(-r*r*8.5)*uA;
+  p+=normalize(d+vec2(1e-5))*lens*.34;
+  float f=fbm5(p+vec2(0.,t*.55));
+  float bands=f*9.0+lens*2.2;
+  float e=abs(fract(bands)-.5);
+  float aa=fwidth(bands)*.95+1e-4;
+  float line=1.-smoothstep(0.,aa,e);
+  float centre=smoothstep(1.32,.21,length(uv*vec2(.59,1.0)));
+  float ink=line*(.034+.155*(1.-centre))+lens*.05;
+  o=vec4(vec3(.0235,.0353,.0549)+vec3(.165,.30,.385)*ink*2.3,1.);
+}`;
+  function sh(t,s){ const x=gl.createShader(t); gl.shaderSource(x,s); gl.compileShader(x);
+    if(!gl.getShaderParameter(x,gl.COMPILE_STATUS)){ console.warn(gl.getShaderInfoLog(x)); return null; } return x; }
+  function initGL(){
+    try{ gl=cv.getContext('webgl2',{antialias:false,alpha:false,powerPreference:'low-power'}); }catch(e){ gl=null; }
+    if(!gl) return false;
+    const v=sh(gl.VERTEX_SHADER,VS),f=sh(gl.FRAGMENT_SHADER,FS);
+    if(!v||!f) return false;
+    prog=gl.createProgram(); gl.attachShader(prog,v); gl.attachShader(prog,f); gl.linkProgram(prog);
+    if(!gl.getProgramParameter(prog,gl.LINK_STATUS)) return false;
+    gl.useProgram(prog);
+    const b=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,b);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+    const a=gl.getAttribLocation(prog,'a'); gl.enableVertexAttribArray(a);
+    gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);
+    loc.res=gl.getUniformLocation(prog,'uRes'); loc.t=gl.getUniformLocation(prog,'uT');
+    loc.p=gl.getUniformLocation(prog,'uP'); loc.a=gl.getUniformLocation(prog,'uA');
+    return true;
+  }
+  function sizeGL(){
+    const w=Math.max(1,Math.round(innerWidth*glScale)),h=Math.max(1,Math.round(innerHeight*glScale));
+    if(cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; gl.viewport(0,0,w,h); }
+  }
+  function drawGL(sec){
+    gl.uniform2f(loc.res,cv.width,cv.height); gl.uniform1f(loc.t,sec);
+    gl.uniform2f(loc.p,ptr.x,-ptr.y); gl.uniform1f(loc.a,ptr.amt);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+  }
+
+  /* ── B · fallback: canvas-2D isolines by marching squares ───────── */
+  function hash(x,y){ let n=(x|0)*374761393+(y|0)*668265263;
+    n=(n^(n>>13))*1274126177; return ((n^(n>>16))>>>0)/4294967296; }
+  function vnoise(x,y){ const ix=Math.floor(x),iy=Math.floor(y);
+    let fx=x-ix,fy=y-iy; fx=fx*fx*(3-2*fx); fy=fy*fy*(3-2*fy);
+    const a=hash(ix,iy),b=hash(ix+1,iy),c=hash(ix,iy+1),d=hash(ix+1,iy+1);
+    return a+(b-a)*fx+(c-a)*fy+(a-b-c+d)*fx*fy; }
+  function fbm(x,y){ let s=0,m=.5;
+    for(let k=0;k<3;k++){ s+=m*vnoise(x,y); x=x*2.03+11.7; y=y*2.03+5.3; m*=.5; } return s; }
+  function initCtx(){ try{ ctx=cv.getContext('2d'); }catch(e){ ctx=null; } return !!ctx; }
+  function sizeCtx(){
+    cv.width=innerWidth; cv.height=innerHeight;
+    cols=Math.ceil(innerWidth/cell)+2; rows=Math.ceil(innerHeight/cell)+2;
+    vg=new Float32Array(cols*rows);
+    const W=cv.width,H=cv.height;
+    grad=ctx.createRadialGradient(W*.40,H*.46,0,W*.40,H*.46,Math.max(W,H)*.66);
+    grad.addColorStop(0,'rgba(6,9,14,.94)');
+    grad.addColorStop(.5,'rgba(6,9,14,.58)');
+    grad.addColorStop(1,'rgba(6,9,14,0)');
+    ctx.lineWidth=1; ctx.lineCap='butt';
+  }
+  function drawCtx(sec){
+    const W=cv.width,H=cv.height,t=sec*.9;
+    for(let j=0;j<rows;j++){
+      const Y=(j*cell-H/2)/H;
+      for(let i=0;i<cols;i++){
+        const X=(i*cell-W/2)/H;
+        let v=fbm(X*1.75+t*.055,Y*1.75)*.66 + fbm(X*2.8-t*.036,Y*2.8+t*.022)*.34;
+        const dx=X-ptr.x, dy=Y-ptr.y;
+        v+=Math.exp(-(dx*dx+dy*dy)*9.0)*ptr.amt*.42;
+        vg[j*cols+i]=v;
+      }
+    }
+    ctx.fillStyle='#06090E'; ctx.fillRect(0,0,W,H);
+    const p=new Path2D();
+    for(let L=0;L<12;L++){
+      const lev=.155+L*.045;
+      for(let j=0;j<rows-1;j++){
+        const r0=j*cols,r1=r0+cols,y0=j*cell;
+        for(let i=0;i<cols-1;i++){
+          const a=vg[r0+i],b=vg[r0+i+1],c=vg[r1+i+1],d=vg[r1+i];
+          const m=(a>=lev?1:0)|(b>=lev?2:0)|(c>=lev?4:0)|(d>=lev?8:0);
+          if(m===0||m===15) continue;
+          const x0=i*cell;
+          let ax,ay,bx,by;
+          switch(m){
+            case 1: case 14:
+              ax=x0; ay=y0+cell*(lev-a)/(d-a); bx=x0+cell*(lev-a)/(b-a); by=y0; break;
+            case 2: case 13:
+              ax=x0+cell*(lev-a)/(b-a); ay=y0; bx=x0+cell; by=y0+cell*(lev-b)/(c-b); break;
+            case 3: case 12:
+              ax=x0; ay=y0+cell*(lev-a)/(d-a); bx=x0+cell; by=y0+cell*(lev-b)/(c-b); break;
+            case 4: case 11:
+              ax=x0+cell; ay=y0+cell*(lev-b)/(c-b); bx=x0+cell*(lev-d)/(c-d); by=y0+cell; break;
+            case 6: case 9:
+              ax=x0+cell*(lev-a)/(b-a); ay=y0; bx=x0+cell*(lev-d)/(c-d); by=y0+cell; break;
+            case 7: case 8:
+              ax=x0; ay=y0+cell*(lev-a)/(d-a); bx=x0+cell*(lev-d)/(c-d); by=y0+cell; break;
+            case 5:
+              p.moveTo(x0,y0+cell*(lev-a)/(d-a)); p.lineTo(x0+cell*(lev-a)/(b-a),y0);
+              p.moveTo(x0+cell,y0+cell*(lev-b)/(c-b)); p.lineTo(x0+cell*(lev-d)/(c-d),y0+cell);
+              continue;
+            case 10:
+              p.moveTo(x0+cell*(lev-a)/(b-a),y0); p.lineTo(x0+cell,y0+cell*(lev-b)/(c-b));
+              p.moveTo(x0,y0+cell*(lev-a)/(d-a)); p.lineTo(x0+cell*(lev-d)/(c-d),y0+cell);
+              continue;
+            default: continue;
+          }
+          p.moveTo(ax,ay); p.lineTo(bx,by);
+        }
+      }
+    }
+    ctx.strokeStyle='rgba(126,180,216,.21)'; ctx.stroke(p);
+    ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+  }
+
+  /* ── transport shared by both renderers ─────────────────────────── */
+  function size(){ if(kind==='gl') sizeGL(); else if(kind==='iso') sizeCtx(); }
+  const t0=performance.now(); let acc=0,frames=0,last=0;
+  function draw(now){
+    raf=0; const dt=now-(last||now); last=now;
+    ptr.x+=(ptr.tx-ptr.x)*.065; ptr.y+=(ptr.ty-ptr.y)*.065; ptr.amt+=(ptr.tamt-ptr.amt)*.05;
+    const sec=(now-t0)/1000;
+    if(kind==='gl') drawGL(sec); else drawCtx(sec);
+    acc+=dt; frames++;
+    if(acc>900){
+      const fps=frames/(acc/1000);
+      if(fps<42){
+        if(kind==='gl'&&glScale>.42){ glScale=Math.max(.42,glScale-.15); sizeGL(); }
+        else if(kind==='iso'&&cell<44){ cell=Math.min(44,cell+6); sizeCtx(); }
+      }
+      st((kind==='gl'?'GL ':'ISO ')+Math.round(fps)+'FPS');
+      acc=0; frames=0;
+    }
+    if(run&&!frozen) raf=requestAnimationFrame(draw);
+  }
+  /* paint immediately and synchronously — never wait on a frame callback that a
+     throttled or backgrounded tab may never deliver */
+  function paintNow(){
+    if(kind==='none') return;
+    const n=performance.now(); last=n; const r=run; run=false; draw(n); run=r;
+  }
+  function setRun(on){
+    if(kind==='none') return;
+    run=on&&!isPhone;                 /* phone: one static render, and the strip says so */
+    if(raf){ cancelAnimationFrame(raf); raf=0; }
+    paintNow();
+    const tag=kind==='gl'?'GL':'ISO';
+    if(run){ st(tag+' LIVE'); if(!raf) raf=requestAnimationFrame(draw); }
+    else st(isPhone?tag+' STATIC':tag+' HOLD');
+  }
+
+  if(initGL()) kind='gl';
+  else if(initCtx()){ kind='iso'; cell=isPhone?30:26; }
+  if(kind==='none'){ cv.classList.add('dead'); st('CSS FALLBACK'); return {setRun(){}}; }
+  size();
+  addEventListener('resize',()=>{ size(); paintNow(); },{passive:true});
+  if(matchMedia('(hover:hover)').matches){
+    addEventListener('pointermove',e=>{
+      ptr.tx=(e.clientX-innerWidth/2)/innerHeight;
+      ptr.ty=(e.clientY-innerHeight/2)/innerHeight;
+      ptr.tamt=1;
+    },{passive:true});
+    addEventListener('pointerleave',()=>{ ptr.tamt=0; },{passive:true});
+  }
+  document.addEventListener('visibilitychange',()=>{
+    frozen=document.hidden; if(!frozen&&run&&!raf) raf=requestAnimationFrame(draw); });
+  setRun(motionOn);
+  return {setRun};
+})();
+
+/* ═══ reveals ═══════════════════════════════════════════════════════ */
+const io=new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); },
+  {threshold:.2, rootMargin:'0px 0px -6% 0px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+/* ═══ live scrub: rail position + mode retune ═══════════════════════ */
+const blks=[...document.querySelectorAll('.blk')];
+const tocLis=[...document.querySelectorAll('#toc li:not(.rail__scrub)')];
+const scrub=document.querySelector('.rail__scrub');
+const modeEl=document.getElementById('st-mode');
+const GLYPH='ABCDEFGHIJKLMNOPQRSTUVWXYZ·/0123456789';
+let modeRaf=0,curMode='';
+function retune(to){
+  if(to===curMode) return; curMode=to; cancelAnimationFrame(modeRaf);
+  if(!motionOn){ modeEl.textContent=to; return; }
+  let k=0; const n=to.length;
+  (function tick(){ let out='';
+    for(let i=0;i<n;i++) out += i<k ? to[i] : (to[i]===' '?' ':GLYPH[(Math.random()*GLYPH.length)|0]);
+    modeEl.textContent=out; k+=0.85;
+    if(k<n+1) modeRaf=requestAnimationFrame(tick); else modeEl.textContent=to;
+  })();
+}
+let active=-1;
+function scrubUpdate(){
+  const mid=scrollY+innerHeight*0.32;
+  let i=0; for(let k=0;k<blks.length;k++) if(blks[k].offsetTop<=mid) i=k;
+  if(i===active) return; active=i;
+  tocLis.forEach((li,k)=>li.classList.toggle('on',k===i));
+  const li=tocLis[i];
+  if(li&&scrub){ scrub.style.height=li.offsetHeight+'px'; scrub.style.transform='translateY('+li.offsetTop+'px)'; }
+  retune(blks[i].dataset.sect);
+}
+
+/* ═══ status strip ══════════════════════════════════════════════════ */
+const stPct=document.getElementById('st-pct'),stBar=document.getElementById('st-bar'),
+      stVp=document.getElementById('st-vp'),vpNav=document.getElementById('vp-nav');
+function readVP(){ const s=innerWidth+'×'+innerHeight; stVp.textContent=s; if(vpNav) vpNav.textContent=s; }
+function readScroll(){
+  const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);
+  const p=Math.min(100,Math.round(scrollY/max*100));
+  stPct.textContent=p+'%'; stBar.style.transform='scaleX('+(p/100)+')';
+}
+let tick=0;
+addEventListener('scroll',()=>{ if(tick) return; tick=requestAnimationFrame(()=>{ tick=0; readScroll(); scrubUpdate(); }); },{passive:true});
+addEventListener('resize',()=>{ readVP(); active=-1; scrubUpdate(); },{passive:true});
+readVP(); readScroll(); scrubUpdate();
+
+/* ═══ checklist → meter + strip (true state) ════════════════════════ */
+const boxes=[...document.querySelectorAll('#chk input')];
+const pc=document.getElementById('pc'),pf=document.getElementById('pf'),
+      pnote=document.getElementById('pnote'),stTask=document.getElementById('st-task');
+const NOTES=['Nothing ticked yet. Start anywhere.','Reading done is a real start.','Halfway is the reference statement.',
+  'Past halfway. Keep the audit honest.','Two left, both short.','Only the return remains.','Complete. Nothing outstanding.'];
+function syncChk(){
+  const n=boxes.filter(b=>b.checked).length;
+  pc.textContent=n;
+  pf.style.transform='scaleX('+(n/boxes.length)+')';
+  pnote.textContent=NOTES[n];
+  stTask.textContent=n+'/'+boxes.length;
+  stTask.className='v '+(n===boxes.length?'g':'a');
+  try{ localStorage.setItem('ob-chk07', boxes.map(b=>b.checked?1:0).join('')); }catch(e){}
+}
+try{ const s=localStorage.getItem('ob-chk07'); if(s) boxes.forEach((b,i)=>b.checked=s[i]==='1'); }catch(e){}
+boxes.forEach(b=>b.addEventListener('change',syncChk));
+syncChk();
+mqReduce.addEventListener('change',e=>{ if(e.matches){ motionOn=false; applyMotion(); field.setRun(false); } });
+</script>
+</body>
+</html>

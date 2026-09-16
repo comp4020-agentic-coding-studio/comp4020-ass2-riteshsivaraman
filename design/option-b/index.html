@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#06090E">
+<meta name="color-scheme" content="dark">
+<title>The Course — Unit 3841</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Sans:wght@400..700&family=Spline+Sans+Mono:wght@300..700&display=swap" rel="stylesheet">
+<style>
+/* ═══ OPTION B · INSTRUMENT ═══ chassis tokens ═══════════════════════════ */
+:root{
+  --ink:#06090E; --ink2:#0A0F16; --panel:#0E141C; --panel-hi:#141C26;
+  --rule:#1E2A38; --rule-hi:#2F4256;
+  --bone:#DCE3EA; --dim:#96A4B3; --faint:#6E7C8B;
+  --sig:#57D9A3; --warn:#F2B24C; --chC:#C9D3DE;
+  --mod:96px;            /* major grid module */
+  --gut:clamp(16px,3.2vw,56px);
+  --mono:"Spline Sans Mono",ui-monospace,monospace;
+  --sans:"Instrument Sans",system-ui,sans-serif;
+  --disp:"Archivo","Instrument Sans",system-ui,sans-serif;
+  --ease:cubic-bezier(.22,.61,.24,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%; color-scheme:dark}
+body{
+  margin:0; background:var(--ink); color:var(--bone);
+  font-family:var(--sans); font-size:16px; line-height:1.62;
+  font-synthesis:none; -webkit-font-smoothing:antialiased;
+  padding-bottom:calc(34px + env(safe-area-inset-bottom)); overflow-x:hidden;
+  touch-action:manipulation; -webkit-tap-highlight-color:rgba(87,217,163,.18);
+}
+.skip{position:absolute; left:-9999px; top:0; z-index:99; background:var(--panel-hi);
+  border:1px solid var(--sig); color:var(--bone); padding:12px 18px; text-decoration:none;
+  font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase}
+.skip:focus{left:var(--gut); top:10px}
+/* ── ambient field (WebGL) ─────────────────────────────────────────────── */
+#field{position:fixed; inset:0; width:100%; height:100%; z-index:0; display:block; background:var(--ink)}
+#field.dead{background:
+  radial-gradient(120% 80% at 82% 4%, #101a26 0%, transparent 62%),
+  radial-gradient(90% 70% at 4% 96%, #0b1620 0%, transparent 58%), var(--ink)}
+/* ── engineering grid overlay ─────────────────────────────────────────── */
+#grid{position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.55; transition:opacity .35s var(--ease);
+  background:
+    repeating-linear-gradient(to right, rgba(120,170,205,.075) 0 1px, transparent 1px var(--mod)),
+    repeating-linear-gradient(to bottom, rgba(120,170,205,.055) 0 1px, transparent 1px var(--mod));
+  mask-image:linear-gradient(to bottom, #000 0 22%, rgba(0,0,0,.35) 60%, rgba(0,0,0,.12) 100%);
+}
+body.nogrid #grid{opacity:0}
+.shell{position:relative; z-index:2}
+
+/* ── type scale ────────────────────────────────────────────────────────── */
+.mono{font-family:var(--mono); font-weight:400; font-variant-numeric:tabular-nums; letter-spacing:.06em}
+.lbl{font-family:var(--mono); font-size:10.5px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--faint)}
+.lbl b{color:var(--dim); font-weight:500}
+h1,h2,h3,h4{font-family:var(--disp); font-weight:600; margin:0; line-height:.98;
+  font-stretch:118%; letter-spacing:-.005em; text-wrap:balance}
+h2.lbl,h3.lbl{font-family:var(--mono); font-size:10.5px; font-weight:500; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--faint); font-stretch:100%; line-height:1.5; text-wrap:initial}
+h1{font-size:clamp(52px,8.4vw,142px); font-weight:700; font-stretch:125%; letter-spacing:-.02em}
+h2{font-size:clamp(28px,3.1vw,50px)}
+h3{font-size:clamp(19px,1.5vw,25px); font-stretch:112%; letter-spacing:0}
+p{margin:0 0 1em}
+.lede{font-size:clamp(16.5px,1.28vw,21px); line-height:1.56; color:#C3CCD6; max-width:46ch}
+.prose{max-width:66ch; color:#C3CCD6}
+.prose strong{color:var(--bone); font-weight:600}
+a{color:var(--bone)}
+:focus-visible{outline:2px solid var(--sig); outline-offset:3px; border-radius:1px}
+
+/* ── nav rail ──────────────────────────────────────────────────────────── */
+.nav{position:sticky; top:0; z-index:40; display:flex; align-items:stretch;
+  background:rgba(8,12,18,.88); backdrop-filter:blur(14px) saturate(120%);
+  border-bottom:1px solid var(--rule); min-height:54px}
+.nav__mark{display:flex; align-items:center; gap:11px; padding:0 18px 0 var(--gut); border-right:1px solid var(--rule)}
+.dot{width:9px; height:9px; border-radius:50%; background:var(--sig); box-shadow:0 0 0 3px rgba(87,217,163,.14)}
+body.reduced .dot{animation:none}
+.dot{animation:pulse 3.4s var(--ease) infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(87,217,163,.10)}50%{box-shadow:0 0 0 6px rgba(87,217,163,.03)}}
+.nav__mark b{font-family:var(--disp); font-stretch:125%; font-weight:700; font-size:13px; letter-spacing:.1em; text-transform:uppercase}
+.nav__links{display:flex}
+.nav__links a{display:flex; align-items:center; padding:0 20px; border-right:1px solid var(--rule);
+  font-family:var(--mono); font-size:11px; letter-spacing:.17em; text-transform:uppercase;
+  color:var(--dim); text-decoration:none; position:relative; transition:color .2s, background .2s}
+.nav__links a:hover{color:var(--bone); background:rgba(87,217,163,.05)}
+.nav__links a[aria-current]{color:var(--bone)}
+.nav__links a[aria-current]::after{content:""; position:absolute; left:0; right:0; bottom:-1px; height:2px; background:var(--sig)}
+.nav__end{margin-left:auto; display:flex}
+.tgl{appearance:none; border:0; border-left:1px solid var(--rule); background:transparent; color:var(--faint);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
+  padding:0 15px; min-height:54px; cursor:pointer; transition:color .2s, background .2s}
+.tgl:hover{color:var(--bone); background:rgba(120,170,205,.06)}
+.tgl[aria-pressed="true"]{color:var(--sig)}
+.tgl[aria-pressed="true"] .led{background:var(--sig); box-shadow:0 0 6px rgba(87,217,163,.6)}
+.led{display:inline-block; width:6px; height:6px; border-radius:1px; background:var(--rule-hi); margin-right:7px; vertical-align:1px}
+.nav__vp{display:flex; align-items:center; padding:0 var(--gut) 0 15px; border-left:1px solid var(--rule); color:var(--faint);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; white-space:nowrap}
+.burger{display:none}
+
+/* ── section frame ─────────────────────────────────────────────────────── */
+.sec{position:relative; padding:0 var(--gut)}
+.sec__hd{display:flex; align-items:baseline; gap:18px; padding:60px 0 22px; border-bottom:1px solid var(--rule)}
+.sec__hd .lbl{white-space:nowrap}
+.sec__hd .rulefill{flex:1; height:1px; background:linear-gradient(to right,var(--rule),transparent)}
+.sec__hd .mono.coord{color:var(--faint); font-size:10.5px; letter-spacing:.14em}
+/* mode-change sweep */
+.sweep{position:absolute; left:0; right:0; height:1px; background:linear-gradient(to right,transparent,var(--sig),transparent);
+  opacity:0; transform:scaleX(.2); transform-origin:left}
+.sec.armed .sweep{animation:sweep .9s var(--ease) forwards}
+@keyframes sweep{0%{opacity:0;transform:scaleX(0)}18%{opacity:.9}100%{opacity:0;transform:scaleX(1)}}
+body.reduced .sec.armed .sweep{animation:none}
+
+/* ── hero ──────────────────────────────────────────────────────────────── */
+.hero{display:grid; grid-template-columns:minmax(0,1.55fr) minmax(280px,.85fr); gap:clamp(24px,4vw,72px);
+  padding:clamp(48px,7vh,104px) var(--gut) clamp(40px,6vh,80px); align-items:end; min-height:74svh}
+.hero__eyebrow{display:flex; flex-wrap:wrap; gap:8px 20px; margin-bottom:clamp(20px,3vh,38px)}
+.hero h1{margin-bottom:6px}
+.hero h1 em{font-style:normal; color:var(--sig)}
+/* measuring bracket under the title — type as instrument */
+.bracket{display:flex; align-items:center; gap:10px; margin:0 0 clamp(22px,3vh,34px); color:var(--faint)}
+.bracket__bar{flex:1; height:12px; position:relative; border-left:1px solid var(--rule-hi); border-right:1px solid var(--rule-hi)}
+.bracket__bar::before{content:""; position:absolute; top:5px; left:0; right:0; height:1px; background:var(--rule)}
+.bracket__bar::after{content:""; position:absolute; top:5px; left:0; right:0; height:1px; background:var(--sig);
+  transform:scaleX(var(--w,0)); transform-origin:left; transition:transform 1.5s var(--ease)}
+.bracket span{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; white-space:nowrap}
+.acts{display:flex; flex-wrap:wrap; gap:10px; margin-top:4px}
+.btn{display:inline-flex; align-items:center; gap:12px; min-height:46px; padding:0 20px;
+  border:1px solid var(--rule-hi); background:rgba(20,28,38,.6); color:var(--bone); text-decoration:none;
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.16em; text-transform:uppercase;
+  transition:border-color .2s, background .2s, transform .2s var(--ease)}
+.btn:hover{border-color:var(--sig); background:rgba(87,217,163,.08); transform:translateY(-1px)}
+.btn--key{border-color:rgba(87,217,163,.5); background:rgba(87,217,163,.09)}
+.btn i{font-style:normal; color:var(--sig)}
+/* spec panel */
+.panel{background:linear-gradient(180deg, rgba(20,28,38,.80), rgba(12,18,26,.86));
+  border:1px solid var(--rule); backdrop-filter:blur(6px);
+  box-shadow:0 1px 0 rgba(160,200,230,.05) inset, 0 24px 60px -30px #000}
+.spec{padding:0}
+.spec__hd{display:flex; justify-content:space-between; gap:12px; padding:12px 16px; border-bottom:1px solid var(--rule)}
+.spec dl{margin:0; padding:4px 0}
+.spec .row{display:flex; justify-content:space-between; gap:14px; padding:9px 16px; border-bottom:1px solid rgba(30,42,56,.55)}
+.spec .row:last-child{border-bottom:0}
+.spec dt{font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint)}
+.spec dd{margin:0; font-family:var(--mono); font-size:12.5px; color:var(--bone); font-variant-numeric:tabular-nums; text-align:right}
+.spec dd.g{color:var(--sig)} .spec dd.a{color:var(--warn)}
+
+/* ── readouts row ──────────────────────────────────────────────────────── */
+.readouts{display:grid; grid-template-columns:repeat(4,1fr); border-top:1px solid var(--rule); border-bottom:1px solid var(--rule)}
+.ro{padding:24px clamp(14px,1.6vw,26px) 22px; border-right:1px solid var(--rule); position:relative}
+.ro:last-child{border-right:0}
+.ro__v{font-family:var(--disp); font-stretch:112%; font-weight:600; font-size:clamp(34px,3.7vw,58px); line-height:1;
+  font-variant-numeric:tabular-nums; display:flex; align-items:baseline; gap:6px}
+.ro__v u{text-decoration:none; font-size:.36em; color:var(--faint); font-family:var(--mono); letter-spacing:.1em}
+.ro__k{margin-top:10px}
+.ro__m{margin-top:12px; height:3px; background:var(--rule); position:relative; overflow:hidden}
+.ro__m i,.mtr__t i{position:absolute; inset:0; background:var(--sig);
+  transform:scaleX(0); transform-origin:left; transition:transform 1.5s var(--ease)}
+.ro:nth-child(2) .ro__m i{background:var(--warn)}
+.ro:nth-child(3) .ro__m i{background:var(--chC)}
+
+/* ── timebase (12-week ruler) ──────────────────────────────────────────── */
+.tb{padding:34px 0 56px}
+.tb__read{display:flex; align-items:baseline; gap:14px; min-height:30px; margin-bottom:14px}
+.tb__read strong{font-family:var(--disp); font-stretch:118%; font-weight:600; font-size:20px}
+.tb__read span{font-size:14px; color:var(--dim)}
+.rail{list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(12,1fr);
+  border-top:1px solid var(--rule-hi)}
+.rail li{position:relative}
+.rail a{display:block; padding:0 0 14px; text-decoration:none; color:var(--faint); position:relative}
+.rail a::before{content:""; position:absolute; top:0; left:0; width:1px; height:11px; background:var(--rule-hi)}
+.rail a:nth-child(1)::before{height:11px}
+.rail .tk{display:block; height:26px; margin-top:0; position:relative}
+.rail .tk i{position:absolute; bottom:0; left:0; width:3px; background:var(--rule-hi); transition:height .3s var(--ease), background .2s}
+.rail .wk{display:block; font-family:var(--mono); font-size:11px; letter-spacing:.1em; padding-top:6px; transition:color .2s}
+.rail a:hover .wk, .rail a:focus-visible .wk{color:var(--bone)}
+.rail a:hover .tk i, .rail a:focus-visible .tk i{background:var(--sig)}
+.rail li.is-here a .wk{color:var(--sig)}
+.rail li.is-here a .tk i{background:var(--sig)}
+.rail li.is-here::after{content:"◆"; position:absolute; top:-18px; left:0; font-size:8px; color:var(--sig)}
+
+/* ── channels (streams) ────────────────────────────────────────────────── */
+.chans{display:grid; grid-template-columns:repeat(3,1fr); gap:0; border-top:1px solid var(--rule); margin-bottom:56px}
+.chan{padding:26px clamp(16px,2vw,30px) 30px; border-right:1px solid var(--rule); position:relative;
+  transition:background .3s var(--ease)}
+.chan:last-child{border-right:0}
+.chan::before{content:""; position:absolute; top:-1px; left:0; width:100%; height:2px; background:var(--ch); opacity:.55}
+.chan:hover{background:rgba(120,170,205,.035)}
+.chan__id{display:flex; align-items:center; gap:10px; margin-bottom:16px}
+.chan__id .sqr{width:10px; height:10px; background:var(--ch)}
+.chan__id .lbl{color:var(--ch); letter-spacing:.22em}
+.chan h3{margin-bottom:12px}
+.chan p{font-size:14.5px; color:#B7C1CC; margin-bottom:14px}
+.chan dl{margin:18px 0 0; border-top:1px solid rgba(30,42,56,.7); font-family:var(--mono); font-size:11px}
+.chan .r{display:flex; justify-content:space-between; gap:10px; padding:7px 0; border-bottom:1px solid rgba(30,42,56,.45)}
+.chan .r dt{color:var(--faint); letter-spacing:.14em; text-transform:uppercase; font-size:10px}
+.chan .r dd{margin:0; color:var(--bone); font-variant-numeric:tabular-nums}
+.chan--a{--ch:var(--sig)} .chan--b{--ch:var(--warn)} .chan--c{--ch:var(--chC)}
+
+/* ── assessment meters ────────────────────────────────────────────────── */
+.mtrs{margin:26px 0 0; border-top:1px solid var(--rule)}
+.mtr{display:grid; grid-template-columns:34px minmax(0,1fr) 88px; gap:clamp(12px,2vw,28px); align-items:center;
+  padding:18px 0; border-bottom:1px solid rgba(30,42,56,.6)}
+.mtr__n{font-family:var(--mono); font-size:11px; color:var(--faint); letter-spacing:.1em}
+.mtr__b{display:flex; flex-direction:column; gap:8px}
+.mtr__b h4{font-family:var(--disp); font-stretch:112%; font-size:17px; font-weight:600}
+.mtr__b p{margin:0; font-size:13.5px; color:var(--dim); max-width:62ch}
+.mtr__t{height:7px; background:var(--rule); position:relative; margin-top:4px; overflow:hidden}
+.mtr__t::after{content:""; position:absolute; inset:0; background:repeating-linear-gradient(to right, rgba(6,9,14,.9) 0 1px, transparent 1px 10%)}
+.mtr__v{font-family:var(--disp); font-stretch:118%; font-weight:600; font-size:26px; text-align:right;
+  font-variant-numeric:tabular-nums}
+.mtr__v u{text-decoration:none; font-family:var(--mono); font-size:11px; color:var(--faint); letter-spacing:.1em}
+.sum{display:flex; align-items:center; justify-content:flex-end; gap:14px; padding:16px 0 56px}
+.sum .chk{display:inline-flex; align-items:center; gap:9px; border:1px solid rgba(87,217,163,.45); color:var(--sig);
+  padding:7px 13px; font-family:var(--mono); font-size:10.5px; letter-spacing:.18em; text-transform:uppercase;
+  background:rgba(87,217,163,.07)}
+
+/* ── notes (prose proof) ──────────────────────────────────────────────── */
+.notes{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(24px,4vw,64px); padding:34px 0 60px}
+.notes h3{margin-bottom:14px}
+.notes p{font-size:15px}
+.notes .side{border-left:1px solid var(--rule); padding-left:clamp(18px,2.4vw,34px)}
+.notes ul{list-style:none; margin:0; padding:0}
+.notes ul li{display:grid; grid-template-columns:62px 1fr; gap:14px; padding:11px 0; border-bottom:1px solid rgba(30,42,56,.55); font-size:14px; color:#B7C1CC}
+.notes ul li b{font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; color:var(--warn); text-transform:uppercase; padding-top:3px}
+
+/* ── footer plate ─────────────────────────────────────────────────────── */
+.plate{border-top:1px solid var(--rule-hi); background:linear-gradient(180deg,rgba(14,20,28,.7),rgba(6,9,14,.9));
+  padding:36px var(--gut) 46px; display:grid; grid-template-columns:repeat(4,1fr); gap:24px}
+.plate div .lbl{display:block; margin-bottom:8px}
+.plate p, .plate a{font-family:var(--mono); font-size:11.5px; color:var(--dim); margin:0 0 5px; letter-spacing:.06em; display:block; text-decoration:none}
+.plate a:hover{color:var(--sig)}
+.plate__serial{grid-column:1/-1; display:flex; justify-content:space-between; gap:18px; flex-wrap:wrap;
+  border-top:1px solid var(--rule); padding-top:18px; margin-top:12px}
+.plate__serial span{font-family:var(--mono); font-size:10px; letter-spacing:.2em; color:var(--faint); text-transform:uppercase}
+
+/* ── status strip (true page state) ───────────────────────────────────── */
+.strip{position:fixed; left:0; right:0; bottom:0; z-index:50; height:34px; display:flex; align-items:stretch;
+  background:rgba(7,10,15,.94); backdrop-filter:blur(12px); border-top:1px solid var(--rule-hi);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint)}
+.strip div{display:flex; align-items:center; gap:8px; padding:0 14px; border-right:1px solid var(--rule); white-space:nowrap}
+.strip div:first-child{padding-left:var(--gut)}
+.strip .v{color:var(--bone); font-variant-numeric:tabular-nums}
+.strip .v.g{color:var(--sig)} .strip .v.a{color:var(--warn)}
+.strip .bar{width:76px; height:5px; background:var(--rule); position:relative}
+.strip .bar i{position:absolute; inset:0; background:var(--sig); transform:scaleX(0); transform-origin:left}
+.strip .spacer{flex:1; border-right:1px solid var(--rule)}
+.strip .last{border-right:0; padding-right:var(--gut)}
+
+/* ── reveal choreography ──────────────────────────────────────────────── */
+html.js .rv{opacity:0; transform:translateY(14px); transition:opacity .7s var(--ease), transform .7s var(--ease)}
+.rv.in{opacity:1; transform:none}
+html.js body.reduced .rv{opacity:1; transform:none; transition:none}
+body.reduced *{animation-duration:.001ms !important; transition-duration:.001ms !important}
+
+/* ── 390×844 ──────────────────────────────────────────────────────────── */
+@media (max-width:900px){
+  /* stacked footer links need a thumb-sized row, not a 19px text line. */
+  .plate a{padding:11px 0; margin-bottom:0}
+  :root{--mod:48px}
+  body{font-size:15.5px}
+  .nav{flex-wrap:wrap; min-height:48px}
+  .nav__mark{padding-left:var(--gut); border-right:0; flex:1; min-height:48px}
+  .nav__links{order:3; width:100%; border-top:1px solid var(--rule); display:none}
+  body.menu .nav__links{display:grid; grid-template-columns:repeat(3,1fr)}
+  .nav__links a{justify-content:center; padding:15px 6px; border-right:1px solid var(--rule)}
+  .nav__links a:last-child{border-right:0}
+  .nav__end{margin-left:0}
+  .tgl{min-height:48px; padding:0 12px}
+  .nav__vp{display:none}
+  .burger{display:flex; align-items:center; gap:7px; min-height:48px; padding:0 var(--gut) 0 12px;
+    border:0; border-left:1px solid var(--rule); background:transparent; color:var(--dim);
+    font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; cursor:pointer}
+  .hero{grid-template-columns:1fr; align-items:start; min-height:0; padding-top:34px}
+  /* the width axis is the first thing to give on a narrow panel: condense
+     rather than overflow the gutter */
+  .hero h1{font-size:clamp(40px,13vw,66px); font-stretch:104%; letter-spacing:-.012em}
+  /* the live timebase readout stacks rather than squeezing two columns into 390 */
+  .tb__read{flex-direction:column; align-items:flex-start; gap:3px; min-height:0}
+  .tb__read strong{font-size:18px; line-height:1.18}
+  .readouts{grid-template-columns:repeat(2,1fr)}
+  .ro:nth-child(2){border-right:0}
+  .ro:nth-child(1),.ro:nth-child(2){border-bottom:1px solid var(--rule)}
+  .rail{grid-template-columns:repeat(6,1fr); border-top:0}
+  .rail li{border-top:1px solid var(--rule-hi)}
+  .rail a{padding-bottom:10px}
+  .rail .tk{height:18px}
+  .chans{grid-template-columns:1fr}
+  .chan{border-right:0; border-bottom:1px solid var(--rule)}
+  .mtr{grid-template-columns:28px minmax(0,1fr); grid-template-areas:"n b" ". v"; gap:8px 14px}
+  .mtr__n{grid-area:n} .mtr__b{grid-area:b} .mtr__v{grid-area:v; text-align:left; font-size:22px}
+  .notes{grid-template-columns:1fr; gap:30px}
+  .notes .side{border-left:0; border-top:1px solid var(--rule); padding:26px 0 0}
+  .plate{grid-template-columns:repeat(2,1fr)}
+  .strip div.hideS{display:none}
+  .strip .bar{width:48px}
+  .sec__hd{padding-top:44px}
+}
+/* ── narrow panel: keep the nav to a single row so the sticky chassis does
+      not eat a fifth of a 390-wide viewport ─────────────────────────────── */
+@media (max-width:480px){
+  /* a readout clipped mid-value is worse than no readout; the strip drops the
+     VP cell here exactly as the inner page does. */
+  .strip .last{display:none}
+  .strip .spacer{border-right:0}
+  .nav__unit{display:none}
+  .nav__mark{gap:9px; padding-right:11px}
+  .nav__mark b{font-size:12px; letter-spacing:.07em}
+  .tgl{padding:0 9px; letter-spacing:.11em}
+  .led{margin-right:5px}
+  .burger{padding:0 var(--gut) 0 9px; letter-spacing:.11em}
+}
+</style>
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+<canvas id="field" aria-hidden="true"></canvas>
+<div id="grid" aria-hidden="true"></div>
+
+<div class="shell">
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="nav__mark"><span class="dot" aria-hidden="true"></span><b translate="no">The&nbsp;Course</b><span class="lbl nav__unit" translate="no" style="margin-left:4px">3841</span></div>
+  <nav class="nav__links" id="navlinks" aria-label="Primary">
+    <a href="index.html" aria-current="page">Overview</a>
+    <a href="inner.html">Week&nbsp;07</a>
+    <a href="deck.html">Deck</a>
+  </nav>
+  <div class="nav__end">
+    <button class="tgl" id="t-grid" aria-pressed="true"><span class="led" aria-hidden="true"></span>Grid</button>
+    <button class="tgl" id="t-motion" aria-pressed="true"><span class="led" aria-hidden="true"></span>Motion</button>
+    <button class="burger" id="burger" aria-expanded="false" aria-controls="navlinks">Menu</button>
+  </div>
+  <div class="nav__vp mono" aria-hidden="true">VP&nbsp;<span id="vp-nav">—</span></div>
+</header>
+
+<main id="main" style="scroll-margin-top:70px">
+<!-- ═══ HERO ═══════════════════════════════════════════════════════════ -->
+<section class="hero" id="s-brief" data-sect="BRIEF">
+  <div>
+    <div class="hero__eyebrow">
+      <span class="lbl">Unit&nbsp;<b>3841</b></span>
+      <span class="lbl">Level&nbsp;<b>3</b></span>
+      <span class="lbl">Rev&nbsp;<b>2.4 / 09-2026</b></span>
+      <span class="lbl">Streams&nbsp;<b>A · B · C</b></span>
+    </div>
+    <h1>The&nbsp;Course</h1>
+    <div class="bracket" aria-hidden="true">
+      <span>◄ 12 WK</span>
+      <span class="bracket__bar" id="brk"></span>
+      <span>36 H CONTACT ►</span>
+    </div>
+    <p class="lede">Twelve weeks of instrumented practice. One shared lecture each week sets the
+      measurement; three parallel streams take that measurement into their own field and argue
+      about what it means. You leave with a folio of process, not a folder of grades.</p>
+    <div class="acts">
+      <a class="btn btn--key" href="inner.html"><i aria-hidden="true">▸</i>Open Week 07</a>
+      <a class="btn" href="deck.html"><i aria-hidden="true">▤</i>Lecture deck</a>
+    </div>
+  </div>
+  <div class="panel spec rv">
+    <div class="spec__hd"><span class="lbl">Operating spec</span><span class="lbl">Sheet 1/1</span></div>
+    <dl>
+      <div class="row"><dt>Mode</dt><dd>Studio + lecture</dd></div>
+      <div class="row"><dt>Cadence</dt><dd>1 lecture / 1 stream</dd></div>
+      <div class="row"><dt>Prerequisite</dt><dd class="g">None</dd></div>
+      <div class="row"><dt>Cohort cap</dt><dd>120</dd></div>
+      <div class="row"><dt>Assessed on</dt><dd class="a">Process artefacts</dd></div>
+      <div class="row"><dt>Late tolerance</dt><dd>72&nbsp;h, no penalty</dd></div>
+      <div class="row"><dt>Final exam</dt><dd class="g">Nil</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ═══ READOUTS ═══════════════════════════════════════════════════════ -->
+<div class="readouts" aria-label="Course at a glance">
+  <div class="ro rv">
+    <div class="ro__v"><span class="ct" data-to="12">0</span><u>weeks</u></div>
+    <span class="lbl ro__k">Teaching period</span>
+    <div class="ro__m" aria-hidden="true"><i data-fill="100"></i></div>
+  </div>
+  <div class="ro rv">
+    <div class="ro__v"><span class="ct" data-to="36">0</span><u>hours</u></div>
+    <span class="lbl ro__k">Scheduled contact</span>
+    <div class="ro__m" aria-hidden="true"><i data-fill="72"></i></div>
+  </div>
+  <div class="ro rv">
+    <div class="ro__v"><span class="ct" data-to="3">0</span><u>streams</u></div>
+    <span class="lbl ro__k">Parallel channels</span>
+    <div class="ro__m" aria-hidden="true"><i data-fill="38"></i></div>
+  </div>
+  <div class="ro rv">
+    <div class="ro__v"><span class="ct" data-to="100">0</span><u>% cont.</u></div>
+    <span class="lbl ro__k">Continuous assessment</span>
+    <div class="ro__m" aria-hidden="true"><i data-fill="100"></i></div>
+  </div>
+</div>
+
+<!-- ═══ TIMEBASE ═══════════════════════════════════════════════════════ -->
+<section class="sec" id="s-timebase" data-sect="TIMEBASE">
+  <div class="sweep" aria-hidden="true"></div>
+  <div class="sec__hd"><h2 class="lbl">01 / Timebase</h2><span class="rulefill" aria-hidden="true"></span><span class="mono coord">X 0 → 12 · STEP 1 WK</span></div>
+  <div class="tb">
+    <p class="prose" style="margin-bottom:26px">The semester runs on a fixed timebase. Each tick is one week, and each week
+      carries the same shape: a shared lecture that installs a method, a stream session that stress-tests it,
+      and a short return that shows what moved. Weeks 04, 08 and 12 are calibration points — no new material,
+      only evidence that the previous three weeks landed.</p>
+    <div class="tb__read" aria-live="polite" id="tbread">
+      <strong id="tb-t">Week 07 — Drift and correction</strong>
+      <span id="tb-d">Selected. Calibration weeks are marked with a diamond.</span>
+    </div>
+    <ul class="rail" id="rail">
+      <li><a href="inner.html" data-t="Week 01 — Setting the instrument" data-d="Baseline readings; how we will measure anything at all."><span class="tk" aria-hidden="true"><i style="height:9px"></i></span><span class="wk">01</span></a></li>
+      <li><a href="inner.html" data-t="Week 02 — Signal and noise" data-d="Separating what the work says from what the room says about it."><span class="tk" aria-hidden="true"><i style="height:14px"></i></span><span class="wk">02</span></a></li>
+      <li><a href="inner.html" data-t="Week 03 — Range and limits" data-d="Choosing a scope narrow enough to finish and wide enough to matter."><span class="tk" aria-hidden="true"><i style="height:19px"></i></span><span class="wk">03</span></a></li>
+      <li><a href="inner.html" data-t="Week 04 — Calibration ◆" data-d="No new material. Bring three artefacts and defend the readings."><span class="tk" aria-hidden="true"><i style="height:8px"></i></span><span class="wk">04</span></a></li>
+      <li><a href="inner.html" data-t="Week 05 — Sampling the field" data-d="Field methods: who you ask, how often, and what that costs."><span class="tk" aria-hidden="true"><i style="height:17px"></i></span><span class="wk">05</span></a></li>
+      <li><a href="inner.html" data-t="Week 06 — Interference" data-d="When two correct methods produce incompatible results."><span class="tk" aria-hidden="true"><i style="height:22px"></i></span><span class="wk">06</span></a></li>
+      <li class="is-here"><a href="inner.html" data-t="Week 07 — Drift and correction" data-d="The week in front of you. Streams diverge hardest here."><span class="tk" aria-hidden="true"><i style="height:26px"></i></span><span class="wk">07</span></a></li>
+      <li><a href="inner.html" data-t="Week 08 — Calibration ◆" data-d="No new material. Mid-semester folio review, ungraded."><span class="tk" aria-hidden="true"><i style="height:8px"></i></span><span class="wk">08</span></a></li>
+      <li><a href="inner.html" data-t="Week 09 — Load and tolerance" data-d="Designing for the case where the method is used badly."><span class="tk" aria-hidden="true"><i style="height:20px"></i></span><span class="wk">09</span></a></li>
+      <li><a href="inner.html" data-t="Week 10 — Handover" data-d="Writing so the next person can pick the instrument up cold."><span class="tk" aria-hidden="true"><i style="height:16px"></i></span><span class="wk">10</span></a></li>
+      <li><a href="inner.html" data-t="Week 11 — Public reading" data-d="Streams present across channels. Cross-examination is the point."><span class="tk" aria-hidden="true"><i style="height:23px"></i></span><span class="wk">11</span></a></li>
+      <li><a href="inner.html" data-t="Week 12 — Calibration ◆" data-d="Final readings. The folio is closed and annotated, not polished."><span class="tk" aria-hidden="true"><i style="height:10px"></i></span><span class="wk">12</span></a></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ CHANNELS ═══════════════════════════════════════════════════════ -->
+<section class="sec" id="s-streams" data-sect="CHANNELS">
+  <div class="sweep" aria-hidden="true"></div>
+  <div class="sec__hd"><h2 class="lbl">02 / Channels</h2><span class="rulefill" aria-hidden="true"></span><span class="mono coord">3 CH · COMMON BUS · INDEPENDENT GAIN</span></div>
+  <p class="prose" style="padding:24px 0 30px">Every student sits on the common bus — the shared lecture — and then picks one
+    channel for the semester. Channels are not difficulty tiers. They differ in what counts as evidence,
+    and that difference is the curriculum. Colour coding here is a convenience; the channel letter is the
+    authority.</p>
+  <div class="chans">
+    <article class="chan chan--a rv">
+      <div class="chan__id"><span class="sqr" aria-hidden="true"></span><span class="lbl">Channel A · Stream A</span></div>
+      <h3>Field and interview</h3>
+      <p>You go and ask people. Stream A treats the transcript as the primary artefact and the summary as a
+        derivative you must be able to defend line by line. Expect to discard your first framing by week five.</p>
+      <p>Weekly output is a coded excerpt plus a note on what you got wrong in the asking.</p>
+      <dl>
+        <div class="r"><dt>Evidence</dt><dd>Transcripts</dd></div>
+        <div class="r"><dt>Session</dt><dd>Tue 14:00</dd></div>
+        <div class="r"><dt>Cap</dt><dd>40</dd></div>
+      </dl>
+    </article>
+    <article class="chan chan--b rv">
+      <div class="chan__id"><span class="sqr" aria-hidden="true"></span><span class="lbl">Channel B · Stream B</span></div>
+      <h3>Build and instrument</h3>
+      <p>You make the thing that takes the reading. Stream B is the most likely to produce a result you cannot
+        explain, which is why the log matters more than the artefact. A broken instrument with a clear log
+        marks higher than a working one without.</p>
+      <p>Weekly output is a build log entry with one measured claim and its error bar.</p>
+      <dl>
+        <div class="r"><dt>Evidence</dt><dd>Build logs</dd></div>
+        <div class="r"><dt>Session</dt><dd>Wed 10:00</dd></div>
+        <div class="r"><dt>Cap</dt><dd>40</dd></div>
+      </dl>
+    </article>
+    <article class="chan chan--c rv">
+      <div class="chan__id"><span class="sqr" aria-hidden="true"></span><span class="lbl">Channel C · Stream C</span></div>
+      <h3>Archive and reading</h3>
+      <p>You work from what already exists. Stream C is quiet and slow and produces the sharpest objections in
+        week eleven, because it is the only channel that can show how a method was used and dropped before.</p>
+      <p>Weekly output is a source note: one document, one claim it supports, one it cannot.</p>
+      <dl>
+        <div class="r"><dt>Evidence</dt><dd>Source notes</dd></div>
+        <div class="r"><dt>Session</dt><dd>Thu 09:00</dd></div>
+        <div class="r"><dt>Cap</dt><dd>40</dd></div>
+      </dl>
+    </article>
+  </div>
+</section>
+
+<!-- ═══ ASSESSMENT ═════════════════════════════════════════════════════ -->
+<section class="sec" id="s-assess" data-sect="ASSESSMENT">
+  <div class="sweep" aria-hidden="true"></div>
+  <div class="sec__hd"><h2 class="lbl">03 / Assessment</h2><span class="rulefill" aria-hidden="true"></span><span class="mono coord">Σ WEIGHTS · TOL ±0</span></div>
+  <p class="prose" style="padding:24px 0 0">Four instruments, no exam. Each one is marked on the trace it leaves behind:
+    what you tried, what it returned, what you changed. Outcome quality is visible to us but is not the
+    variable being measured.</p>
+  <div class="mtrs">
+    <div class="mtr rv">
+      <span class="mtr__n">01</span>
+      <div class="mtr__b">
+        <h4>Weekly returns</h4>
+        <p>Twelve short entries, one per week, each ending in a stated change. Best ten count; two may be missed without notice.</p>
+        <div class="mtr__t" aria-hidden="true"><i data-fill="20"></i></div>
+      </div>
+      <div class="mtr__v">20<u>&nbsp;%</u></div>
+    </div>
+    <div class="mtr rv">
+      <span class="mtr__n">02</span>
+      <div class="mtr__b">
+        <h4>Stream folio</h4>
+        <p>The channel’s own evidence type, accumulated and annotated. Marked on legibility of process, not on volume.</p>
+        <div class="mtr__t" aria-hidden="true"><i data-fill="25"></i></div>
+      </div>
+      <div class="mtr__v">25<u>&nbsp;%</u></div>
+    </div>
+    <div class="mtr rv">
+      <span class="mtr__n">03</span>
+      <div class="mtr__b">
+        <h4>Cross-channel review</h4>
+        <p>You review two folios from channels other than your own and are marked on the quality of your objections.</p>
+        <div class="mtr__t" aria-hidden="true"><i data-fill="25"></i></div>
+      </div>
+      <div class="mtr__v">25<u>&nbsp;%</u></div>
+    </div>
+    <div class="mtr rv">
+      <span class="mtr__n">04</span>
+      <div class="mtr__b">
+        <h4>Capstone log</h4>
+        <p>A real project you were going to pursue anyway, logged under this unit’s method. Graded on the log alone.</p>
+        <div class="mtr__t" aria-hidden="true"><i data-fill="30"></i></div>
+      </div>
+      <div class="mtr__v">30<u>&nbsp;%</u></div>
+    </div>
+  </div>
+  <div class="sum"><span class="lbl">Total weighting</span><span class="chk"><span aria-hidden="true">✓</span> Σ = <span id="sigma">100</span>&nbsp;% · locked</span></div>
+</section>
+
+<!-- ═══ NOTES ══════════════════════════════════════════════════════════ -->
+<section class="sec" id="s-notes" data-sect="OPERATING NOTES">
+  <div class="sweep" aria-hidden="true"></div>
+  <div class="sec__hd"><h2 class="lbl">04 / Operating notes</h2><span class="rulefill" aria-hidden="true"></span><span class="mono coord">POLICY · PLAIN LANGUAGE</span></div>
+  <div class="notes">
+    <div class="prose">
+      <h3>How to fail this unit</h3>
+      <p>The reliable way to fail is to hide the middle of your work. A folio that contains only the finished
+        artefact reads as a folio with no process in it, and process is what the rubric measures. Show the
+        version you abandoned and say why you abandoned it.</p>
+      <p>The second reliable way is to treat the shared lecture as optional. Channels diverge fast, and the
+        lecture is the only place the three of them stay commensurable. <strong>Miss three and you will be
+        arguing from a different set of terms than the people marking you.</strong></p>
+      <p>Extensions are granted, not negotiated. Ask before the due date, name a new date, and the new date
+        becomes the due date. Asking afterwards is a different conversation and a worse one.</p>
+    </div>
+    <div class="side">
+      <span class="lbl" style="display:block;margin-bottom:16px">Standing tolerances</span>
+      <ul>
+        <li><b>Late</b><span>Seventy-two hours, uncapped and unpenalised. After that, ask.</span></li>
+        <li><b>AI use</b><span>Permitted and logged. An unlogged tool is the misconduct, not the tool.</span></li>
+        <li><b>Rework</b><span>Any weekly return may be resubmitted once, up to week eleven.</span></li>
+        <li><b>Access</b><span>Every session has a transcript. Every deck has a text version.</span></li>
+        <li><b>Channel swap</b><span>Once, before the end of week three, no reason required.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="plate">
+  <div><span class="lbl">Navigate</span><a href="index.html">Overview</a><a href="inner.html">Week 07</a><a href="deck.html">Lecture deck</a></div>
+  <div><span class="lbl">Channels</span><p>A — Field and interview</p><p>B — Build and instrument</p><p>C — Archive and reading</p></div>
+  <div><span class="lbl">Contact</span><p>Convenor consultation</p><p>Mon 15:00–17:00</p><p>Room 2.14, by the window</p></div>
+  <div><span class="lbl">Handbook</span><p>Assessment schedule</p><p>Standing tolerances</p><p>Access statement</p></div>
+  <div class="plate__serial">
+    <span>Unit 3841 · Rev 2.4</span><span>Sheet 1 of 3</span><span>Design option B · Instrument</span><span>Placeholder content</span>
+  </div>
+</footer>
+</div>
+
+<div class="strip" id="strip" aria-hidden="true">
+  <div>Scroll <span class="bar"><i id="st-bar"></i></span> <span class="v" id="st-pct">0%</span></div>
+  <div>Mode <span class="v g" id="st-mode">BRIEF</span></div>
+  <div class="hideS">Field <span class="v" id="st-field">INIT</span></div>
+  <div class="hideS">Scale <span class="v" id="st-scale">—</span></div>
+  <div class="spacer"></div>
+  <div class="last">VP <span class="v" id="st-vp">—</span></div>
+</div>
+
+<script>
+/* ═══ 1 · chassis state ═══════════════════════════════════════════════ */
+const mqReduce = matchMedia('(prefers-reduced-motion: reduce)');
+const store = { get(k,d){ try{ const v=localStorage.getItem(k); return v===null?d:v==='1'; }catch(e){ return d; } },
+                set(k,v){ try{ localStorage.setItem(k, v?'1':'0'); }catch(e){} } };
+let motionOn = store.get('ob-motion', !mqReduce.matches) && !mqReduce.matches;
+let gridOn   = store.get('ob-grid', true);
+const body = document.body;
+function applyMotion(){ body.classList.toggle('reduced', !motionOn);
+  document.getElementById('t-motion').setAttribute('aria-pressed', String(motionOn)); }
+function applyGrid(){ body.classList.toggle('nogrid', !gridOn);
+  document.getElementById('t-grid').setAttribute('aria-pressed', String(gridOn)); }
+applyMotion(); applyGrid();
+document.getElementById('t-motion').addEventListener('click', ()=>{ motionOn=!motionOn; store.set('ob-motion',motionOn); applyMotion(); field.setRun(motionOn); });
+document.getElementById('t-grid').addEventListener('click', ()=>{ gridOn=!gridOn; store.set('ob-grid',gridOn); applyGrid(); });
+const burger = document.getElementById('burger');
+if(burger) burger.addEventListener('click', ()=>{ const o=body.classList.toggle('menu'); burger.setAttribute('aria-expanded', String(o)); });
+
+/* ═══ 2 · ambient contour field (raw WebGL2, no library) ══════════════ */
+const FIELD_OUT='st-field';
+const field=(function(){
+  const cv=document.getElementById('field');
+  const isPhone=matchMedia('(max-width:900px)').matches;
+  const st=v=>{const e=document.getElementById(FIELD_OUT); if(e)e.textContent=v;};
+  /* pointer is stored screen-normalised, y DOWN */
+  const ptr={x:.24,y:.06,tx:.24,ty:.06,amt:0,tamt:0};
+  let kind='none',run=false,raf=0,frozen=false;
+  let gl=null,prog=null,loc={},glScale=isPhone?.6:.9;
+  let ctx=null,vg=null,cols=0,rows=0,cell=26,grad=null;
+
+  /* ── A · fast path: WebGL2 contour shader ───────────────────────── */
+  const VS=`#version 300 es
+in vec2 a; void main(){ gl_Position=vec4(a,0.,1.); }`;
+  const FS=`#version 300 es
+precision highp float;
+uniform vec2 uRes; uniform float uT; uniform vec2 uP; uniform float uA;
+out vec4 o;
+float h(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123); }
+float n(vec2 p){ vec2 i=floor(p),f=fract(p); f=f*f*(3.-2.*f);
+  return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y); }
+float fbm3(vec2 p){ float a=.5,s=0.; for(int k=0;k<3;k++){ s+=a*n(p); p=p*2.03+vec2(11.7,5.3); a*=.5; } return s; }
+float fbm5(vec2 p){ float a=.5,s=0.; for(int k=0;k<5;k++){ s+=a*n(p); p=p*2.02+vec2(17.3,9.1); a*=.5; } return s; }
+void main(){
+  vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;
+  vec2 p=uv*2.15; float t=uT*.032;
+  p+=(vec2(fbm3(p*.75+vec2(t,0.)),fbm3(p*.75+vec2(0.,-t)+5.2))-.5)*1.15;
+  vec2 d=uv-uP; float r=length(d);
+  float lens=exp(-r*r*8.5)*uA;
+  p+=normalize(d+vec2(1e-5))*lens*.34;
+  float f=fbm5(p+vec2(0.,t*.55));
+  float bands=f*9.0+lens*2.2;
+  float e=abs(fract(bands)-.5);
+  float aa=fwidth(bands)*.95+1e-4;
+  float line=1.-smoothstep(0.,aa,e);
+  float centre=smoothstep(1.32,.21,length(uv*vec2(.59,1.0)));
+  float ink=line*(.034+.155*(1.-centre))+lens*.05;
+  o=vec4(vec3(.0235,.0353,.0549)+vec3(.165,.30,.385)*ink*2.3,1.);
+}`;
+  function sh(t,s){ const x=gl.createShader(t); gl.shaderSource(x,s); gl.compileShader(x);
+    if(!gl.getShaderParameter(x,gl.COMPILE_STATUS)){ console.warn(gl.getShaderInfoLog(x)); return null; } return x; }
+  function initGL(){
+    try{ gl=cv.getContext('webgl2',{antialias:false,alpha:false,powerPreference:'low-power'}); }catch(e){ gl=null; }
+    if(!gl) return false;
+    const v=sh(gl.VERTEX_SHADER,VS),f=sh(gl.FRAGMENT_SHADER,FS);
+    if(!v||!f) return false;
+    prog=gl.createProgram(); gl.attachShader(prog,v); gl.attachShader(prog,f); gl.linkProgram(prog);
+    if(!gl.getProgramParameter(prog,gl.LINK_STATUS)) return false;
+    gl.useProgram(prog);
+    const b=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,b);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+    const a=gl.getAttribLocation(prog,'a'); gl.enableVertexAttribArray(a);
+    gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);
+    loc.res=gl.getUniformLocation(prog,'uRes'); loc.t=gl.getUniformLocation(prog,'uT');
+    loc.p=gl.getUniformLocation(prog,'uP'); loc.a=gl.getUniformLocation(prog,'uA');
+    return true;
+  }
+  function sizeGL(){
+    const w=Math.max(1,Math.round(innerWidth*glScale)),h=Math.max(1,Math.round(innerHeight*glScale));
+    if(cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; gl.viewport(0,0,w,h); }
+  }
+  function drawGL(sec){
+    gl.uniform2f(loc.res,cv.width,cv.height); gl.uniform1f(loc.t,sec);
+    gl.uniform2f(loc.p,ptr.x,-ptr.y); gl.uniform1f(loc.a,ptr.amt);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+  }
+
+  /* ── B · fallback: canvas-2D isolines by marching squares ───────── */
+  function hash(x,y){ let n=(x|0)*374761393+(y|0)*668265263;
+    n=(n^(n>>13))*1274126177; return ((n^(n>>16))>>>0)/4294967296; }
+  function vnoise(x,y){ const ix=Math.floor(x),iy=Math.floor(y);
+    let fx=x-ix,fy=y-iy; fx=fx*fx*(3-2*fx); fy=fy*fy*(3-2*fy);
+    const a=hash(ix,iy),b=hash(ix+1,iy),c=hash(ix,iy+1),d=hash(ix+1,iy+1);
+    return a+(b-a)*fx+(c-a)*fy+(a-b-c+d)*fx*fy; }
+  function fbm(x,y){ let s=0,m=.5;
+    for(let k=0;k<3;k++){ s+=m*vnoise(x,y); x=x*2.03+11.7; y=y*2.03+5.3; m*=.5; } return s; }
+  function initCtx(){ try{ ctx=cv.getContext('2d'); }catch(e){ ctx=null; } return !!ctx; }
+  function sizeCtx(){
+    cv.width=innerWidth; cv.height=innerHeight;
+    cols=Math.ceil(innerWidth/cell)+2; rows=Math.ceil(innerHeight/cell)+2;
+    vg=new Float32Array(cols*rows);
+    const W=cv.width,H=cv.height;
+    grad=ctx.createRadialGradient(W*.40,H*.46,0,W*.40,H*.46,Math.max(W,H)*.66);
+    grad.addColorStop(0,'rgba(6,9,14,.94)');
+    grad.addColorStop(.5,'rgba(6,9,14,.58)');
+    grad.addColorStop(1,'rgba(6,9,14,0)');
+    ctx.lineWidth=1; ctx.lineCap='butt';
+  }
+  function drawCtx(sec){
+    const W=cv.width,H=cv.height,t=sec*.9;
+    for(let j=0;j<rows;j++){
+      const Y=(j*cell-H/2)/H;
+      for(let i=0;i<cols;i++){
+        const X=(i*cell-W/2)/H;
+        let v=fbm(X*1.75+t*.055,Y*1.75)*.66 + fbm(X*2.8-t*.036,Y*2.8+t*.022)*.34;
+        const dx=X-ptr.x, dy=Y-ptr.y;
+        v+=Math.exp(-(dx*dx+dy*dy)*9.0)*ptr.amt*.42;
+        vg[j*cols+i]=v;
+      }
+    }
+    ctx.fillStyle='#06090E'; ctx.fillRect(0,0,W,H);
+    const p=new Path2D();
+    for(let L=0;L<12;L++){
+      const lev=.155+L*.045;
+      for(let j=0;j<rows-1;j++){
+        const r0=j*cols,r1=r0+cols,y0=j*cell;
+        for(let i=0;i<cols-1;i++){
+          const a=vg[r0+i],b=vg[r0+i+1],c=vg[r1+i+1],d=vg[r1+i];
+          const m=(a>=lev?1:0)|(b>=lev?2:0)|(c>=lev?4:0)|(d>=lev?8:0);
+          if(m===0||m===15) continue;
+          const x0=i*cell;
+          let ax,ay,bx,by;
+          switch(m){
+            case 1: case 14:
+              ax=x0; ay=y0+cell*(lev-a)/(d-a); bx=x0+cell*(lev-a)/(b-a); by=y0; break;
+            case 2: case 13:
+              ax=x0+cell*(lev-a)/(b-a); ay=y0; bx=x0+cell; by=y0+cell*(lev-b)/(c-b); break;
+            case 3: case 12:
+              ax=x0; ay=y0+cell*(lev-a)/(d-a); bx=x0+cell; by=y0+cell*(lev-b)/(c-b); break;
+            case 4: case 11:
+              ax=x0+cell; ay=y0+cell*(lev-b)/(c-b); bx=x0+cell*(lev-d)/(c-d); by=y0+cell; break;
+            case 6: case 9:
+              ax=x0+cell*(lev-a)/(b-a); ay=y0; bx=x0+cell*(lev-d)/(c-d); by=y0+cell; break;
+            case 7: case 8:
+              ax=x0; ay=y0+cell*(lev-a)/(d-a); bx=x0+cell*(lev-d)/(c-d); by=y0+cell; break;
+            case 5:
+              p.moveTo(x0,y0+cell*(lev-a)/(d-a)); p.lineTo(x0+cell*(lev-a)/(b-a),y0);
+              p.moveTo(x0+cell,y0+cell*(lev-b)/(c-b)); p.lineTo(x0+cell*(lev-d)/(c-d),y0+cell);
+              continue;
+            case 10:
+              p.moveTo(x0+cell*(lev-a)/(b-a),y0); p.lineTo(x0+cell,y0+cell*(lev-b)/(c-b));
+              p.moveTo(x0,y0+cell*(lev-a)/(d-a)); p.lineTo(x0+cell*(lev-d)/(c-d),y0+cell);
+              continue;
+            default: continue;
+          }
+          p.moveTo(ax,ay); p.lineTo(bx,by);
+        }
+      }
+    }
+    ctx.strokeStyle='rgba(126,180,216,.21)'; ctx.stroke(p);
+    ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+  }
+
+  /* ── transport shared by both renderers ─────────────────────────── */
+  function size(){ if(kind==='gl') sizeGL(); else if(kind==='iso') sizeCtx(); }
+  const t0=performance.now(); let acc=0,frames=0,last=0;
+  function draw(now){
+    raf=0; const dt=now-(last||now); last=now;
+    ptr.x+=(ptr.tx-ptr.x)*.065; ptr.y+=(ptr.ty-ptr.y)*.065; ptr.amt+=(ptr.tamt-ptr.amt)*.05;
+    const sec=(now-t0)/1000;
+    if(kind==='gl') drawGL(sec); else drawCtx(sec);
+    acc+=dt; frames++;
+    if(acc>900){
+      const fps=frames/(acc/1000);
+      if(fps<42){
+        if(kind==='gl'&&glScale>.42){ glScale=Math.max(.42,glScale-.15); sizeGL(); }
+        else if(kind==='iso'&&cell<44){ cell=Math.min(44,cell+6); sizeCtx(); }
+      }
+      st((kind==='gl'?'GL ':'ISO ')+Math.round(fps)+'FPS');
+      acc=0; frames=0;
+    }
+    if(run&&!frozen) raf=requestAnimationFrame(draw);
+  }
+  /* paint immediately and synchronously — never wait on a frame callback that a
+     throttled or backgrounded tab may never deliver */
+  function paintNow(){
+    if(kind==='none') return;
+    const n=performance.now(); last=n; const r=run; run=false; draw(n); run=r;
+  }
+  function setRun(on){
+    if(kind==='none') return;
+    run=on&&!isPhone;                 /* phone: one static render, and the strip says so */
+    if(raf){ cancelAnimationFrame(raf); raf=0; }
+    paintNow();
+    const tag=kind==='gl'?'GL':'ISO';
+    if(run){ st(tag+' LIVE'); if(!raf) raf=requestAnimationFrame(draw); }
+    else st(isPhone?tag+' STATIC':tag+' HOLD');
+  }
+
+  if(initGL()) kind='gl';
+  else if(initCtx()){ kind='iso'; cell=isPhone?30:26; }
+  if(kind==='none'){ cv.classList.add('dead'); st('CSS FALLBACK'); return {setRun(){}}; }
+  size();
+  addEventListener('resize',()=>{ size(); paintNow(); },{passive:true});
+  if(matchMedia('(hover:hover)').matches){
+    addEventListener('pointermove',e=>{
+      ptr.tx=(e.clientX-innerWidth/2)/innerHeight;
+      ptr.ty=(e.clientY-innerHeight/2)/innerHeight;
+      ptr.tamt=1;
+    },{passive:true});
+    addEventListener('pointerleave',()=>{ ptr.tamt=0; },{passive:true});
+  }
+  document.addEventListener('visibilitychange',()=>{
+    frozen=document.hidden; if(!frozen&&run&&!raf) raf=requestAnimationFrame(draw); });
+  setRun(motionOn);
+  return {setRun};
+})();
+
+/* ═══ 3 · reveals, counters, meters ═══════════════════════════════════ */
+const ease = x => 1 - Math.pow(1-x, 3);
+function count(el){
+  const to = +el.dataset.to; if(el.dataset.done) return; el.dataset.done='1';
+  if(!motionOn){ el.textContent = to; return; }
+  const dur = 900 + Math.min(600, to*4), t0 = performance.now();
+  (function step(now){ const k = Math.min(1,(now-t0)/dur);
+    el.textContent = Math.round(to*ease(k)); if(k<1) requestAnimationFrame(step); })(performance.now());
+}
+const io = new IntersectionObserver(es=>{ es.forEach(e=>{
+  if(!e.isIntersecting) return;
+  e.target.classList.add('in');
+  e.target.querySelectorAll('.ct').forEach(count);
+  e.target.querySelectorAll('[data-fill]').forEach(i=>{ i.style.transform = 'scaleX('+(i.dataset.fill/100)+')'; });
+  io.unobserve(e.target);
+}); }, {threshold:.25, rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+const brk = document.getElementById('brk');
+if(brk) setTimeout(()=>brk.style.setProperty('--w','1'), 380);
+
+/* ═══ 4 · mode change per section (device-like retune) ════════════════ */
+const secs = [...document.querySelectorAll('[data-sect]')];
+const modeEl = document.getElementById('st-mode');
+const GLYPH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ/·0123456789';
+let modeAnim = 0, currentMode = '';
+function retune(to){
+  if(to===currentMode) return; currentMode = to;
+  cancelAnimationFrame(modeAnim);
+  if(!motionOn){ modeEl.textContent = to; return; }
+  let k=0; const n=to.length;
+  (function tick(){
+    let out=''; for(let i=0;i<n;i++){ out += i < k ? to[i] : (to[i]===' '?' ':GLYPH[(Math.random()*GLYPH.length)|0]); }
+    modeEl.textContent = out; k += 0.9;
+    if(k < n+1) modeAnim = requestAnimationFrame(tick); else modeEl.textContent = to;
+  })();
+}
+const ioMode = new IntersectionObserver(es=>{ es.forEach(e=>{
+  if(e.isIntersecting && e.intersectionRatio>0.16){
+    retune(e.target.dataset.sect);
+    if(e.target.classList.contains('sec')){ e.target.classList.add('armed'); }
+  }
+}); }, {threshold:[0.16,0.5]});
+secs.forEach(s=>ioMode.observe(s));
+
+/* ═══ 5 · status strip = true page state ═════════════════════════════ */
+const stPct=document.getElementById('st-pct'), stBar=document.getElementById('st-bar'),
+      stVp=document.getElementById('st-vp'), vpNav=document.getElementById('vp-nav');
+let tick=0;
+function readVP(){ const s = innerWidth+'×'+innerHeight; stVp.textContent=s; if(vpNav) vpNav.textContent=s; }
+function readScroll(){
+  const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+  const p = Math.min(100, Math.round(scrollY/max*100));
+  stPct.textContent = p+'%'; stBar.style.transform = 'scaleX('+(p/100)+')';
+}
+addEventListener('scroll', ()=>{ if(tick) return; tick=requestAnimationFrame(()=>{ tick=0; readScroll(); }); }, {passive:true});
+addEventListener('resize', readVP, {passive:true});
+readVP(); readScroll();
+
+/* ═══ 6 · timebase readout ═══════════════════════════════════════════ */
+const tbT=document.getElementById('tb-t'), tbD=document.getElementById('tb-d');
+const tbDefault = [tbT.textContent, tbD.textContent];
+document.querySelectorAll('#rail a').forEach(a=>{
+  const show = ()=>{ tbT.textContent=a.dataset.t; tbD.textContent=a.dataset.d; };
+  a.addEventListener('pointerenter', show); a.addEventListener('focus', show);
+  a.addEventListener('pointerleave', ()=>{ tbT.textContent=tbDefault[0]; tbD.textContent=tbDefault[1]; });
+});
+/* Σ check — the readout is computed, not typed */
+document.getElementById('sigma').textContent =
+  [...document.querySelectorAll('.mtr__v')].reduce((s,e)=>s+parseInt(e.textContent,10),0);
+mqReduce.addEventListener('change', e=>{ if(e.matches){ motionOn=false; applyMotion(); field.setRun(false); } });
+</script>
+</body>
+</html>

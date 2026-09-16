@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F4ECDC">
+<title>Week 07 · Registration and the off-register — The Course</title>
+<meta name="description" content="Week 07 session sheet: shared lecture, three parallel streams, readings, activity and a checklist.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@500..700&display=swap">
+<style>
+/* ============================================================
+   TACTILE STAGE — shared skin (identical tokens to sheet 1)
+   ============================================================ */
+:root{
+  --oat:#F4ECDC; --manila:#E3D0A6; --kraft:#C4A878;
+  --ink:#211B15; --ink-soft:#4A3F33; --orange:#FF5A1F; --teal:#14625F;
+  --disp:"Bricolage Grotesque",system-ui,sans-serif;
+  --body:"Newsreader",Georgia,serif;
+  --mono:"Courier Prime",ui-monospace,monospace;
+  --hand:"Caveat",cursive;
+  --lift-1:0 1px 0 rgba(33,27,21,.20), 0 2px 3px -1px rgba(96,64,28,.42);
+  --lift-2:0 1px 0 rgba(33,27,21,.22), 0 3px 4px -1px rgba(96,64,28,.44), 0 7px 9px -7px rgba(96,64,28,.34);
+  --lift-3:0 1px 0 rgba(33,27,21,.22), 0 4px 5px -1px rgba(96,64,28,.48), 0 11px 13px -9px rgba(96,64,28,.4);
+  color-scheme:light;
+  --rail:clamp(18px,4vw,72px);
+  --measure:64ch;
+}
+*,*::before,*::after{box-sizing:border-box}
+/* `clip`, not `hidden`: hidden would make the root a scroll container and
+   kill the sticky ink gauge. The tape ends deliberately hang past the sheet,
+   and at 390px that was 9px of sideways scroll on the whole document. */
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;overflow-x:clip}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--oat);color:var(--ink);font-family:var(--body);
+  font-size:1.1875rem;line-height:1.64;font-optical-sizing:auto;overflow-x:clip;
+  -webkit-tap-highlight-color:rgba(255,90,31,.25);touch-action:manipulation}
+body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(120% 90% at 18% -10%, rgba(255,255,255,.75), transparent 60%),
+    radial-gradient(90% 70% at 88% 108%, rgba(196,168,120,.42), transparent 62%),
+    repeating-linear-gradient(94deg, rgba(150,120,80,.045) 0 1px, transparent 1px 7px),
+    var(--oat)}
+.grain{position:fixed;inset:0;width:100%;height:100%;z-index:9000;pointer-events:none;opacity:.075;mix-blend-mode:multiply}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+::selection{background:var(--orange);color:#fff}
+:focus-visible{outline:3px solid var(--teal);outline-offset:3px;border-radius:2px}
+a{color:var(--teal);text-decoration-thickness:1px;text-underline-offset:.18em}
+a:hover{color:var(--ink);text-decoration-color:var(--orange);text-decoration-thickness:3px}
+h1,h2,h3,h4{font-family:var(--disp);font-weight:700;margin:0;line-height:.98;text-wrap:balance;letter-spacing:-.02em}
+p{margin:0 0 1.05em}
+[id]{scroll-margin-top:96px}
+.skip{position:absolute;left:8px;top:-60px;z-index:9999;background:var(--ink);color:var(--oat);
+  font-family:var(--mono);font-size:.8rem;padding:.6rem .9rem;text-decoration:none}
+.skip:focus{top:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+.sheet{position:relative;isolation:isolate}
+.sheet>.pulp{position:absolute;inset:0;z-index:-1;background:var(--oat);box-shadow:var(--lift-2);filter:url(#deckle)}
+.sheet--manila>.pulp{background:var(--manila)}
+.sheet--kraft>.pulp{background:var(--kraft)}
+.gridded{background-image:
+  repeating-linear-gradient(to bottom, transparent 0 15px, rgba(20,98,95,.1) 15px 16px),
+  repeating-linear-gradient(to right, transparent 0 15px, rgba(20,98,95,.1) 15px 16px)}
+.tape{position:relative;display:inline-block;
+  background:linear-gradient(176deg, rgba(255,255,255,.34), rgba(196,168,120,.5)),var(--manila);
+  box-shadow:0 1px 0 rgba(255,255,255,.4) inset, 0 2px 5px -2px rgba(80,58,30,.5);
+  clip-path:polygon(0 6%,4% 0,9% 5%,15% 1%,21% 6%,28% 2%,35% 6%,42% 1%,49% 6%,56% 2%,63% 6%,70% 1%,77% 6%,84% 2%,91% 6%,96% 1%,100% 6%,
+                    100% 94%,95% 100%,89% 95%,83% 99%,76% 94%,69% 99%,62% 94%,55% 99%,48% 94%,41% 99%,34% 94%,27% 99%,20% 94%,13% 99%,6% 94%,0 99%)}
+.tape::after{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg, rgba(150,120,80,.14) 0 1px, transparent 1px 4px);opacity:.7}
+.stamp{display:inline-block;font-family:var(--mono);font-weight:700;font-size:0.7rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.42em .7em .36em;border:2px solid currentColor;color:var(--orange);
+  filter:url(#inkspread);opacity:.9}
+.stamp--teal{color:var(--teal)}
+.stamp--ink{color:var(--ink-soft)}
+.hand{font-family:var(--hand);font-size:1.34rem;line-height:1.26;color:var(--teal)}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 1rem}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.btn{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+  background:var(--oat);color:var(--ink);border:2px solid var(--ink);padding:.7em 1em .6em;cursor:pointer;
+  box-shadow:3px 3px 0 var(--ink);transition:transform .12s ease, box-shadow .12s ease, background-color .12s ease;
+  text-decoration:none;display:inline-block}
+.btn:hover{transform:translate(1.5px,1.5px);box-shadow:1.5px 1.5px 0 var(--orange);background:var(--manila);color:var(--ink)}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+
+/* nav */
+.topbar{position:fixed;inset:0 0 auto 0;z-index:8000;pointer-events:none;
+  padding:0 var(--rail);padding-top:max(0px,env(safe-area-inset-top));
+  display:flex;align-items:flex-start;gap:clamp(6px,1.4vw,18px)}
+.topbar>*{pointer-events:auto}
+/* On the densest page the tapes were sitting directly on body copy as you
+   read downward. They lift away on downward scroll and come straight back on
+   upward scroll — and on any focus inside them, so a keyboard user can never
+   tab into a nav that is off-screen. */
+.topbar{transition:transform .32s cubic-bezier(.3,.8,.3,1)}
+.topbar.is-away{transform:translateY(-130%)}
+@media (prefers-reduced-motion:reduce){.topbar{transition:none}}
+.navtape{font-family:var(--mono);font-size:clamp(.7rem,1.5vw,.76rem);letter-spacing:.14em;text-transform:uppercase;
+  text-decoration:none;color:var(--ink);padding:1.05em .95em .8em;
+  transform:translateY(-6px) rotate(var(--r,-1deg));transition:transform .22s cubic-bezier(.2,.8,.3,1)}
+.navtape:nth-child(2){--r:1.2deg}
+.navtape:nth-child(3){--r:-1.6deg}
+.navtape:hover{transform:translateY(-1px) rotate(calc(var(--r,-1deg) * .3));color:var(--ink)}
+/* Flat second ink, not a lit lozenge — riso lays one colour down and stops. */
+.navtape[aria-current="page"]{background:var(--orange)}
+.navtape[aria-current="page"]::before{content:"▸ "}
+.sheetmark{margin-left:auto;font-family:var(--mono);font-size:0.7rem;letter-spacing:.16em;color:var(--ink-soft);
+  padding-top:1.5em;text-transform:uppercase;opacity:.75;white-space:nowrap}
+@media (max-width:1180px){.sheetmark{display:none}}
+
+/* ============================================================
+   THE SESSION SHEET — a punched, ruled working document
+   ============================================================ */
+.doc{max-width:1500px;margin:0 auto;padding:0 var(--rail) clamp(3rem,8vh,6rem);
+  display:grid;grid-template-columns:84px minmax(0,1fr);gap:0}
+@media (max-width:900px){.doc{grid-template-columns:minmax(0,1fr);padding-top:0}}
+
+/* the punched spine */
+.spine{position:relative;border-right:1.5px solid rgba(33,27,21,.26);
+  background:linear-gradient(to right, rgba(196,168,120,.3), transparent)}
+.spine .holes{position:sticky;top:112px;display:flex;flex-direction:column;gap:34px;align-items:center;padding-top:6px}
+.hole{width:19px;height:19px;border-radius:50%;background:radial-gradient(circle at 42% 34%, rgba(150,120,80,.55), rgba(33,27,21,.3));
+  box-shadow:0 1px 0 rgba(255,255,255,.7)}
+.spine .vlabel{position:sticky;top:400px;writing-mode:vertical-rl;transform:rotate(180deg);
+  font-family:var(--mono);font-size:0.7rem;letter-spacing:.34em;text-transform:uppercase;color:var(--ink-soft);
+  margin:2.4rem auto 0;display:block;width:max-content}
+@media (max-width:900px){
+  .spine{border-right:0;border-bottom:1.5px solid rgba(33,27,21,.26);
+    background:linear-gradient(to bottom, rgba(196,168,120,.3), transparent);margin-top:74px}
+  .spine .holes{position:static;flex-direction:row;gap:26px;justify-content:flex-start;padding:12px 0}
+  .spine .vlabel{display:none}
+}
+.body{padding:clamp(6.5rem,12vh,9rem) 0 0 clamp(1.2rem,3vw,3rem)}
+@media (max-width:900px){.body{padding:1.6rem 0 0}}
+
+/* masthead */
+.masthead{position:relative;margin-bottom:clamp(2.4rem,6vh,4rem)}
+.masthead .kicker{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;margin-bottom:1.1rem}
+.masthead .wknum{font-family:var(--disp);font-weight:800;font-variation-settings:"wdth" 78,"opsz" 96;
+  font-size:clamp(4.4rem,15vw,12rem);line-height:.76;letter-spacing:-.05em;
+  color:var(--orange);mix-blend-mode:multiply;display:block;margin:0 0 -.06em}
+.masthead h1{font-size:clamp(1.85rem,4.6vw,3.6rem);font-variation-settings:"wdth" 88,"opsz" 72;
+  max-width:24ch;margin:0 0 1rem}
+.masthead .standfirst{font-size:clamp(1.05rem,1.7vw,1.3rem);font-style:italic;max-width:52ch;margin:0}
+.runsheet{display:flex;flex-wrap:wrap;gap:0;margin-top:1.8rem;font-family:var(--mono);font-size:.74rem;
+  border-top:1.5px solid rgba(33,27,21,.28);border-bottom:1.5px solid rgba(33,27,21,.28)}
+.runsheet div{padding:.8rem 1.1rem .7rem;border-right:1.5px dotted rgba(33,27,21,.3);flex:1 1 150px;min-width:0}
+.runsheet div:last-child{border-right:0}
+.runsheet dt{font-size:0.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 .3rem}
+.runsheet dd{margin:0;font-variant-numeric:tabular-nums}
+
+/* section headers */
+.sechead{display:flex;align-items:baseline;gap:1rem;margin:0 0 1.5rem;flex-wrap:wrap}
+.sechead .secno{font-family:var(--mono);font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--orange);flex:none}
+.sechead h2{font-size:clamp(1.6rem,3.4vw,2.7rem);font-variation-settings:"wdth" 88}
+.sec{margin-bottom:clamp(3rem,8vh,6rem)}
+hr.rule{height:0;border:0;border-top:1.5px solid rgba(33,27,21,.28);margin:0 0 2rem}
+
+/* the shared lecture: a two-column editorial slab, not a card */
+.lecture{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.52fr);gap:clamp(1.4rem,3.4vw,3.4rem);align-items:start}
+@media (max-width:1000px){.lecture{grid-template-columns:minmax(0,1fr)}}
+.prose{max-width:var(--measure);font-size:1.13rem}
+.prose>p:first-child{font-size:1.36rem;line-height:1.46}
+.prose>p:first-child::first-letter{font-family:var(--disp);font-size:3em;line-height:.76;float:left;
+  padding:.06em .12em 0 0;color:var(--teal);font-weight:800}
+.prose h3{font-family:var(--disp);font-size:1.12rem;font-variation-settings:"wdth" 92;letter-spacing:.01em;
+  margin:2rem 0 .5rem;text-transform:uppercase;font-size:.9rem;letter-spacing:.14em;color:var(--ink-soft)}
+.underlined{position:relative;display:inline-block}
+.underlined svg{position:absolute;left:-4px;right:-4px;bottom:-11px;width:calc(100% + 8px);height:20px;overflow:visible;pointer-events:none}
+.pullquote{margin:2rem 0;padding:1.3rem 1.5rem;transform:rotate(-.5deg)}
+.pullquote p{font-family:var(--disp);font-weight:600;font-size:clamp(1.15rem,2vw,1.5rem);
+  font-variation-settings:"wdth" 92;line-height:1.16;margin:0}
+.pullquote cite{display:block;font-family:var(--mono);font-size:0.7rem;letter-spacing:.14em;text-transform:uppercase;
+  font-style:normal;color:var(--ink-soft);margin-top:.9rem}
+.aside{position:relative}
+.stickynote{position:relative;padding:1.2rem 1.3rem;transform:rotate(1.6deg);margin-bottom:1.8rem}
+.stickynote .tape{position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-2deg);
+  width:96px;height:28px}
+.diagram{width:100%;height:auto;display:block;margin:0 0 .8rem}
+.figcap{font-family:var(--mono);font-size:.7rem;line-height:1.6;color:var(--ink-soft);margin:0}
+
+/* ============================================================
+   STREAMS — filing folder, one panel at a time, page-turn
+   ============================================================ */
+.folder{position:relative;margin-top:.4rem}
+.tabs{display:flex;gap:6px;align-items:flex-end;padding-left:clamp(0px,2vw,26px);position:relative;z-index:3}
+.tab{font-family:var(--mono);font-size:clamp(0.7rem,1.4vw,.74rem);letter-spacing:.14em;text-transform:uppercase;
+  background:linear-gradient(to bottom, rgba(196,168,120,.45), rgba(196,168,120,.16)),var(--oat);
+  border:1.5px solid rgba(33,27,21,.3);border-bottom:0;color:var(--ink-soft);
+  padding:.78em .9em .95em;cursor:pointer;position:relative;top:2px;
+  border-radius:9px 9px 0 0;transition:top .16s ease, background-color .16s ease, color .16s ease;
+  min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tab .tn{font-weight:700;color:var(--ink);font-size:1.05em}
+.tab:hover{top:-1px;color:var(--ink)}
+.tab[aria-selected="true"]{top:-4px;color:var(--ink);
+  background:linear-gradient(to bottom, rgba(255,90,31,.34), rgba(255,90,31,.05)),var(--oat);
+  border-color:var(--ink);box-shadow:0 -3px 8px -4px rgba(80,58,30,.5)}
+.tab[aria-selected="true"]::after{content:"";position:absolute;inset:auto 8px 5px 8px;height:0;border-top:2px solid var(--orange)}
+.folderbody{position:relative;perspective:2000px;border:1.5px solid var(--ink);background:var(--oat);
+  box-shadow:var(--lift-3);min-height:min(74vh,620px)}
+.folderbody::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg, rgba(255,255,255,.5), transparent 26%, transparent 76%, rgba(196,168,120,.34))}
+.leaf{padding:clamp(1.4rem,3vw,2.6rem);transform-origin:left center;backface-visibility:hidden}
+.leaf[hidden]{display:none}
+.leaf.is-turning{position:absolute;inset:0;z-index:2;overflow:hidden}
+.leafhead{display:flex;flex-wrap:wrap;gap:.8rem;align-items:baseline;margin-bottom:.4rem}
+.leafhead h3{font-size:clamp(1.5rem,3vw,2.3rem);font-variation-settings:"wdth" 88}
+.leafhead .role{font-family:var(--mono);font-size:0.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.leafgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.66fr);gap:clamp(1.2rem,3vw,2.8rem);
+  align-items:start;margin-top:1.4rem}
+@media (max-width:900px){.leafgrid{grid-template-columns:minmax(0,1fr)}}
+.leafgrid .prose{font-size:1.08rem}
+.steps{list-style:none;counter-reset:s;margin:1.2rem 0 0;padding:0}
+.steps li{counter-increment:s;position:relative;padding:.62rem 0 .62rem 3.1rem;
+  border-bottom:1.5px dotted rgba(33,27,21,.3);font-size:1rem}
+.steps li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:.66rem;
+  font-family:var(--mono);font-size:.74rem;letter-spacing:.06em;color:var(--orange);
+  border:1.5px solid currentColor;padding:.15em .35em}
+.timebox{font-family:var(--mono);font-size:.72rem;line-height:1.75;padding:1rem 1.1rem;margin-bottom:1.3rem}
+.timebox b{display:block;font-size:0.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.45rem}
+.timebox span{display:grid;grid-template-columns:4.6rem 1fr;gap:.6rem}
+.timebox span i{font-style:normal;font-variant-numeric:tabular-nums;color:var(--teal)}
+
+/* ============================================================
+   READINGS — a ruled library card with a stamp column
+   ============================================================ */
+.card{position:relative;padding:clamp(1.2rem,2.6vw,2rem) clamp(1rem,2.4vw,2rem);transform:rotate(-.35deg)}
+.card .cardhead{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;align-items:baseline;
+  border-bottom:2px solid var(--ink);padding-bottom:.6rem;margin-bottom:.2rem}
+.card .cardhead h3{font-size:1.3rem;font-variation-settings:"wdth" 90}
+.card .cardhead span{font-family:var(--mono);font-size:0.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
+.reads{list-style:none;margin:0;padding:0}
+.reads li{display:grid;grid-template-columns:2.3rem minmax(0,1fr) 7.2rem;gap:.9rem;align-items:baseline;
+  padding:.82rem 0;border-bottom:1.5px solid rgba(20,98,95,.2)}
+@media (max-width:640px){.reads li{grid-template-columns:2rem minmax(0,1fr);row-gap:.35rem}
+  .reads li .due{grid-column:2}}
+.reads .rn{font-family:var(--mono);font-size:.72rem;color:var(--orange);font-variant-numeric:tabular-nums}
+.reads .ti{font-size:1.02rem;line-height:1.38}
+.reads .ti em{color:var(--ink-soft)}
+.reads .au{display:block;font-family:var(--mono);font-size:.7rem;color:var(--ink-soft);margin-top:.18rem}
+.reads .due{font-family:var(--mono);font-size:0.7rem;letter-spacing:.12em;text-transform:uppercase;
+  border:1.5px solid var(--teal);color:var(--teal);padding:.3em .45em .24em;text-align:center;
+  transform:rotate(-1.6deg);filter:url(#inkspread)}
+.reads .due--core{border-color:var(--orange);color:var(--orange)}
+
+/* activity slip */
+.slip{position:relative;padding:clamp(1.3rem,2.8vw,2.2rem);transform:rotate(.7deg);max-width:74ch}
+.slip .tape{position:absolute;width:120px;height:32px}
+.slip .tape.t1{top:-14px;left:-22px;transform:rotate(-24deg)}
+.slip .tape.t2{bottom:-14px;right:-22px;transform:rotate(-24deg)}
+.slip h3{font-size:clamp(1.3rem,2.4vw,1.9rem);margin-bottom:.7rem;font-variation-settings:"wdth" 90}
+.slip .bracket{position:absolute;inset:-6px;pointer-events:none;overflow:visible}
+
+/* ============================================================
+   CHECKLIST — slips you stamp
+   ============================================================ */
+.checkwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,260px);gap:clamp(1.4rem,3vw,3rem);align-items:start}
+@media (max-width:900px){.checkwrap{grid-template-columns:minmax(0,1fr)}}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:.75rem}
+.checks li{position:relative}
+.checks input{position:absolute;opacity:0;width:0;height:0}
+.checks label{display:grid;grid-template-columns:40px minmax(0,1fr);gap:1rem;align-items:start;
+  padding:.95rem 1.1rem;cursor:pointer;position:relative;
+  background:var(--oat);border:1.5px solid rgba(33,27,21,.3);box-shadow:var(--lift-1);
+  transition:transform .18s cubic-bezier(.2,.8,.3,1), box-shadow .18s ease, background-color .18s ease}
+.checks label:hover{transform:translate(-1px,-2px) rotate(-.4deg);box-shadow:var(--lift-2);background:#FAF4E7}
+.checks input:focus-visible + label{outline:3px solid var(--teal);outline-offset:3px}
+.checks .box{width:40px;height:40px;border:2px solid var(--ink);display:grid;place-items:center;background:rgba(255,255,255,.5)}
+.checks .box svg{width:30px;height:30px;overflow:visible}
+.checks .box path{fill:none;stroke:var(--orange);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:100;stroke-dashoffset:100;transition:stroke-dashoffset .42s cubic-bezier(.4,0,.2,1)}
+.checks .ctxt{font-size:1.02rem;line-height:1.42}
+.checks .cmeta{display:block;font-family:var(--mono);font-size:0.7rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-soft);margin-top:.28rem}
+.checks input:checked + label{background:linear-gradient(0deg,rgba(20,98,95,.1),rgba(20,98,95,.1)),var(--oat);
+  transform:rotate(-.55deg)}
+.checks input:checked + label .box path{stroke-dashoffset:0}
+.checks input:checked + label .ctxt{color:var(--ink-soft)}
+.checks input:checked + label::after{content:"DONE";position:absolute;right:.7rem;top:50%;
+  transform:translateY(-50%) rotate(-9deg);font-family:var(--mono);font-weight:700;font-size:.72rem;
+  letter-spacing:.2em;color:var(--teal);border:2px solid currentColor;padding:.26em .45em .2em;
+  filter:url(#inkspread);opacity:.85;pointer-events:none}
+@media (max-width:520px){.checks input:checked + label::after{right:.5rem;top:.5rem;transform:rotate(-9deg);font-size:0.7rem}}
+.gauge{position:sticky;top:112px;padding:1.2rem 1.3rem}
+.gauge b{display:block;font-family:var(--mono);font-size:0.7rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:.7rem}
+.gauge .n{font-family:var(--disp);font-weight:800;font-size:2.8rem;font-variation-settings:"wdth" 80;
+  line-height:.9;font-variant-numeric:tabular-nums;display:block}
+.gauge .bar{height:16px;border:2px solid var(--ink);margin:.9rem 0 .5rem;position:relative;background:rgba(255,255,255,.45)}
+.gauge .fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--orange);
+  background-image:repeating-linear-gradient(90deg, rgba(33,27,21,.22) 0 2px, transparent 2px 7px);
+  transition:width .38s cubic-bezier(.3,0,.2,1)}
+.gauge .ticks{display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.7rem;color:var(--ink-soft)}
+.gauge .hand{margin:.8rem 0 0;display:block}
+
+/* prev / next: a page turn */
+.pageturn{display:grid;grid-template-columns:1fr 1fr;gap:clamp(.6rem,2vw,1.6rem);
+  border-top:1.5px solid rgba(33,27,21,.28);padding-top:1.8rem;margin-top:clamp(1rem,4vh,3rem)}
+@media (max-width:640px){.pageturn{grid-template-columns:minmax(0,1fr)}}
+.pageturn a{position:relative;text-decoration:none;color:var(--ink);padding:1.2rem 1.3rem;display:block;
+  transition:transform .2s cubic-bezier(.2,.8,.3,1)}
+.pageturn a:hover{transform:translateY(-4px)}
+.pageturn a:hover>.pulp{box-shadow:var(--lift-3)}
+.pageturn .dir{font-family:var(--mono);font-size:0.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--orange)}
+.pageturn .ti{font-family:var(--disp);font-weight:700;font-size:1.22rem;font-variation-settings:"wdth" 90;
+  display:block;margin-top:.4rem;line-height:1.1}
+.pageturn a:last-child{text-align:right}
+@media (max-width:640px){.pageturn a:last-child{text-align:left}}
+
+.colophon{position:relative;border-top:1.5px solid rgba(33,27,21,.28);
+  background:linear-gradient(to bottom,rgba(196,168,120,.22),transparent 60%);margin-top:clamp(2rem,6vh,4rem)}
+.colophon .in{max-width:1500px;margin:0 auto;padding:clamp(2rem,5vh,3.2rem) var(--rail) clamp(2.6rem,6vh,4rem);
+  font-family:var(--mono);font-size:.78rem;line-height:1.7;display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1.8rem}
+.colophon h4{font-family:var(--mono);font-size:0.7rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-soft);margin:0 0 .6rem;font-weight:700}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;
+    transition-duration:.001ms !important}
+  .checks .box path{transition:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<svg class="defs" aria-hidden="true" focusable="false">
+  <filter id="grainF"><feTurbulence type="fractalNoise" baseFrequency="0.92" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+  <filter id="deckle"><feTurbulence type="fractalNoise" baseFrequency="0.014 0.05" numOctaves="3" seed="12" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <filter id="inkspread"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.7" xChannelSelector="R" yChannelSelector="G"/></filter>
+</svg>
+<svg class="grain" aria-hidden="true" focusable="false"><rect width="100%" height="100%" filter="url(#grainF)"/></svg>
+
+<nav class="topbar" aria-label="Primary">
+  <a class="navtape tape" href="index.html">The Course</a>
+  <a class="navtape tape" href="inner.html" aria-current="page">Week 07</a>
+  <a class="navtape tape" href="deck.html">Lecture Deck</a>
+  <p class="sheetmark">Sheet 2 of 3 · session sheet</p>
+</nav>
+
+<div class="doc">
+  <div class="spine" aria-hidden="true">
+    <div class="holes">
+      <span class="hole"></span><span class="hole"></span><span class="hole"></span>
+      <span class="hole"></span><span class="hole"></span><span class="hole"></span>
+    </div>
+    <span class="vlabel">Week 07 · session sheet · filed 14 Sep</span>
+  </div>
+
+  <main class="body" id="main">
+    <!-- ============ masthead ============ -->
+    <header class="masthead">
+      <p class="kicker">
+        <span class="stamp stamp--ink">Week 07 of 12</span>
+        <span class="stamp stamp--teal">All streams</span>
+        <span class="stamp">Readings due Thu</span>
+      </p>
+      <span class="wknum num" aria-hidden="true">07</span>
+      <h1>Registration and the off-register</h1>
+      <p class="standfirst">What happens when two layers of the same work are laid down slightly out of line — and why the gap between them is usually the most informative thing on the page.</p>
+      <dl class="runsheet">
+        <div><dt>Shared lecture</dt><dd>Mon 10:00 · 50&nbsp;min</dd></div>
+        <div><dt>Streams</dt><dd>Tue–Thu · 2–3&nbsp;hrs</dd></div>
+        <div><dt>Submitted</dt><dd>Fri 17:00</dd></div>
+        <div><dt>Weight</dt><dd>3 of 45 (process)</dd></div>
+        <div><dt>Deck</dt><dd><a href="deck.html">8&nbsp;slides →</a></dd></div>
+      </dl>
+    </header>
+
+    <!-- ============ shared lecture ============ -->
+    <section class="sec" id="lecture" aria-labelledby="h-lecture">
+      <div class="sechead"><p class="secno">01 · Shared</p><h2 id="h-lecture">The lecture</h2></div>
+      <hr class="rule">
+      <div class="lecture">
+        <div class="prose">
+          <p>Registration is the problem of getting one layer to land exactly on top of another. In two-colour printing it is a mechanical question: the sheet moves through the press twice, and it never goes through twice the same way. A fraction of a millimetre of drift and the second ink sits beside the first instead of on it.</p>
+
+          <h3>Where the useful information sits</h3>
+          <p>Printers spend a great deal of effort eliminating that drift, which is reasonable — but it means the drift itself is rarely examined. This week we take the opposite position. An out-of-register print is a <span class="underlined" data-underline>record of the machine’s behaviour</span>, written in the only language the machine has. The misalignment tells you about pressure, about paper stretch, about which direction the grain ran. None of that is visible in a print that came out correctly.</p>
+          <p>The claim generalises past printing, and that is why it is a shared lecture rather than a stream session. Any process that runs twice over the same material leaves a registration trace: a second draft over a first, a repeated experiment, a rehearsal against a performance, a design intent against what was actually built. In each case the interesting measurement is not either layer on its own. It is the offset.</p>
+
+          <div class="pullquote sheet sheet--manila">
+            <span class="pulp"></span>
+            <p>The gap between what you meant to do and what the material let you do is not an error term. It is the finding.</p>
+            <cite>Lecture 07 · opening claim</cite>
+          </div>
+
+          <h3>Three ways the offset is read</h3>
+          <p>We will work through three readings of the same off-register sheet, because they conflict and the conflict is instructive. The first treats the offset as noise to be characterised and subtracted. The second treats it as a signature — a way of identifying which press, which hand, which session produced a given artefact. The third treats it as an aesthetic resource, something to be induced deliberately at a magnitude you choose.</p>
+          <p>All three are defensible. What is not defensible is using one of them without noticing that you have chosen. By the end of the session you should be able to say which reading you are operating under in your own stream work this week, and what the other two would have had you do instead.</p>
+
+          <h3>What to bring</h3>
+          <p>Two versions of something you have already made this semester, where the second was meant to be a corrected version of the first. Any medium. We overlay them in the second half of the session and you annotate your own offsets in front of the room.</p>
+        </div>
+
+        <aside class="aside">
+          <div class="stickynote sheet sheet--manila">
+            <span class="pulp"></span>
+            <span class="tape"></span>
+            <p class="stamp stamp--teal" style="margin:0 0 .7rem">Before Monday</p>
+            <p class="hand" style="margin:0">Bring the <em>bad</em> version.<br>Not the tidied one.<br>The tidied one has<br>already thrown away<br>the thing we need.</p>
+          </div>
+
+          <figure style="margin:0">
+            <svg class="diagram" viewBox="0 0 320 210" role="img" aria-label="Diagram: two identical square outlines printed slightly out of line, the overlap area drawn darker where the two inks multiply.">
+              <rect width="320" height="210" fill="none"/>
+              <g>
+                <rect x="46" y="44" width="150" height="112" fill="#FF5A1F" fill-opacity=".72"/>
+                <rect x="78" y="66" width="150" height="112" fill="#14625F" fill-opacity=".72" style="mix-blend-mode:multiply"/>
+              </g>
+              <path d="M46 30 L46 18 M196 30 L196 18 M46 24 L196 24" stroke="#211B15" stroke-width="1.3" fill="none"/>
+              <path d="M78 190 L78 200 M228 190 L228 200 M78 196 L228 196" stroke="#211B15" stroke-width="1.3" fill="none"/>
+              <text x="252" y="120" font-family="Courier Prime, monospace" font-size="11" fill="#211B15">offset</text>
+              <text x="252" y="134" font-family="Courier Prime, monospace" font-size="11" fill="#211B15">= 32 / 22</text>
+              <circle cx="286" cy="34" r="9" fill="none" stroke="#FF5A1F" stroke-width="1.6"/>
+              <path d="M286 20v28M272 34h28" stroke="#14625F" stroke-width="1.2"/>
+            </svg>
+            <figcaption class="figcap">Fig. 7.1 — Ink A laid first, Ink B laid 32 units right and 22 down. The multiply region is the only part of the sheet that records both passes at once.</figcaption>
+          </figure>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ============ streams: filing folder ============ -->
+    <section class="sec" id="streams" aria-labelledby="h-streams">
+      <div class="sechead"><p class="secno">02 · Parallel</p><h2 id="h-streams">The three streams</h2></div>
+      <hr class="rule">
+      <p style="max-width:var(--measure);margin-bottom:1.6rem">One folder, three leaves. Pull a tab to turn to that stream — each leaf carries the full session, not a summary of it.</p>
+
+      <div class="folder" data-folder>
+        <div class="tabs" role="tablist" aria-label="Stream sessions for week 07">
+          <button class="tab" role="tab" id="tab-a" aria-controls="leaf-a" aria-selected="true" tabindex="0"><span class="tn">A</span> · Fabric &amp; Structure</button>
+          <button class="tab" role="tab" id="tab-b" aria-controls="leaf-b" aria-selected="false" tabindex="-1"><span class="tn">B</span> · Blocking</button>
+          <button class="tab" role="tab" id="tab-c" aria-controls="leaf-c" aria-selected="false" tabindex="-1"><span class="tn">C</span> · Archive</button>
+        </div>
+
+        <div class="folderbody" data-folderbody>
+          <!-- STREAM A -->
+          <div class="leaf" role="tabpanel" id="leaf-a" aria-labelledby="tab-a" tabindex="0">
+            <div class="leafhead">
+              <h3>Fabric &amp; Structure</h3>
+              <p class="role">Stream A · studio · 3&nbsp;hrs · bench 4–11</p>
+            </div>
+            <p class="stamp">Induce the offset deliberately</p>
+            <div class="leafgrid">
+              <div class="prose">
+                <p>You will build the same small structure twice from identical stock, using the same drawings, and then measure every way the second one differs from the first. The point is not to get better at the second attempt. It is to produce a defensible account of where a repeated build drifts and why.</p>
+                <p>Work in pairs but build separately — you need two independent second attempts to tell a systematic drift from a personal habit. If both of you drift the same direction, the cause is in the material or the jig. If you drift differently, the cause is in your hands, and that is a different kind of finding with a different remedy.</p>
+                <p>Bring both objects to Friday’s cross-stream review intact. Do not repair the worse one. A repaired object cannot be measured.</p>
+                <ol class="steps">
+                  <li>Cut stock for two identical builds. Label every piece before you start; unlabelled offcuts are the most common way this session fails.</li>
+                  <li>Build the first without timing yourself. Record the finished dimensions at nine fixed points.</li>
+                  <li>Build the second from the same drawings. Same nine measurements, same order, same instrument.</li>
+                  <li>Tabulate the nine offsets. Sign and date the table before you look at your partner’s.</li>
+                  <li>Write two hundred words naming which reading of the offset you are using, and what the other two would have told you to do.</li>
+                </ol>
+              </div>
+              <div>
+                <div class="timebox sheet sheet--manila"><span class="pulp"></span>
+                  <b>Session shape</b>
+                  <span><i>0:00</i> Bench setup, stock check</span>
+                  <span><i>0:15</i> Build one, untimed</span>
+                  <span><i>1:20</i> Measure, nine points</span>
+                  <span><i>1:40</i> Build two</span>
+                  <span><i>2:35</i> Measure, tabulate</span>
+                  <span><i>2:50</i> Sign and file</span>
+                </div>
+                <p class="hand">The nine points have to be chosen <em>before</em> the first build. Choosing them after is how you accidentally prove whatever you already believed.</p>
+                <p class="figcap" style="margin-top:1rem">Take to Friday: two objects, one signed table, two hundred words. Nothing else is collected.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- STREAM B -->
+          <div class="leaf" role="tabpanel" id="leaf-b" aria-labelledby="tab-b" tabindex="0" hidden>
+            <div class="leafhead">
+              <h3>Blocking &amp; Facilitation</h3>
+              <p class="role">Stream B · seminar · 2&nbsp;hrs · paired rotation</p>
+            </div>
+            <p class="stamp stamp--teal">Run it twice, change one variable</p>
+            <div class="leafgrid">
+              <div class="prose">
+                <p>Your registration problem is a session run twice with the same run sheet and a different room. You will facilitate a fifteen-minute discussion on this week’s lecture claim, then hand your run sheet to your partner and watch them facilitate the identical fifteen minutes with a different group.</p>
+                <p>What you are measuring is the offset between the written structure and what the room actually did with it — twice, by two different people. A run sheet that produces the same shape in both hands is robust. One that only works when its author runs it is a performance, not a structure, and you should say so in your notes rather than defending it.</p>
+                <p>The hard discipline here is not interrupting. While your partner runs your sheet you take timestamped notes and say nothing, including when they are clearly about to lose the group. The recovery is data.</p>
+                <ol class="steps">
+                  <li>Write a fifteen-minute run sheet: an opening question, two turns, a close. One page, timestamped, no notes to self.</li>
+                  <li>Run it. Your partner observes silently and timestamps.</li>
+                  <li>Swap. Run their sheet with a different group while they observe yours.</li>
+                  <li>Lay the two observation sets side by side and mark every point where the two runs diverged by more than ninety seconds.</li>
+                  <li>Annotate your own sheet in ink where the structure, not the facilitator, caused the divergence.</li>
+                </ol>
+              </div>
+              <div>
+                <div class="timebox sheet sheet--manila"><span class="pulp"></span>
+                  <b>Session shape</b>
+                  <span><i>0:00</i> Run sheets written</span>
+                  <span><i>0:25</i> Run one, observed</span>
+                  <span><i>0:45</i> Reset, swap groups</span>
+                  <span><i>0:55</i> Run two, observed</span>
+                  <span><i>1:20</i> Side-by-side marking</span>
+                  <span><i>1:45</i> Annotate and file</span>
+                </div>
+                <p class="hand">Silence while your sheet fails is the whole assessment. Write down the moment you wanted to step in.</p>
+                <p class="figcap" style="margin-top:1rem">Take to Friday: one annotated run sheet, two timestamped observation sets, divergence marks in ink.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- STREAM C -->
+          <div class="leaf" role="tabpanel" id="leaf-c" aria-labelledby="tab-c" tabindex="0" hidden>
+            <div class="leafhead">
+              <h3>Archive &amp; Evidence</h3>
+              <p class="role">Stream C · desk work · 2&nbsp;hrs · archive access</p>
+            </div>
+            <p class="stamp stamp--ink">Reconstruct, then compare</p>
+            <div class="leafgrid">
+              <div class="prose">
+                <p>You will take a week of somebody else’s archive from earlier in the semester and reconstruct what they did from the record alone — no conversation, no questions. Then you will show them your reconstruction and record, precisely, where it departed from what actually happened.</p>
+                <p>That departure is the registration offset of an archive: the distance between the events and the retrievable account of them. Every archive has one. An archive that claims not to is either very small or lying, and this session is mostly about learning to estimate the size of yours.</p>
+                <p>You are not grading their archive and they are not grading yours. You are both producing a measurement, and the measurement is only useful if neither of you has an interest in it coming out small.</p>
+                <ol class="steps">
+                  <li>Draw a week at random. Read the whole record before writing anything down.</li>
+                  <li>Reconstruct the week as a dated narrative with a confidence mark against each claim.</li>
+                  <li>Hand it over. Let them mark it up without discussion.</li>
+                  <li>Classify each departure: absent from the record, present but ambiguous, or present and misread by you.</li>
+                  <li>Write one change to your own archive practice that the third category — not the first — makes necessary.</li>
+                </ol>
+              </div>
+              <div>
+                <div class="timebox sheet sheet--manila"><span class="pulp"></span>
+                  <b>Session shape</b>
+                  <span><i>0:00</i> Draw a week, read fully</span>
+                  <span><i>0:30</i> Reconstruct with confidence marks</span>
+                  <span><i>1:05</i> Exchange and mark up</span>
+                  <span><i>1:30</i> Classify departures</span>
+                  <span><i>1:50</i> One practice change, written</span>
+                </div>
+                <p class="hand">Most people fix the gaps and ignore the misreadings. The misreadings are the ones your own archive will do to you.</p>
+                <p class="figcap" style="margin-top:1rem">Take to Friday: the reconstruction, the marked-up copy, a classified departure list, one practice change.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ readings ============ -->
+    <section class="sec" id="readings" aria-labelledby="h-readings">
+      <div class="sechead"><p class="secno">03 · Before Monday</p><h2 id="h-readings">Readings</h2></div>
+      <hr class="rule">
+      <div class="card sheet sheet--manila">
+        <span class="pulp"></span>
+        <div class="cardhead">
+          <h3>Week 07 · issue card</h3>
+          <span>Core = read it twice · Return Fri 17:00</span>
+        </div>
+        <ol class="reads">
+          <li><span class="rn">7.1</span><span class="ti"><em>Two Passes:</em> tolerance, drift and the mechanics of the second impression<span class="au">Halloran, ch. 3 — 18 pp.</span></span><span class="due due--core">Core</span></li>
+          <li><span class="rn">7.2</span><span class="ti">The signature in the error: attributing artefacts by their imperfections<span class="au">Njoku &amp; Weisz — 11 pp.</span></span><span class="due due--core">Core</span></li>
+          <li><span class="rn">7.3</span><span class="ti">Notes on induced misalignment in two-colour practice<span class="au">Sandoval, working paper — 6 pp.</span></span><span class="due">Select</span></li>
+          <li><span class="rn">7.4</span><span class="ti">What the rehearsal knows that the performance forgets<span class="au">Achterberg, essay — 9 pp.</span></span><span class="due">Select</span></li>
+          <li><span class="rn">7.5</span><span class="ti">Measurement without a witness: confidence marks in personal archives<span class="au">Lindqvist — 14 pp.</span></span><span class="due">Stream C</span></li>
+        </ol>
+        <p class="figcap" style="margin-top:1.2rem">Read 7.1 and 7.2 before the lecture. Pick one of 7.3 or 7.4 — they disagree, and the seminar is better if the room has both. 7.5 replaces a select reading for Stream C.</p>
+      </div>
+    </section>
+
+    <!-- ============ activity ============ -->
+    <section class="sec" id="activity" aria-labelledby="h-activity">
+      <div class="sechead"><p class="secno">04 · In the room</p><h2 id="h-activity">The activity</h2></div>
+      <hr class="rule">
+      <div class="slip sheet" data-slip>
+        <span class="pulp"></span>
+        <span class="tape t1"></span><span class="tape t2"></span>
+        <svg class="bracket" data-bracket aria-hidden="true" focusable="false"></svg>
+        <h3>Overlay, in front of the room</h3>
+        <p>Twenty minutes, whole cohort, no slides. Bring your two versions. You will put the second on top of the first on the overhead, mark the offset in orange at three points you choose, and say one sentence about which of the three readings you are using.</p>
+        <p style="margin-bottom:0">Then somebody who is not in your stream marks a fourth point, and you say what that one shows that your three did not. That is the whole activity. It goes badly when people choose their three points to make a tidy story, so choose them before you have a story.</p>
+        <p class="hand" style="margin:1.3rem 0 0">Nobody has ever regretted picking the ugliest offset. Several people have regretted picking the neatest.</p>
+      </div>
+    </section>
+
+    <!-- ============ checklist ============ -->
+    <section class="sec" id="checklist" aria-labelledby="h-checklist">
+      <div class="sechead"><p class="secno">05 · Filed by Friday</p><h2 id="h-checklist">Checklist</h2></div>
+      <hr class="rule">
+      <div class="checkwrap">
+        <ul class="checks" data-checks>
+          <li><input type="checkbox" id="c1"><label for="c1"><span class="box"><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path pathLength="100" d="M7 22 L16 31 L34 9"/></svg></span><span><span class="ctxt">Readings 7.1 and 7.2 read, with your own marginal notes still on them</span><span class="cmeta">Before Mon 10:00 · not collected, but asked about</span></span></label></li>
+          <li><input type="checkbox" id="c2"><label for="c2"><span class="box"><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path pathLength="100" d="M7 22 L16 31 L34 9"/></svg></span><span><span class="ctxt">One of 7.3 or 7.4 chosen, and you can say why you picked that side</span><span class="cmeta">Before Mon 10:00</span></span></label></li>
+          <li><input type="checkbox" id="c3"><label for="c3"><span class="box"><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path pathLength="100" d="M7 22 L16 31 L34 9"/></svg></span><span><span class="ctxt">Two versions of an earlier piece brought in, the untidied one included</span><span class="cmeta">Mon lecture · physical, not photographed</span></span></label></li>
+          <li><input type="checkbox" id="c4"><label for="c4"><span class="box"><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path pathLength="100" d="M7 22 L16 31 L34 9"/></svg></span><span><span class="ctxt">Your stream’s measurement artefact completed and signed</span><span class="cmeta">Stream session · table, observation set or departure list</span></span></label></li>
+          <li><input type="checkbox" id="c5"><label for="c5"><span class="box"><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path pathLength="100" d="M7 22 L16 31 L34 9"/></svg></span><span><span class="ctxt">Two hundred words naming which reading of the offset you used</span><span class="cmeta">Fri 17:00 · counts toward the process weighting</span></span></label></li>
+          <li><input type="checkbox" id="c6"><label for="c6"><span class="box"><svg viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path pathLength="100" d="M7 22 L16 31 L34 9"/></svg></span><span><span class="ctxt">Anything you reversed this week left in the record, dated, with the reason</span><span class="cmeta">Fri 17:00 · the single most-marked item on this sheet</span></span></label></li>
+        </ul>
+        <div class="gauge sheet sheet--manila gridded">
+          <span class="pulp"></span>
+          <b>Filed this week</b>
+          <span class="n"><span data-count>0</span> <span style="font-size:1rem;color:var(--ink-soft)">/ 6</span></span>
+          <div class="bar"><span class="fill" data-fill></span></div>
+          <p class="ticks"><span>0</span><span>3</span><span>6</span></p>
+          <p class="hand" data-gaugenote>Nothing filed yet.</p>
+          <p class="sr" role="status" aria-live="polite" data-live></p>
+        </div>
+      </div>
+    </section>
+
+    <nav class="pageturn" aria-label="Week navigation">
+      <a class="sheet" href="inner.html"><span class="pulp"></span><span class="dir">← Previous</span><span class="ti">06 · Critique without consensus</span></a>
+      <a class="sheet" href="inner.html"><span class="pulp"></span><span class="dir">Next →</span><span class="ti">08 · Handing the work over</span></a>
+    </nav>
+  </main>
+</div>
+
+<footer class="colophon">
+  <div class="in">
+    <div>
+      <h3>This sheet</h3>
+      <p style="margin:0">Week 07 session sheet. One shared lecture, three parallel streams, five readings, one activity, six filed items. Printed in two inks on oat stock.</p>
+    </div>
+    <div>
+      <h3>Elsewhere</h3>
+      <p style="margin:0"><a href="index.html">1 · The Course</a><br><a href="inner.html">2 · Week 07</a><br><a href="deck.html">3 · Lecture Deck</a></p>
+    </div>
+    <div>
+      <h3>Inks</h3>
+      <p style="margin:0">A #FF5A1F · B #14625F · Key #211B15. Orange is never used at body size; links and body-scale accents are Ink B.</p>
+    </div>
+    <div>
+      <h3>Notes</h3>
+      <p style="margin:0">Tab panels turn like leaves in a folder. Under reduced motion they change instantly and the checklist stamps without drawing.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js"></script>
+<script>
+(function(){
+  "use strict";
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var hasGSAP = typeof window.gsap !== "undefined";
+  if(hasGSAP) gsap.registerPlugin(ScrollTrigger);
+
+  /* ==========================================================
+     Folder tabs with a real page turn.
+     Tabs are real buttons with tablist semantics; the turn is
+     decoration on top of an instant, accessible swap.
+     ========================================================== */
+  function folder(){
+    var root = document.querySelector("[data-folder]");
+    if(!root) return;
+    var tabs = [].slice.call(root.querySelectorAll('[role="tab"]'));
+    var panels = tabs.map(function(t){ return document.getElementById(t.getAttribute("aria-controls")); });
+    var busy = false, current = 0;
+
+    function show(next, focusPanel){
+      if(next === current || busy) return;
+      var from = panels[current], to = panels[next];
+      var forward = next > current;
+
+      tabs.forEach(function(t,i){
+        t.setAttribute("aria-selected", i===next ? "true" : "false");
+        t.tabIndex = i===next ? 0 : -1;
+      });
+
+      var finish = function(){
+        from.hidden = true;
+        from.classList.remove("is-turning");
+        to.classList.remove("is-turning");
+        if(hasGSAP) gsap.set([from,to], {clearProps:"all"});
+        busy = false; current = next;
+        if(focusPanel) to.focus({preventScroll:true});
+        if(hasGSAP) ScrollTrigger.refresh();
+      };
+
+      if(REDUCED || !hasGSAP){ to.hidden = false; finish(); return; }
+
+      busy = true;
+      to.hidden = false;
+      /* the outgoing leaf lifts and turns away; the incoming one
+         arrives flat from the other side of the fold */
+      from.classList.add("is-turning");
+      gsap.set(from, {zIndex:3, transformOrigin: forward ? "left center" : "right center"});
+      gsap.set(to,   {zIndex:1, opacity:0});
+      var tl = gsap.timeline({onComplete:finish});
+      tl.to(from, {rotateY: forward ? -84 : 84, x: forward ? -18 : 18,
+                   boxShadow:"0 24px 44px -20px rgba(80,58,30,.6)",
+                   duration:.44, ease:"power2.in"}, 0)
+        .to(from, {opacity:0, duration:.18, ease:"none"}, .3)
+        .fromTo(to, {rotateY: forward ? 24 : -24, x: forward ? 26 : -26, opacity:0},
+                    {rotateY:0, x:0, opacity:1, duration:.46, ease:"power3.out"}, .28);
+    }
+
+    tabs.forEach(function(t,i){
+      t.addEventListener("click", function(){ show(i, false); });
+      t.addEventListener("keydown", function(e){
+        var k = e.key, n = null;
+        if(k === "ArrowRight" || k === "ArrowDown") n = (i+1) % tabs.length;
+        else if(k === "ArrowLeft" || k === "ArrowUp") n = (i-1+tabs.length) % tabs.length;
+        else if(k === "Home") n = 0;
+        else if(k === "End") n = tabs.length-1;
+        if(n === null) return;
+        e.preventDefault();
+        tabs[n].focus();
+        show(n, false);
+      });
+    });
+  }
+
+  /* ---------- checklist gauge ---------- */
+  function checklist(){
+    var list = document.querySelector("[data-checks]");
+    if(!list) return;
+    var boxes = [].slice.call(list.querySelectorAll('input[type="checkbox"]'));
+    var count = document.querySelector("[data-count]");
+    var fill = document.querySelector("[data-fill]");
+    var note = document.querySelector("[data-gaugenote]");
+    var live = document.querySelector("[data-live]");
+    var notes = [
+      "Nothing filed yet.",
+      "A start. The 200&nbsp;words are the one that slips.",
+      "Keep the reversals — they carry the most marks.",
+      "Halfway. Stream artefact next.",
+      "Good. Do not tidy anything on the way out.",
+      "One left, and it is the one people forget.",
+      "All six filed. Sign the sheet and leave it alone."
+    ];
+    function update(){
+      var n = boxes.filter(function(b){ return b.checked; }).length;
+      count.textContent = n;
+      fill.style.width = (n/boxes.length*100) + "%";
+      note.textContent = notes[n];
+      live.textContent = n + " of " + boxes.length + " items filed.";
+    }
+    boxes.forEach(function(b){ b.addEventListener("change", update); });
+    update();
+  }
+
+  /* ---------- hand-drawn marks ---------- */
+  function marks(){
+    if(typeof window.rough === "undefined") return;
+
+    /* underline that arrives late */
+    var host = document.querySelector("[data-underline]");
+    if(host){
+      var svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+      host.appendChild(svg);
+      var drawU = function(){
+        var w = host.offsetWidth + 8;
+        svg.setAttribute("viewBox","0 0 "+w+" 20");
+        svg.innerHTML = "";
+        var g = rough.svg(svg);
+        svg.appendChild(g.path("M2 9 C "+(w*0.3)+" 3, "+(w*0.62)+" 15, "+(w-2)+" 7",
+          {stroke:"#FF5A1F", strokeWidth:3.1, roughness:1.9, bowing:1.4, seed:21}));
+        draw(svg, host);
+      };
+      drawU();
+      window.addEventListener("resize", debounce(drawU, 240));
+    }
+
+    /* bracket around the activity slip */
+    var slip = document.querySelector("[data-slip]");
+    var br = document.querySelector("[data-bracket]");
+    if(slip && br){
+      var drawB = function(){
+        var w = Math.round(slip.offsetWidth) + 12, h = Math.round(slip.offsetHeight) + 12;
+        br.setAttribute("viewBox","0 0 "+w+" "+h);
+        br.innerHTML = "";
+        var g2 = rough.svg(br);
+        var inset = 6;
+        br.appendChild(g2.path("M"+(inset+46)+" "+inset+" L"+inset+" "+inset+" L"+inset+" "+(h-inset)+" L"+(inset+46)+" "+(h-inset),
+          {stroke:"#14625F", strokeWidth:2.6, roughness:2, bowing:1.6, seed:31}));
+        br.appendChild(g2.path("M"+(w-inset-46)+" "+inset+" L"+(w-inset)+" "+inset+" L"+(w-inset)+" "+(h-inset)+" L"+(w-inset-46)+" "+(h-inset),
+          {stroke:"#14625F", strokeWidth:2.6, roughness:2, bowing:1.6, seed:37}));
+        draw(br, slip);
+      };
+      drawB();
+      window.addEventListener("resize", debounce(drawB, 240));
+    }
+  }
+  function draw(svg, trigger){
+    if(REDUCED || !hasGSAP) return;
+    var paths = svg.querySelectorAll("path");
+    paths.forEach(function(p){
+      var len = 600;
+      try{ len = p.getTotalLength() || 600; }catch(e){}
+      p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
+    });
+    gsap.to(paths, {strokeDashoffset:0, duration:.8, ease:"power1.inOut", stagger:.14,
+      scrollTrigger:{trigger:trigger, start:"top 84%", once:true}});
+  }
+
+  /* ---------- quiet entrance for the long sections ---------- */
+  function reveals(){
+    if(REDUCED || !hasGSAP) return;
+    gsap.utils.toArray(".sec, .masthead .runsheet, .pageturn").forEach(function(el){
+      gsap.from(el, {y:22, opacity:0, duration:.62, ease:"power2.out",
+        scrollTrigger:{trigger:el, start:"top 90%", once:true}});
+    });
+  }
+
+  function debounce(fn, ms){
+    var t; return function(){ var a=arguments,s=this; clearTimeout(t); t=setTimeout(function(){fn.apply(s,a);}, ms); };
+  }
+
+  function boot(){
+    try{ folder(); }catch(e){ console.warn("folder:", e); }
+    try{ checklist(); }catch(e){ console.warn("checklist:", e); }
+    try{ marks(); }catch(e){ console.warn("marks:", e); }
+    try{ reveals(); }catch(e){ console.warn("reveals:", e); }
+  }
+  if(document.readyState === "complete") boot();
+  else window.addEventListener("load", boot);
+})();
+
+/* ---- nav tapes get out of the way of the prose ---- */
+(function(){
+  var bar = document.querySelector(".topbar");
+  if(!bar) return;
+  var last = window.scrollY, ticking = false;
+  function apply(){
+    var y = window.scrollY;
+    if(y > 420 && y > last + 4)      bar.classList.add("is-away");
+    else if(y < last - 4 || y < 420) bar.classList.remove("is-away");
+    last = y; ticking = false;
+  }
+  window.addEventListener("scroll", function(){
+    if(!ticking){ ticking = true; requestAnimationFrame(apply); }
+  }, {passive:true});
+  bar.addEventListener("focusin", function(){ bar.classList.remove("is-away"); });
+})();
+</script>
+</body>
+</html>

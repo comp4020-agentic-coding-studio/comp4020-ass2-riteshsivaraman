@@ -234,3 +234,35 @@ an effective 8.5px, logged as accepted on 09-16. The rebrand did not change
 it, and the decision to accept or spend roughly twenty minutes on in-canvas
 media queries has not been put to the user as a question. It should be, rather
 than defaulted again.
+
+---
+
+## 2026-09-17 — "completely forget the current front end; give me 2-3 fresh design options"
+
+**Prompt (verbatim intent):** the site so far is a poor duplicate of the
+COMP4020 site's style and is unsatisfactory. Forget the current front end
+entirely. Using only the theme of the course, produce a *design demo* for a
+fresh front end — modern and innovative above all. Not building the site;
+getting a design first. May be unrelated to course content and ported later.
+Astro/libraries available, so be innovative. Give 2–3 options, blind to
+existing work. Must capture an aesthetic *and* interesting dynamic page
+elements. "Any questions?"
+
+**Context:** follows the notepad rebrand (`d7fe9a8`), which this prompt
+supersedes. The verdict is that the rebrand fixed the *skin* but not the
+underlying structural mimicry — the layout grammar was still COMP4020's.
+
+**Questions asked before starting** (per the ask-for-direction rule; the
+prompt invited them): format, content, constraints, scope.
+
+**Answers, treated as settled:**
+- Standalone HTML in `design/` — no Astro, no build, opened directly in Chrome.
+- Abstract placeholder content — judged on form alone; porting real copy is a
+  later pass, with the known risk that real content breaks a design.
+- Anything goes — CDN libraries (GSAP, three.js, Lenis), WebGL, heavy JS. axe
+  and portability are deferred until a winner is picked.
+- Home + inner + deck per option, three options — nine pages.
+
+**Still undecided and owned by the user:** which option wins; whether the
+winner ports wholesale or only its layout grammar; how much of the "anything
+goes" dynamism survives the axe gate.

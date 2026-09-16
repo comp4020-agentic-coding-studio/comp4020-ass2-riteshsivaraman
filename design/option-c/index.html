@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F4ECDC">
+<title>The Course — a twelve-week production</title>
+<meta name="description" content="A twelve-week studio. One shared stage, three parallel scenes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@500..700&display=swap">
+<style>
+/* ============================================================
+   TACTILE STAGE — shared skin
+   Two inks, one warm stock, everything cut from paper.
+   ============================================================ */
+:root{
+  --oat:#F4ECDC;
+  --manila:#E3D0A6;
+  --kraft:#C4A878;
+  --ink:#211B15;
+  --ink-soft:#4A3F33;
+  --orange:#FF5A1F;
+  --teal:#14625F;
+
+  --disp:"Bricolage Grotesque",system-ui,sans-serif;
+  --body:"Newsreader",Georgia,serif;
+  --mono:"Courier Prime",ui-monospace,monospace;
+  --hand:"Caveat",cursive;
+
+  /* warm contact shadows — never grey */
+  --lift-1:0 1px 0 rgba(33,27,21,.20), 0 2px 3px -1px rgba(96,64,28,.42);
+  --lift-2:0 1px 0 rgba(33,27,21,.22), 0 3px 4px -1px rgba(96,64,28,.44), 0 7px 9px -7px rgba(96,64,28,.34);
+  --lift-3:0 1px 0 rgba(33,27,21,.22), 0 4px 5px -1px rgba(96,64,28,.48), 0 11px 13px -9px rgba(96,64,28,.4);
+
+  color-scheme:light;
+  --rail:clamp(18px,4vw,72px);
+  --measure:66ch;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0;
+  background:var(--oat);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:1.1875rem;
+  line-height:1.62;
+  font-optical-sizing:auto;
+  overflow-x:clip;
+  -webkit-tap-highlight-color:rgba(255,90,31,.25);
+  touch-action:manipulation;
+}
+/* the stock itself: warm wash + faint paper fibre */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(120% 90% at 18% -10%, rgba(255,255,255,.75), transparent 60%),
+    radial-gradient(90% 70% at 88% 108%, rgba(196,168,120,.42), transparent 62%),
+    repeating-linear-gradient(94deg, rgba(150,120,80,.045) 0 1px, transparent 1px 7px),
+    var(--oat);
+}
+.grain{position:fixed;inset:0;width:100%;height:100%;z-index:9000;pointer-events:none;opacity:.085;mix-blend-mode:multiply}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+::selection{background:var(--orange);color:#fff}
+:focus-visible{outline:3px solid var(--teal);outline-offset:3px;border-radius:2px}
+a{color:var(--teal);text-decoration-thickness:1px;text-underline-offset:.18em}
+a:hover{color:var(--ink);text-decoration-color:var(--orange);text-decoration-thickness:3px}
+img,svg{max-width:100%}
+h1,h2,h3,h4{font-family:var(--disp);font-weight:700;margin:0;line-height:.95;text-wrap:balance;letter-spacing:-.02em}
+p{margin:0 0 1.05em}
+.skip{position:absolute;left:8px;top:-60px;z-index:9999;background:var(--ink);color:var(--oat);
+  font-family:var(--mono);font-size:.8rem;padding:.6rem .9rem;text-decoration:none}
+.skip:focus{top:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+/* ---------- paper primitives ---------- */
+.sheet{position:relative;isolation:isolate}
+.sheet>.pulp{
+  position:absolute;inset:0;z-index:-1;
+  background:var(--oat);
+  box-shadow:var(--lift-2);
+  filter:url(#deckle);
+}
+.sheet--manila>.pulp{background:var(--manila)}
+.sheet--kraft>.pulp{background:var(--kraft)}
+.ruled{background-image:repeating-linear-gradient(to bottom, transparent 0 30px, rgba(20,98,95,.16) 30px 31px)}
+.gridded{background-image:
+  repeating-linear-gradient(to bottom, transparent 0 15px, rgba(20,98,95,.11) 15px 16px),
+  repeating-linear-gradient(to right, transparent 0 15px, rgba(20,98,95,.11) 15px 16px)}
+.halftone{background-image:radial-gradient(var(--orange) 1.15px, transparent 1.25px);background-size:6px 6px}
+
+/* gaffer tape */
+.tape{
+  position:relative;display:inline-block;
+  background:linear-gradient(176deg, rgba(255,255,255,.34), rgba(196,168,120,.5)),var(--manila);
+  box-shadow:0 1px 0 rgba(255,255,255,.4) inset, 0 2px 5px -2px rgba(80,58,30,.5);
+  clip-path:polygon(0 6%,4% 0,9% 5%,15% 1%,21% 6%,28% 2%,35% 6%,42% 1%,49% 6%,56% 2%,63% 6%,70% 1%,77% 6%,84% 2%,91% 6%,96% 1%,100% 6%,
+                    100% 94%,95% 100%,89% 95%,83% 99%,76% 94%,69% 99%,62% 94%,55% 99%,48% 94%,41% 99%,34% 94%,27% 99%,20% 94%,13% 99%,6% 94%,0 99%);
+}
+.tape::after{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg, rgba(150,120,80,.14) 0 1px, transparent 1px 4px);opacity:.7}
+
+/* rubber stamp */
+.stamp{
+  display:inline-block;font-family:var(--mono);font-weight:700;
+  font-size:0.7rem;letter-spacing:.2em;text-transform:uppercase;
+  padding:.42em .7em .36em;border:2px solid currentColor;color:var(--orange);
+  filter:url(#inkspread);opacity:.9;
+}
+.stamp--teal{color:var(--teal)}
+.stamp--ink{color:var(--ink-soft)}
+.hand{font-family:var(--hand);font-size:1.34rem;line-height:1.25;color:var(--teal)}
+.eyebrow{font-family:var(--mono);font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 1.2rem}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+/* the tapes are fixed, so an anchor jump must clear them */
+[id]{scroll-margin-top:96px}
+
+/* ---------- nav: three strips of tape ---------- */
+.topbar{position:fixed;inset:0 0 auto 0;z-index:8000;pointer-events:none;
+  padding:0 var(--rail);display:flex;align-items:flex-start;gap:clamp(6px,1.4vw,18px);
+  padding-top:max(0px,env(safe-area-inset-top))}
+.topbar>*{pointer-events:auto}
+/* The tapes lift off the page while you read downward, so they never
+   cover body copy; they come back the moment you scroll up. */
+.topbar{transition:transform .32s cubic-bezier(.3,.8,.3,1)}
+.topbar.is-away{transform:translateY(-130%)}
+@media (prefers-reduced-motion:reduce){.topbar{transition:none}}
+.navtape{
+  font-family:var(--mono);font-size:clamp(.7rem,1.5vw,.76rem);letter-spacing:.14em;text-transform:uppercase;
+  text-decoration:none;color:var(--ink);padding:1.05em .95em .8em;
+  transform:translateY(-6px) rotate(var(--r,-1deg));
+  transition:transform .22s cubic-bezier(.2,.8,.3,1);
+}
+.navtape:nth-child(2){--r:1.2deg}
+.navtape:nth-child(3){--r:-1.6deg}
+.navtape:hover{transform:translateY(-1px) rotate(calc(var(--r,-1deg) * .3));color:var(--ink)}
+/* Flat second ink, not a lit lozenge — riso lays one colour down and stops. */
+.navtape[aria-current="page"]{color:var(--ink);background:var(--orange)}
+.navtape[aria-current="page"]::before{content:"▸ "}
+/* The sheet mark is a printer's slug: it must sit on one line or not at all.
+   Left to wrap it doubled the bar height and pushed the tapes down onto the
+   first line of body copy at intermediate widths. */
+.sheetmark{margin-left:auto;font-family:var(--mono);font-size:0.7rem;letter-spacing:.16em;color:var(--ink-soft);
+  padding-top:1.5em;text-transform:uppercase;opacity:.75;white-space:nowrap}
+@media (max-width:1180px){.sheetmark{display:none}}
+
+/* ============================================================
+   SCENE 1 — the proscenium (signature)
+   ============================================================ */
+.stagescene{position:relative}
+.stage{position:relative;height:100svh;min-height:520px;overflow:hidden;perspective:1400px}
+.flat{position:absolute;will-change:transform}
+.flat-backdrop{inset:4% 7% 14% 7%;z-index:1;box-shadow:var(--lift-2);
+  /* two cut sheets with a hard horizon between them, not an airbrushed sky */
+  background:linear-gradient(to bottom,#FBF5E8 0 56%, #EFE2C4 56% 57%, var(--manila) 57% 100%)}
+.flat-backdrop::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(46% 54% at 50% 104%, var(--orange) 0 38%, rgba(255,90,31,.4) 62%, transparent 82%);
+  opacity:.8;mix-blend-mode:multiply;
+  mask-image:radial-gradient(#000 1.5px, transparent 1.6px);mask-size:7px 7px;
+  -webkit-mask-image:radial-gradient(#000 1.5px, transparent 1.6px);-webkit-mask-size:7px 7px}
+.flat-hills{inset:auto 7% 13% 7%;height:30%;z-index:2}
+.flat-hills svg{width:100%;height:100%;display:block}
+.flat-wing{top:-2%;bottom:0;width:26%;z-index:3;background:var(--manila);
+  box-shadow:var(--lift-3);filter:url(#deckle)}
+/* the wing's own corrugation */
+.flat-wing::after{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg, rgba(150,120,80,.0) 0 22px, rgba(150,120,80,.22) 22px 23px)}
+/* the cut edge of each wing, inked hard so it never blends into the backdrop */
+.flat-wing::before{content:"";position:absolute;top:0;bottom:0;width:3px;z-index:1;
+  background:rgba(33,27,21,.42)}
+.wing-l::before{right:0}
+.wing-r::before{left:0}
+.wing-l{left:-1%}
+.wing-r{right:-1%}
+/* the stage floor: kraft board, with the lamp pooling on it */
+.flat-floor{inset:auto 0 0 0;height:14%;z-index:4;background:var(--kraft);
+  box-shadow:0 -2px 0 rgba(33,27,21,.38), 0 -5px 7px -5px rgba(96,64,28,.5)}
+/* boards, ruled across the stage floor — flat stock, no pooled sheen */
+.flat-floor::after{content:"";position:absolute;inset:0;opacity:.5;
+  background:repeating-linear-gradient(to right, transparent 0 78px, rgba(33,27,21,.28) 78px 79px)}
+/* one lamp, aimed. Kept flat and weak so it never becomes a soft-box. */
+.stagelight{position:absolute;inset:0;pointer-events:none;z-index:5;
+  background:linear-gradient(to bottom, rgba(33,27,21,.2) 0 4%, transparent 14%),
+             radial-gradient(150% 120% at 50% 26%, transparent 70%, rgba(33,27,21,.26) 100%);
+  mix-blend-mode:multiply}
+.stagelight::after{content:"";position:absolute;inset:0;mix-blend-mode:screen;
+  background:radial-gradient(38% 34% at var(--lx,50%) var(--ly,20%), rgba(255,240,215,.34), transparent 70%)}
+.arch{position:absolute;inset:0;pointer-events:none;z-index:6}
+.arch svg{width:100%;height:100%;display:block}
+.arch--portrait{display:none}
+@media (max-aspect-ratio:1/1){.arch--land{display:none}.arch--portrait{display:block}}
+
+.marquee{position:absolute;z-index:7;left:50%;top:50%;transform:translate(-50%,-52%);
+  width:min(700px,60vw);text-align:center;isolation:isolate}
+/* A cut title card pinned to the backdrop. Hard edge, not a glow — and it is
+   what keeps the type off the halftone dots. */
+.marquee::before{content:"";position:absolute;inset:-7% -8%;z-index:-1;pointer-events:none;
+  background:#FBF5E8;filter:url(#deckle);box-shadow:var(--lift-2);
+  transform:rotate(-.5deg)}
+.marquee h1{
+  font-size:clamp(2.8rem,8.4vw,7.4rem);
+  font-variation-settings:"wdth" 88,"opsz" 96;
+  letter-spacing:-.045em;line-height:.82;margin:0 0 .3em;
+  display:flex;flex-wrap:wrap;justify-content:center;gap:0 .02em}
+.marquee h1 .ch{display:inline-block;transform-origin:50% 100%}
+.marquee h1 .ch--ink2{color:var(--orange);mix-blend-mode:multiply}
+.marquee .lede{font-size:clamp(1.02rem,2.3vw,1.42rem);max-width:30ch;margin:0 auto 1.1rem;
+  font-style:italic;color:var(--ink)}
+.marquee .badges{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+.cue{position:absolute;z-index:7;left:50%;bottom:clamp(14px,3vh,40px);transform:translateX(-50%);
+  font-family:var(--mono);font-size:0.7rem;letter-spacing:.24em;text-transform:uppercase;
+  color:#FBF5E8;text-shadow:0 1px 3px rgba(33,27,21,.7)}
+.cue span{display:inline-block;animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+
+/* ============================================================
+   generic section chrome
+   ============================================================ */
+.wrap{max-width:1420px;margin:0 auto;padding:clamp(3.6rem,9vh,8rem) var(--rail)}
+.secno{font-family:var(--mono);font-size:.7rem;letter-spacing:.24em;color:var(--orange);text-transform:uppercase}
+.rule{height:0;border:0;border-top:1.5px solid rgba(33,27,21,.28);margin:0 0 2.4rem}
+h2.big{font-size:clamp(2.1rem,5.4vw,4.2rem);font-variation-settings:"wdth" 86,"opsz" 72;margin:.35rem 0 1.6rem}
+
+/* ---------- prologue: fold-out with a hand in the margin ---------- */
+.prologue{position:relative}
+.foldout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.62fr);gap:clamp(1.6rem,4vw,4.2rem);align-items:start}
+@media (max-width:900px){.foldout{grid-template-columns:minmax(0,1fr)}}
+.prose{max-width:var(--measure);font-size:1.15rem}
+.prose .lead{font-size:1.44rem;line-height:1.44}
+.prose .lead::first-letter{
+  font-family:var(--disp);font-size:3.1em;line-height:.74;float:left;
+  padding:.06em .12em 0 0;color:var(--orange);font-weight:800}
+.circled{position:relative;white-space:nowrap}
+.circled svg{position:absolute;left:-10px;top:-12px;width:calc(100% + 20px);height:calc(100% + 24px);
+  overflow:visible;pointer-events:none}
+.circled path{fill:none;stroke:var(--orange);stroke-width:2.4;stroke-linecap:round}
+.margincol{position:relative;padding-top:1.4rem}
+.marginnote{position:relative;padding:1.2rem 1.3rem;transform:rotate(-1.4deg)}
+.marginnote .hand{display:block}
+.arrowdraw{display:block;width:100%;height:78px;overflow:visible}
+.arrowdraw path{fill:none;stroke:var(--teal);stroke-width:2.2;stroke-linecap:round}
+
+/* ---------- scene: three flats (streams) ---------- */
+.flatsscene{position:relative}
+.flatsviewport{position:relative;min-height:100svh;display:grid;place-items:center;overflow:hidden}
+.flatsinner{width:100%;max-width:1420px;padding:0 var(--rail)}
+.flatsrow{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(.8rem,2.4vw,2.4rem);align-items:stretch;position:relative}
+.stitch{position:absolute;inset:0;pointer-events:none;z-index:5;overflow:visible}
+.stitch path{fill:none;stroke:var(--teal);stroke-width:2.6;stroke-dasharray:11 9;stroke-linecap:round}
+.streamflat{position:relative;padding:clamp(1.2rem,2.4vw,2.1rem);min-height:clamp(300px,42vh,430px);
+  display:flex;flex-direction:column;gap:.7rem;transform-origin:50% 100%}
+.streamflat:nth-child(1){--tilt:-1.5deg}
+.streamflat:nth-child(2){--tilt:.7deg}
+.streamflat:nth-child(3){--tilt:1.9deg}
+.streamflat>.pulp{transform:rotate(var(--tilt))}
+.streamflat .tab{position:absolute;top:-16px;left:1.4rem;padding:.5em .85em .4em;
+  font-family:var(--mono);font-size:0.7rem;letter-spacing:.2em;text-transform:uppercase}
+.streamflat h3{font-size:clamp(1.5rem,2.5vw,2.15rem);font-variation-settings:"wdth" 88;margin:.55rem 0 .15rem}
+.streamflat .role{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--teal)}
+.streamflat p{font-size:1.02rem;margin:0}
+.streamflat ul{margin:.2rem 0 0;padding-left:1.1rem;font-size:.98rem}
+.streamflat li{margin-bottom:.28rem}
+.streamflat .foot{margin-top:auto;font-family:var(--mono);font-size:0.7rem;letter-spacing:.1em;color:var(--ink-soft);
+  border-top:1.5px solid rgba(33,27,21,.22);padding-top:.7rem;text-transform:uppercase}
+@media (max-width:900px){
+  .flatsrow{grid-template-columns:minmax(0,1fr);gap:1.9rem}
+  .flatsviewport{min-height:0;padding:0}
+  .streamflat{min-height:0}
+}
+
+/* ---------- weights: physical chips in a tray ---------- */
+.weights .wrap{padding-bottom:clamp(3rem,7vh,6rem)}
+.weightgrid{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1fr);gap:clamp(1.6rem,4vw,3.6rem);align-items:start}
+@media (max-width:900px){.weightgrid{grid-template-columns:minmax(0,1fr)}}
+.trayhold{position:relative}
+.tray{position:relative;height:clamp(330px,46vh,470px);overflow:hidden;
+  border-bottom:0;touch-action:pan-y}
+.tray>.pulp{background:var(--manila)}
+.tray .lip{position:absolute;inset:auto 0 0 0;height:30%;pointer-events:none;
+  background:linear-gradient(to top,var(--kraft),rgba(196,168,120,0));
+  box-shadow:0 -2px 0 rgba(33,27,21,.22)}
+.chip{position:absolute;left:0;top:0;width:96px;height:96px;display:grid;place-items:center;
+  will-change:transform;cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}
+.chip:active{cursor:grabbing}
+.chip .disc{width:100%;height:100%;border-radius:50%;display:grid;place-items:center;
+  background:var(--oat);box-shadow:var(--lift-2), 0 0 0 2.5px var(--ink) inset;filter:url(#deckle)}
+.chip .val{font-family:var(--disp);font-weight:800;font-size:1.85rem;font-variation-settings:"wdth" 82;line-height:.9}
+.chip .lbl{font-family:var(--mono);font-size:0.7rem;letter-spacing:.14em;text-transform:uppercase;margin-top:.15rem}
+.chip--a .disc{background:linear-gradient(0deg,rgba(255,90,31,.22),rgba(255,90,31,.22)),var(--oat)}
+.chip--b .disc{background:linear-gradient(0deg,rgba(20,98,95,.2),rgba(20,98,95,.2)),var(--oat)}
+.chip--c .disc{background:var(--oat)}
+.readout{font-family:var(--mono);margin-top:1.1rem;display:flex;flex-wrap:wrap;align-items:baseline;gap:.8rem}
+.readout .tot{font-family:var(--disp);font-weight:800;font-size:3.1rem;font-variation-settings:"wdth" 80;
+  line-height:.9;font-variant-numeric:tabular-nums}
+.readout .of{font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
+.traybtns{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
+.btn{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+  background:var(--oat);color:var(--ink);border:2px solid var(--ink);padding:.7em 1em .6em;cursor:pointer;
+  box-shadow:3px 3px 0 var(--ink);transition:transform .12s ease, box-shadow .12s ease}
+.btn:hover{transform:translate(1.5px,1.5px);box-shadow:1.5px 1.5px 0 var(--orange);background:var(--manila)}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.weightlist{margin:1.4rem 0 0;padding:0;list-style:none;font-family:var(--mono);font-size:.86rem}
+.weightlist li{display:grid;grid-template-columns:3.6rem 1fr auto;gap:.8rem;align-items:baseline;
+  padding:.62rem 0;border-bottom:1.5px dotted rgba(33,27,21,.3)}
+.weightlist b{font-family:var(--disp);font-size:1.15rem;font-variant-numeric:tabular-nums}
+.weightlist span:last-child{color:var(--teal);letter-spacing:.1em;text-transform:uppercase;font-size:0.7rem}
+
+/* ---------- the run: twelve tickets ---------- */
+.runstrip{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:clamp(5px,.7vw,11px)}
+@media (max-width:1100px){.runstrip{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (max-width:600px){.runstrip{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.ticket{position:relative;display:block;text-decoration:none;color:var(--ink);
+  padding:.85rem .6rem 1rem;text-align:left;min-height:118px;
+  transition:transform .2s cubic-bezier(.2,.8,.3,1), box-shadow .2s ease}
+.ticket>.pulp{box-shadow:var(--lift-1)}
+.ticket .wk{font-family:var(--mono);font-size:0.7rem;letter-spacing:.14em;color:var(--ink-soft);display:block}
+.ticket .n{font-family:var(--disp);font-weight:800;font-size:1.9rem;font-variation-settings:"wdth" 80;
+  line-height:.85;display:block;margin:.1rem 0 .35rem;font-variant-numeric:tabular-nums}
+.ticket .t{font-size:.86rem;line-height:1.24;display:block}
+.ticket::after{content:"";position:absolute;left:.6rem;right:.6rem;bottom:.5rem;height:0;
+  border-top:1.5px dotted rgba(33,27,21,.3)}
+.ticket:hover,.ticket:focus-visible{transform:translateY(-6px) rotate(-.8deg)}
+.ticket:hover>.pulp,.ticket:focus-visible>.pulp{box-shadow:var(--lift-3)}
+.ticket--now{color:var(--ink)}
+.ticket--now>.pulp{background:var(--manila)}
+.ticket--now .n{color:var(--orange);mix-blend-mode:multiply}
+.ticket--now .stamp{position:absolute;right:-6px;top:-9px;transform:rotate(6deg);font-size:0.7rem}
+
+/* ---------- colophon ---------- */
+.colophon{position:relative;margin-top:clamp(2rem,6vh,5rem);
+  border-top:1.5px solid rgba(33,27,21,.28);background:linear-gradient(to bottom,rgba(196,168,120,.22),transparent 60%)}
+.colophon .wrap{padding-top:clamp(2rem,5vh,3.4rem);padding-bottom:clamp(2.6rem,6vh,4.4rem)}
+.colgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:1.8rem;
+  font-family:var(--mono);font-size:.78rem;line-height:1.7}
+.colgrid h4{font-family:var(--mono);font-size:0.7rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--ink-soft);margin:0 0 .6rem;font-weight:700}
+.regmarks{display:flex;gap:1.4rem;align-items:center;margin-bottom:1.6rem;opacity:.8}
+.regmarks svg{width:26px;height:26px;flex:none}
+.inkchip{display:inline-flex;align-items:center;gap:.45rem}
+.inkchip i{width:13px;height:13px;display:inline-block;border:1.5px solid var(--ink)}
+
+/* ---------- reduced motion ---------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms !important;animation-iteration-count:1 !important;
+    transition-duration:.001ms !important}
+  .cue span{animation:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- procedural texture: all of it, no image files -->
+<svg class="defs" aria-hidden="true" focusable="false">
+  <filter id="grainF"><feTurbulence type="fractalNoise" baseFrequency="0.92" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+  <filter id="deckle"><feTurbulence type="fractalNoise" baseFrequency="0.014 0.05" numOctaves="3" seed="12" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <filter id="inkspread"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.7" xChannelSelector="R" yChannelSelector="G"/></filter>
+</svg>
+<svg class="grain" aria-hidden="true" focusable="false"><rect width="100%" height="100%" filter="url(#grainF)"/></svg>
+
+<nav class="topbar" aria-label="Primary">
+  <a class="navtape tape" href="index.html" aria-current="page">The Course</a>
+  <a class="navtape tape" href="inner.html">Week 07</a>
+  <a class="navtape tape" href="deck.html">Lecture Deck</a>
+  <p class="sheetmark">Sheet 1 of 3 · two inks</p>
+</nav>
+
+<main id="main">
+
+  <!-- ==========================================================
+       SCENE 1 · the proscenium assembles
+       ========================================================== -->
+  <section class="stagescene" id="scene-stage" aria-labelledby="h-title">
+    <div class="stage" data-stage>
+      <div class="flat flat-backdrop" data-f="backdrop"></div>
+      <div class="flat flat-hills" data-f="hills">
+        <!-- three cut-paper step flats, each a darker stock, each with the
+             light catching its top cut edge -->
+        <svg viewBox="0 0 1200 400" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <path d="M0 108 C 150 74 246 132 372 104 C 512 72 604 128 742 100 C 884 70 1024 118 1200 88 L1200 400 L0 400Z" fill="#C4A878"/>
+          <path d="M0 116 C 150 82 246 140 372 112 C 512 80 604 136 742 108 C 884 78 1024 126 1200 96 L1200 110 C 1024 140 884 92 742 122 C 604 150 512 94 372 126 C 246 154 150 96 0 130Z" fill="#FBF5E8" opacity=".5"/>
+          <path d="M0 214 C 190 178 322 242 486 208 C 664 170 790 232 962 202 C 1082 180 1150 202 1200 194 L1200 400 L0 400Z" fill="#A8905E"/>
+          <path d="M0 222 C 190 186 322 250 486 216 C 664 178 790 240 962 210 C 1082 188 1150 210 1200 202 L1200 214 C 1150 222 1082 200 962 222 C 790 252 664 190 486 228 C 322 262 190 198 0 234Z" fill="#E3D0A6" opacity=".55"/>
+          <path d="M0 312 C 210 286 360 336 540 312 C 730 286 880 330 1060 308 C 1140 298 1176 304 1200 300 L1200 400 L0 400Z" fill="#14625F"/>
+        </svg>
+      </div>
+      <div class="flat flat-wing wing-l" data-f="wingL"></div>
+      <div class="flat flat-wing wing-r" data-f="wingR"></div>
+      <div class="flat flat-floor" data-f="floor"></div>
+      <div class="stagelight" data-light aria-hidden="true"></div>
+
+      <div class="arch arch--land" aria-hidden="true">
+        <svg viewBox="0 0 1000 620" preserveAspectRatio="none" focusable="false">
+          <!-- Contact shadow the frame throws onto the set. Hard-edged and
+               short — a cut sheet resting 2mm off the backdrop, not a glow.
+               Two stacked strokes give a 6px falloff without any blur,
+               which cannot stretch into a dome under preserveAspectRatio. -->
+          <path fill="#FBF5E8" fill-rule="evenodd" d="M0 0h1000v620H0z
+            M104 620 L104 352 A396 268 0 0 1 896 352 L896 620 Z"/>
+          <path fill="none" stroke="#211B15" stroke-opacity=".62" stroke-width="2.6" vector-effect="non-scaling-stroke"
+            d="M104 620 L104 352 A396 268 0 0 1 896 352 L896 620"/>
+          <!-- the cut edge, catching the lamp along the top of the arch -->
+          <path fill="#C4A878" fill-opacity=".34" d="M104 352 A396 268 0 0 1 896 352 L896 374 A396 268 0 0 0 104 374 Z"/>
+        </svg>
+      </div>
+      <div class="arch arch--portrait" aria-hidden="true">
+        <svg viewBox="0 0 500 900" preserveAspectRatio="none" focusable="false">
+          <path fill="#FBF5E8" fill-rule="evenodd" d="M0 0h500v900H0z
+            M34 900 L34 356 A216 228 0 0 1 466 356 L466 900 Z"/>
+          <path fill="none" stroke="#211B15" stroke-opacity=".62" stroke-width="2.6" vector-effect="non-scaling-stroke"
+            d="M34 900 L34 356 A216 228 0 0 1 466 356 L466 900"/>
+          <path fill="#C4A878" fill-opacity=".34" d="M34 356 A216 228 0 0 1 466 356 L466 378 A216 228 0 0 0 34 378 Z"/>
+        </svg>
+      </div>
+
+      <div class="marquee">
+        <h1 id="h-title" aria-label="The Course">
+          <span class="ch">T</span><span class="ch">H</span><span class="ch">E</span><span class="ch" style="width:.28em"> </span><span class="ch ch--ink2">C</span><span class="ch ch--ink2">O</span><span class="ch ch--ink2">U</span><span class="ch ch--ink2">R</span><span class="ch ch--ink2">S</span><span class="ch ch--ink2">E</span>
+        </h1>
+        <p class="lede" data-mq>Twelve weeks. One shared stage, three parallel scenes.</p>
+        <p class="badges" data-mq>
+          <span class="stamp stamp--ink">Level 3</span>
+          <span class="stamp stamp--teal">No prerequisite</span>
+          <span class="stamp">Set in two inks</span>
+        </p>
+      </div>
+      <p class="cue"><span>Scroll to build the set ↓</span></p>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       PROLOGUE
+       ========================================================== -->
+  <section class="prologue" aria-labelledby="h-prologue">
+    <div class="wrap">
+      <p class="secno">Prologue</p>
+      <h2 class="big" id="h-prologue">A set you build before<br>anyone takes their seat</h2>
+      <hr class="rule">
+      <div class="foldout">
+        <div class="prose">
+          <p class="lead">Most of what you will make in this course is scaffolding — the flats, the blocking, the run sheet. It is the part nobody in the audience is meant to notice, and it is the part that decides whether the thing holds together on the night.</p>
+          <p>So the studio runs like a production. Every week opens on a shared stage: one lecture, one problem, everybody in the same room looking at the same object. Then the room splits into three scenes running in parallel, each taking that week’s problem into a different kind of material. You commit to one scene for the semester and you watch the other two from the wings.</p>
+          <p>What you are graded on is <span class="circled" data-circle>the legible trace</span> of your process — the annotated draft, the rejected version with a reason written on it, the decision you reversed and dated. Outcomes are noisy and mostly not yours to control. The record of how you worked is entirely yours, and it is the only thing here that can be read fairly.</p>
+          <p>Bring nothing but a way of keeping notes. Everything else is cut, folded and taped together in the room.</p>
+        </div>
+        <aside class="margincol">
+          <div class="marginnote sheet sheet--manila">
+            <span class="pulp"></span>
+            <p class="stamp stamp--teal" style="margin:0 0 .7rem">Read this bit twice</p>
+            <p class="hand">Nobody is marking whether<br>the set was <em>good</em>.<br>They are marking whether<br>you can say why you<br>built it that way.</p>
+          </div>
+          <svg class="arrowdraw" data-arrow viewBox="0 0 320 78" aria-hidden="true" focusable="false"></svg>
+          <p style="font-family:var(--mono);font-size:.78rem;line-height:1.7;margin:0">
+            Twelve sessions · one shared lecture each · three parallel streams · one capstone assembled from work you were going to do anyway.
+          </p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       SCENE 2 · three flats fly in and get stitched together
+       ========================================================== -->
+  <section class="flatsscene" id="scene-streams" aria-labelledby="h-streams">
+    <div class="wrap" style="padding-bottom:0">
+      <p class="secno">Scene I · the three streams</p>
+      <h2 class="big" id="h-streams">Same problem,<br>three materials</h2>
+      <hr class="rule">
+    </div>
+    <div class="flatsviewport" data-flatsviewport>
+      <div class="flatsinner">
+        <div class="flatsrow" data-flatsrow>
+          <svg class="stitch" data-stitch viewBox="0 0 1000 420" preserveAspectRatio="none" aria-hidden="true" focusable="false"></svg>
+
+          <article class="streamflat sheet" data-flat>
+            <span class="pulp"></span>
+            <span class="tab tape">Stream A</span>
+            <p class="role">Builds the object</p>
+            <h3>Fabric&nbsp;&amp;<br>Structure</h3>
+            <p>You take the week’s problem and make a physical answer to it — something with load paths, tolerances and a way of failing. The critique is on whether the thing stands, and on whether your drawings match what you actually built.</p>
+            <ul>
+              <li>Weekly build to a fixed material budget</li>
+              <li>A drawing set that stays in sync with the object</li>
+              <li>One deliberate failure test, documented</li>
+            </ul>
+            <p class="foot">Studio · 3&nbsp;hrs · bench space allocated</p>
+          </article>
+
+          <article class="streamflat sheet sheet--manila" data-flat>
+            <span class="pulp"></span>
+            <span class="tab tape">Stream B</span>
+            <p class="role">Runs the room</p>
+            <h3>Blocking&nbsp;&amp;<br>Facilitation</h3>
+            <p>Your material is other people’s attention. Each week you convene a short session on the shared problem and are assessed on the structure you gave it, not on whether the group agreed with you at the end.</p>
+            <ul>
+              <li>A run sheet written before, marked up after</li>
+              <li>Two rounds of peer observation notes</li>
+              <li>One session you deliberately hand over</li>
+            </ul>
+            <p class="foot">Seminar · 2&nbsp;hrs · paired rotation</p>
+          </article>
+
+          <article class="streamflat sheet sheet--kraft" data-flat>
+            <span class="pulp"></span>
+            <span class="tab tape">Stream C</span>
+            <p class="role">Keeps the record</p>
+            <h3>Archive&nbsp;&amp;<br>Evidence</h3>
+            <p>You work on the trace itself: what gets written down, how it is indexed, and what a reader can reconstruct from it a year later. The stream that most often changes how people in the other two streams work.</p>
+            <ul>
+              <li>A working archive with a stated retrieval policy</li>
+              <li>Weekly citation audit of your own claims</li>
+              <li>One reconstruction of somebody else’s week</li>
+            </ul>
+            <p class="foot">Desk work · 2&nbsp;hrs · archive access</p>
+          </article>
+        </div>
+        <p class="hand" style="margin:1.6rem 0 0;max-width:46ch">The thread is the point — every week the three scenes are stitched back to one lecture before they diverge again.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       SCENE 3 · the weights, physically
+       ========================================================== -->
+  <section class="weights" id="scene-weights" aria-labelledby="h-weights">
+    <div class="wrap">
+      <p class="secno">Scene II · assessment</p>
+      <h2 class="big" id="h-weights">Three counters,<br>one tray, no gaps</h2>
+      <hr class="rule">
+      <div class="weightgrid">
+        <div class="trayhold">
+          <div class="tray sheet sheet--manila gridded" data-tray>
+            <span class="pulp"></span>
+            <div class="chip chip--a" data-chip data-weight="45"><span class="disc"><span class="val num">45</span><span class="lbl">Process</span></span></div>
+            <div class="chip chip--b" data-chip data-weight="20"><span class="disc"><span class="val num">20</span><span class="lbl">Artefact</span></span></div>
+            <div class="chip chip--c" data-chip data-weight="35"><span class="disc"><span class="val num">35</span><span class="lbl">Response</span></span></div>
+            <span class="lip"></span>
+          </div>
+          <!-- The total is the whole point of the section and it changes as a
+               side effect of dragging, so it has to be announced, not just
+               redrawn. polite, not assertive: counters can land in a flurry. -->
+          <p class="readout" role="status" aria-live="polite">
+            <span class="tot" data-total>100</span>
+            <span class="of">in the tray, of 100</span>
+            <span class="stamp" data-verdict hidden>Short — 100 required</span>
+          </p>
+          <div class="traybtns">
+            <button class="btn" type="button" data-tip>Tip the tray</button>
+            <button class="btn" type="button" data-reset>Put them back</button>
+          </div>
+          <p class="hand" style="margin:.9rem 0 0" data-hint>Grab a counter and throw it out of the tray.</p>
+        </div>
+        <div>
+          <p>Nothing in the system checks that a course’s weightings add to one hundred. That is a human job, so this page makes the arithmetic physical: the three counters are the whole mark, the tray is the course, and you can see immediately when one is missing.</p>
+          <ul class="weightlist">
+            <li><b class="num">45</b><span>Legibility of process — the annotated trace, dated, with reversals left in.</span><span>Weekly</span></li>
+            <li><b class="num">20</b><span>A working artefact that another person can pick up and run.</span><span>Week 09</span></li>
+            <li><b class="num">35</b><span>Response to the brief — evidence you read what was asked and argued with it.</span><span>Week 12</span></li>
+          </ul>
+          <p style="font-family:var(--mono);font-size:.8rem;line-height:1.7;margin:1.4rem 0 0;color:var(--ink-soft)">
+            Capstone is work you are already pursuing outside the course. It is graded on the artefacts of pursuing it — never on whether it landed, never on whose name is on it.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       THE RUN
+       ========================================================== -->
+  <section class="run" aria-labelledby="h-run">
+    <div class="wrap">
+      <p class="secno">The run · twelve weeks</p>
+      <h2 class="big" id="h-run">Call sheet</h2>
+      <hr class="rule">
+      <div class="runstrip">
+        <a class="ticket sheet" href="inner.html"><span class="pulp"></span><span class="wk">WK</span><span class="n">01</span><span class="t">Reading the room you are in</span></a>
+        <a class="ticket sheet" href="inner.html"><span class="pulp"></span><span class="wk">WK</span><span class="n">02</span><span class="t">Materials and their refusals</span></a>
+        <a class="ticket sheet" href="inner.html"><span class="pulp"></span><span class="wk">WK</span><span class="n">03</span><span class="t">Notation: writing what you did</span></a>
+        <a class="ticket sheet" href="inner.html"><span class="pulp"></span><span class="wk">WK</span><span class="n">04</span><span class="t">Scale, and when it breaks</span></a>
+        <a class="ticket sheet" href="inner.html"><span class="pulp"></span><span class="wk">WK</span><span class="n">05</span><span class="t">Rehearsal as a method</span></a>
+        <a class="ticket sheet" href="inner.html"><span class="pulp"></span><span class="wk">WK</span><span class="n">06</span><span class="t">Critique without consensus</span></a>
+        <a class="ticket sheet ticket--now" href="inner.html" aria-describedby="now-note"><span class="pulp"></span><span class="wk">WK</span><span class="n">07</span><span class="t">Registration and the off-register</span><span class="stamp">This week</span></a>
+        <a class="ticket sheet" href="inner.html"><span class="pulp"></span><span class="wk">WK</span><span class="n">08</span><span class="t">Handing the work over</span></a>
+        <a class="ticket sheet" href="inner.html"><span class="pulp"></span><span class="wk">WK</span><span class="n">09</span><span class="t">The artefact, load-tested</span></a>
+        <a class="ticket sheet" href="inner.html"><span class="pulp"></span><span class="wk">WK</span><span class="n">10</span><span class="t">Archives and forgetting</span></a>
+        <a class="ticket sheet" href="inner.html"><span class="pulp"></span><span class="wk">WK</span><span class="n">11</span><span class="t">Assembling the capstone</span></a>
+        <a class="ticket sheet" href="inner.html"><span class="pulp"></span><span class="wk">WK</span><span class="n">12</span><span class="t">Strike the set, keep the notes</span></a>
+      </div>
+      <p id="now-note" style="font-family:var(--mono);font-size:.78rem;margin:1.5rem 0 0;color:var(--ink-soft)">
+        Every ticket opens the same worked example — Week 07, the densest sheet in the set.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="colophon">
+  <div class="wrap">
+    <div class="regmarks" aria-hidden="true">
+      <svg viewBox="0 0 40 40" focusable="false"><circle cx="20" cy="20" r="12" fill="none" stroke="#FF5A1F" stroke-width="2"/><path d="M20 0v40M0 20h40" stroke="#14625F" stroke-width="1.6"/></svg>
+      <svg viewBox="0 0 40 40" focusable="false"><path d="M20 2v36M2 20h36" stroke="#211B15" stroke-width="1.6"/><rect x="11" y="11" width="18" height="18" fill="none" stroke="#FF5A1F" stroke-width="2"/></svg>
+      <svg viewBox="0 0 40 40" focusable="false"><rect x="2" y="14" width="12" height="12" fill="#FF5A1F"/><rect x="14" y="14" width="12" height="12" fill="#14625F"/><rect x="26" y="14" width="12" height="12" fill="#211B15"/></svg>
+    </div>
+    <div class="colgrid">
+      <div>
+        <h3>Colophon</h3>
+        <p style="margin:0">Set in Bricolage Grotesque, Newsreader and Courier Prime. Every texture on this sheet is drawn by the browser — grain, deckled edges and halftone are SVG filters and CSS gradients. No image files exist.</p>
+      </div>
+      <div>
+        <h3>Inks</h3>
+        <p style="margin:0 0 .4rem"><span class="inkchip"><i style="background:#FF5A1F"></i> Ink A · #FF5A1F</span></p>
+        <p style="margin:0 0 .4rem"><span class="inkchip"><i style="background:#14625F"></i> Ink B · #14625F</span></p>
+        <p style="margin:0"><span class="inkchip"><i style="background:#211B15"></i> Key · #211B15</span></p>
+      </div>
+      <div>
+        <h3>Sheets</h3>
+        <p style="margin:0"><a href="index.html">1 · The Course</a><br><a href="inner.html">2 · Week 07</a><br><a href="deck.html">3 · Lecture Deck</a></p>
+      </div>
+      <div>
+        <h3>Stock</h3>
+        <p style="margin:0">Oat #F4ECDC · Manila #E3D0A6 · Kraft #C4A878. Trimmed to 1920 and 390. Reduced motion honoured: the set arrives already assembled.</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/matter-js@0.19.0/build/matter.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---- nav tapes get out of the way of the prose ---- */
+  (function(){
+    var bar = document.querySelector(".topbar");
+    if(!bar) return;
+    var last = window.scrollY, ticking = false;
+    function apply(){
+      var y = window.scrollY;
+      if(y > 420 && y > last + 4)      bar.classList.add("is-away");
+      else if(y < last - 4 || y < 420) bar.classList.remove("is-away");
+      last = y; ticking = false;
+    }
+    window.addEventListener("scroll", function(){
+      if(!ticking){ ticking = true; requestAnimationFrame(apply); }
+    }, {passive:true});
+    /* keyboard users must never lose the nav: a focus inside it brings it back */
+    bar.addEventListener("focusin", function(){ bar.classList.remove("is-away"); });
+  })();
+  var FINE = window.matchMedia("(pointer: fine)").matches;
+  var hasGSAP = typeof window.gsap !== "undefined";
+
+  /* ---------- smooth scroll (off under reduced motion) ---------- */
+  if(hasGSAP && !REDUCED && typeof window.Lenis !== "undefined"){
+    gsap.registerPlugin(ScrollTrigger);
+    var lenis = new Lenis({duration:1.05, smoothWheel:true});
+    lenis.on("scroll", ScrollTrigger.update);
+    gsap.ticker.add(function(t){ lenis.raf(t*1000); });
+    gsap.ticker.lagSmoothing(0);
+  } else if(hasGSAP){
+    gsap.registerPlugin(ScrollTrigger);
+  }
+
+  /* ==========================================================
+     SIGNATURE — the set assembles
+     Desktop: pinned scroll scene, flats fly in from the wings.
+     Mobile:  no pin. The flats are already hinged in place and
+              the marquee arrives on entry — the proscenium
+              becomes a standing portrait frame instead.
+     ========================================================== */
+  function assembleStage(){
+    if(!hasGSAP) return;
+    var stage = document.querySelector("[data-stage]");
+    if(!stage) return;
+    var q = function(s){ return stage.querySelector(s); };
+    var chars = stage.querySelectorAll(".marquee h1 .ch");
+    var mqs = stage.querySelectorAll("[data-mq]");
+
+    if(REDUCED){ return; } /* the set is already built in CSS */
+
+    var lede = stage.querySelector(".lede");
+    var badges = stage.querySelector(".badges");
+    var badgeItems = badges ? badges.querySelectorAll(".stamp") : [];
+
+    /* CURTAIN UP — runs on load, so the hero is never an empty box.
+       Backdrop, floor and arch land, and the title sets itself. */
+    gsap.set(badgeItems, {opacity:0, y:14, rotate:-3});
+    gsap.timeline({defaults:{ease:"power3.out"}})
+      .from('[data-f="backdrop"]', {yPercent:-46, opacity:0, duration:.95}, 0)
+      .from('[data-f="floor"]',    {yPercent:74, duration:.8}, .1)
+      .from(".arch",               {scale:1.05, opacity:0, duration:.95}, .05)
+      .from(chars, {yPercent:112, rotate:7, opacity:0, duration:.72, stagger:.045}, .42)
+      .from(lede,  {y:20, opacity:0, duration:.6}, 1.02)
+      .from(".cue",{opacity:0, duration:.5}, 1.3);
+
+    var mm = gsap.matchMedia();
+
+    /* DESCEND — the scroll flies in the depth layers the title card
+       was missing, stamps the badges, then walks the whole set back. */
+    mm.add("(min-width: 901px)", function(){
+      var tl = gsap.timeline({
+        scrollTrigger:{
+          trigger:"#scene-stage", start:"top top", end:"+=210%",
+          scrub:.9, pin:stage, pinSpacing:true, anticipatePin:1
+        },
+        defaults:{ease:"power2.out"}
+      });
+      tl.from('[data-f="wingL"]', {xPercent:-132, rotate:-7, duration:1.1}, 0)
+        .from('[data-f="wingR"]', {xPercent:132,  rotate:7,  duration:1.1}, .08)
+        .from('[data-f="hills"]', {yPercent:78, duration:1.1}, .42)
+        .to(badgeItems, {opacity:1, y:0, rotate:function(i){ return (i-1)*2.4; },
+                         duration:.5, stagger:.14, ease:"back.out(2.4)"}, .95)
+        .to(".cue", {opacity:0, duration:.35}, 1.05)
+        .to(".marquee", {scale:.88, y:-24, duration:1.3}, 1.5)
+        .to(['[data-f="backdrop"]','[data-f="hills"]'], {scale:.955, duration:1.3}, 1.5)
+        .to("[data-light]", {opacity:1.35, duration:1.3}, 1.5)
+        .to('[data-f="wingL"]', {xPercent:-9, duration:1.3}, 1.5)
+        .to('[data-f="wingR"]', {xPercent:9,  duration:1.3}, 1.5);
+      return function(){ gsap.set(".marquee", {clearProps:"all"}); };
+    });
+
+    /* 390 × 844 — no pin. The wings are hinged in on entry and the
+       proscenium stays as a standing portrait frame. */
+    mm.add("(max-width: 900px)", function(){
+      var tl = gsap.timeline({scrollTrigger:{trigger:stage, start:"top 85%", once:true},
+                              defaults:{ease:"power3.out"}});
+      tl.from('[data-f="wingL"]', {xPercent:-72, rotate:-4, duration:.8})
+        .from('[data-f="wingR"]', {xPercent:72,  rotate:4,  duration:.8}, "-=.72")
+        .from('[data-f="hills"]', {yPercent:52, opacity:0, duration:.65}, "-=.5")
+        .to(badgeItems, {opacity:1, y:0, rotate:0, duration:.45, stagger:.1,
+                         ease:"back.out(2.2)"}, "-=.3");
+      return function(){};
+    });
+  }
+
+  /* ---------- the light moves with the pointer ---------- */
+  /* This used to parallax the flats and the title card as well. Two reasons it
+     went: cut paper pinned to a stage does not slide about under your cursor,
+     so the parallax argued with the whole conceit; and it fired six GSAP tweens
+     plus a getBoundingClientRect on every single pointermove. What is left is
+     one aimed lamp, which is the thing the direction actually asked for — the
+     set photographed under a real light. */
+  function movingLight(){
+    if(REDUCED || !FINE) return;
+    var stage = document.querySelector("[data-stage]");
+    var light = document.querySelector("[data-light]");
+    if(!stage || !light) return;
+    var rect = null, px = 0, py = 0, queued = false;
+    function measure(){ rect = stage.getBoundingClientRect(); }
+    function paint(){
+      queued = false;
+      if(!rect) measure();
+      var nx = (px - rect.left)/rect.width, ny = (py - rect.top)/rect.height;
+      light.style.setProperty("--lx", (nx*100).toFixed(1)+"%");
+      light.style.setProperty("--ly", (ny*100).toFixed(1)+"%");
+    }
+    stage.addEventListener("pointermove", function(e){
+      px = e.clientX; py = e.clientY;
+      if(!queued){ queued = true; requestAnimationFrame(paint); }
+    }, {passive:true});
+    /* read the box on resize and scroll, never inside the move handler */
+    measure();
+    window.addEventListener("resize", measure);
+    window.addEventListener("scroll", measure, {passive:true});
+  }
+
+  /* ---------- hand-drawn marks that arrive late ---------- */
+  function drawMarks(){
+    var rc = window.rough;
+    /* circle around a phrase */
+    var host = document.querySelector("[data-circle]");
+    if(host && rc){
+      var svg = document.createElementNS("http://www.w3.org/2000/svg","svg");
+      host.appendChild(svg);
+      var draw = function(){
+        var w = host.offsetWidth + 20, h = host.offsetHeight + 24;
+        svg.setAttribute("viewBox","0 0 "+w+" "+h);
+        svg.innerHTML = "";
+        var gen = rc.svg(svg);
+        var node = gen.ellipse(w/2, h/2, w*0.99, h*0.92, {stroke:"#FF5A1F", strokeWidth:2.4, roughness:2.1, bowing:1.6, seed:9});
+        svg.appendChild(node);
+        animateIn(svg, host);
+      };
+      draw();
+      window.addEventListener("resize", debounce(draw, 220));
+    }
+    /* arrow in the margin */
+    var arrowHost = document.querySelector("[data-arrow]");
+    if(arrowHost && rc){
+      var gen2 = rough.svg(arrowHost);
+      arrowHost.appendChild(gen2.path("M8 8 C 70 4, 120 44, 196 40", {stroke:"#14625F", strokeWidth:2.2, roughness:1.9, bowing:2, seed:3}));
+      arrowHost.appendChild(gen2.path("M196 40 L178 27 M196 40 L176 52", {stroke:"#14625F", strokeWidth:2.2, roughness:1.6, seed:5}));
+      animateIn(arrowHost, arrowHost);
+    }
+  }
+  function animateIn(svg, trigger){
+    var paths = svg.querySelectorAll("path, ellipse");
+    if(REDUCED || !hasGSAP){ return; }
+    paths.forEach(function(p){
+      var len = 0;
+      try{ len = p.getTotalLength ? p.getTotalLength() : 600; }catch(e){ len = 600; }
+      if(!len) len = 600;
+      p.style.strokeDasharray = len; p.style.strokeDashoffset = len;
+    });
+    gsap.to(paths, {
+      strokeDashoffset:0, duration:.85, ease:"power1.inOut", stagger:.12,
+      scrollTrigger:{trigger:trigger, start:"top 82%", once:true}
+    });
+  }
+
+  /* ---------- the stitch between the three flats ---------- */
+  function stitchFlats(){
+    if(!hasGSAP) return;
+    var svg = document.querySelector("[data-stitch]");
+    var row = document.querySelector("[data-flatsrow]");
+    var flats = document.querySelectorAll("[data-flat]");
+    if(!svg || !row) return;
+
+    var build = function(){
+      var r = row.getBoundingClientRect();
+      svg.setAttribute("viewBox","0 0 "+Math.round(r.width)+" "+Math.round(r.height));
+      svg.setAttribute("preserveAspectRatio","none");
+      svg.innerHTML = "";
+      var pts = [];
+      flats.forEach(function(f){
+        var b = f.getBoundingClientRect();
+        pts.push([b.left - r.left + b.width/2, b.top - r.top + b.height*0.16]);
+      });
+      if(pts.length < 2) return;
+      var d = "M"+pts[0][0]+" "+pts[0][1];
+      for(var i=1;i<pts.length;i++){
+        var p0 = pts[i-1], p1 = pts[i];
+        var mx = (p0[0]+p1[0])/2;
+        d += " Q"+mx+" "+(Math.min(p0[1],p1[1]) - 46)+" "+p1[0]+" "+p1[1];
+      }
+      var path = document.createElementNS("http://www.w3.org/2000/svg","path");
+      path.setAttribute("d", d);
+      svg.appendChild(path);
+      if(!REDUCED){
+        var len = path.getTotalLength();
+        gsap.fromTo(path, {strokeDashoffset:len},
+          {strokeDashoffset:0, duration:1.4, ease:"none",
+           scrollTrigger:{trigger:row, start:"top 78%", once:true}});
+        path.style.strokeDasharray = "11 9";
+      }
+    };
+
+    var mm2 = gsap.matchMedia();
+    mm2.add("(min-width: 901px)", function(){
+      gsap.set(flats, {opacity:1});
+      if(!REDUCED){
+        gsap.from(flats, {
+          xPercent:function(i){ return i===0 ? -130 : (i===2 ? 130 : 0); },
+          yPercent:function(i){ return i===1 ? 90 : 0; },
+          rotate:function(i){ return i===0 ? -9 : (i===2 ? 9 : 0); },
+          opacity:0, duration:1.05, ease:"power3.out", stagger:.16,
+          scrollTrigger:{trigger:"[data-flatsviewport]", start:"top 72%", once:true}
+        });
+      }
+      build();
+      return function(){};
+    });
+    mm2.add("(max-width: 900px)", function(){
+      if(!REDUCED){
+        gsap.from(flats, {y:40, rotate:-2, opacity:0, duration:.7, ease:"power3.out",
+          scrollTrigger:{trigger:row, start:"top 88%", once:true}, stagger:.12});
+      }
+      build();
+      return function(){};
+    });
+    window.addEventListener("resize", debounce(build, 240));
+  }
+
+  /* ==========================================================
+     The weighting counters — real physics, real typography.
+     Matter.js drives invisible bodies; the DOM chips ride them.
+     ========================================================== */
+  function weightTray(){
+    var tray = document.querySelector("[data-tray]");
+    var chips = [].slice.call(document.querySelectorAll("[data-chip]"));
+    var totalEl = document.querySelector("[data-total]");
+    var verdict = document.querySelector("[data-verdict]");
+    var hint = document.querySelector("[data-hint]");
+    if(!tray || !chips.length) return;
+
+    if(typeof window.Matter === "undefined" || REDUCED){
+      /* static fallback: lay the counters out on the tray floor */
+      chips.forEach(function(c,i){
+        c.style.transform = "translate("+(24 + i*116)+"px,"+(tray.clientHeight-140)+"px) rotate("+(i-1)*4+"deg)";
+        c.style.cursor = "default";
+      });
+      if(hint) hint.textContent = "Counters shown at rest — motion is switched off on this device.";
+      return;
+    }
+
+    var M = Matter;
+    var W = tray.clientWidth, H = tray.clientHeight;
+    var engine = M.Engine.create({gravity:{x:0,y:1.05}});
+    var world = engine.world;
+    var SIZE = Math.min(96, Math.max(64, Math.round(W/4.4)));
+
+    /* A tray, not a sealed box. Earlier this had four walls, which made the
+       whole point unreachable: a counter could never actually leave, so the
+       "Short by N" state could not happen and the instruction to throw one
+       out was a lie. Now there is a floor the width of the tray and two low
+       lips — enough that a counter never rolls out on its own, but a
+       deliberate throw clears them and the mark visibly stops adding up. */
+    var LIP = Math.round(SIZE * 0.42);
+    var wallOpts = {isStatic:true, restitution:.32, friction:.5};
+    var walls = [
+      M.Bodies.rectangle(W/2, H + 30, W, 60, wallOpts),               /* floor */
+      M.Bodies.rectangle(-8, H - LIP/2, 16, LIP, wallOpts),           /* left lip  */
+      M.Bodies.rectangle(W + 8, H - LIP/2, 16, LIP, wallOpts)         /* right lip */
+    ];
+    M.Composite.add(world, walls);
+    chips.forEach(function(c){ c.style.width = SIZE+"px"; c.style.height = SIZE+"px"; });
+
+    var bodies = chips.map(function(c,i){
+      var b = M.Bodies.circle(W*(0.24 + i*0.26), -90 - i*130, SIZE/2, {
+        restitution:.52, friction:.22, frictionAir:.012, density:.0016
+      });
+      b.chipEl = c;
+      b.weight = parseInt(c.dataset.weight,10);
+      return b;
+    });
+    M.Composite.add(world, bodies);
+
+    /* drag only where there is a real pointer — Matter's touch handlers
+       otherwise swallow vertical scroll on a phone. */
+    if(FINE){
+      var mouse = M.Mouse.create(tray);
+      var mc = M.MouseConstraint.create(engine, {mouse:mouse, constraint:{stiffness:.22, render:{visible:false}}});
+      M.Composite.add(world, mc);
+      tray.addEventListener("wheel", function(e){ e.stopPropagation(); }, {passive:true});
+    } else {
+      if(hint) hint.textContent = "Tap a counter to knock it loose, or tip the tray.";
+      tray.addEventListener("click", function(e){
+        var r = tray.getBoundingClientRect();
+        var px = e.clientX - r.left, py = e.clientY - r.top;
+        bodies.forEach(function(b){
+          var dx = b.position.x - px, dy = b.position.y - py;
+          if(Math.sqrt(dx*dx+dy*dy) < SIZE*0.8){
+            M.Body.applyForce(b, b.position, {x:(dx>=0?1:-1)*0.055, y:-0.07});
+          }
+        });
+      });
+    }
+
+    var render = function(){
+      bodies.forEach(function(b){
+        var el = b.chipEl;
+        el.style.transform = "translate("+(b.position.x - SIZE/2).toFixed(1)+"px,"+
+                             (b.position.y - SIZE/2).toFixed(1)+"px) rotate("+b.angle.toFixed(3)+"rad)";
+      });
+    };
+    /* Step the engine ourselves rather than with Matter.Runner. Runner owns
+       its own requestAnimationFrame loop, and on this page it does not tick
+       at all — the bodies fall a frame or two and freeze. Driving
+       Engine.update from gsap.ticker also puts the physics on the same clock
+       as the scroll animation, so the chips cannot drift out of step with it.
+       The delta is clamped so a backgrounded tab does not resume with one
+       enormous step that fires every chip through the tray wall. */
+    /* Self-timed: gsap.ticker hands its callback a delta in milliseconds,
+       not seconds, and guessing wrong silently runs the physics at the
+       wrong speed instead of failing. Measuring the clock here removes the
+       ambiguity whichever loop ends up driving it. */
+    var live = false, prev = performance.now();
+    var stepAll = function(){
+      var now = performance.now();
+      var ms = Math.min(Math.max(now - prev, 8), 33);
+      prev = now;
+      if(live){ M.Engine.update(engine, ms); render(); }
+    };
+    /* Plain rAF on purpose. Matter's own Runner never ticks here, and
+       gsap.ticker parks itself when no tween is active, so neither is a
+       clock this can rely on. */
+    (function loop(){ stepAll(); requestAnimationFrame(loop); })();
+    render();
+
+    /* The tray is a long way down the page, so hold the counters above it
+       and let them drop when it actually comes into view — otherwise the
+       one piece of motion that explains the section has already finished
+       by the time anybody looks at it. */
+    if("IntersectionObserver" in window){
+      var io = new IntersectionObserver(function(entries){
+        if(entries[0].isIntersecting){ prev = performance.now(); live = true; io.disconnect(); }
+      }, {threshold:0.45});
+      io.observe(tray);
+    } else { live = true; }
+
+    /* readout: sum of what is still inside the tray */
+    var last = -1;
+    var tick = function(){
+      var sum = 0;
+      bodies.forEach(function(b){
+        var p = b.position;
+        if(p.x > -SIZE*0.4 && p.x < W + SIZE*0.4 && p.y < H + SIZE*0.4) sum += b.weight;
+      });
+      if(sum !== last){
+        last = sum;
+        totalEl.textContent = sum;
+        if(sum === 100){
+          verdict.hidden = false; verdict.textContent = "Signed off · adds to 100";
+          verdict.classList.add("stamp--teal");
+        } else {
+          verdict.hidden = false;
+          verdict.textContent = sum > 100 ? "Over — "+(sum-100)+" too many" : "Short by "+(100-sum);
+          verdict.classList.remove("stamp--teal");
+        }
+      }
+      setTimeout(tick, 140);
+    };
+    verdict.hidden = false; tick();
+
+    document.querySelector("[data-tip]").addEventListener("click", function(){
+      bodies.forEach(function(b){
+        M.Body.applyForce(b, b.position, {x:(Math.random()-.5)*0.09, y:-0.085});
+        M.Body.setAngularVelocity(b, (Math.random()-.5)*0.4);
+      });
+    });
+    document.querySelector("[data-reset]").addEventListener("click", function(){
+      bodies.forEach(function(b,i){
+        M.Body.setPosition(b, {x:W*(0.24 + i*0.26), y:-60 - i*70});
+        M.Body.setVelocity(b, {x:0,y:0});
+        M.Body.setAngularVelocity(b, 0);
+        M.Body.setAngle(b, 0);
+      });
+    });
+
+    window.addEventListener("resize", debounce(function(){
+      var nW = tray.clientWidth, nH = tray.clientHeight;
+      if(nW === W && nH === H) return;
+      W = nW; H = nH;
+      M.Body.setPosition(walls[0], {x:W/2, y:H + 30});
+      M.Body.setPosition(walls[1], {x:-8, y:H - LIP/2});
+      M.Body.setPosition(walls[2], {x:W + 8, y:H - LIP/2});
+    }, 260));
+  }
+
+  function debounce(fn, ms){
+    var t; return function(){ var a=arguments, s=this; clearTimeout(t); t=setTimeout(function(){ fn.apply(s,a); }, ms); };
+  }
+
+  function boot(){
+    try{ assembleStage(); }catch(e){ console.warn("stage:", e); }
+    try{ movingLight(); }catch(e){ console.warn("light:", e); }
+    try{ drawMarks(); }catch(e){ console.warn("marks:", e); }
+    try{ stitchFlats(); }catch(e){ console.warn("stitch:", e); }
+    try{ weightTray(); }catch(e){ console.warn("tray:", e); }
+  }
+  if(document.readyState === "complete") boot();
+  else window.addEventListener("load", boot);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#F4ECDC">
+<title>Lecture 07 deck · a folded strip — The Course</title>
+<meta name="description" content="Lecture 07 on one concertina-folded paper strip. Eight panels, keyboard navigable.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Caveat:wght@500..700&display=swap">
+<style>
+/* ============================================================
+   TACTILE STAGE — sheet 3. The deck is one folded strip of
+   paper. You do not advance slides; you walk along a fold.
+   ============================================================ */
+:root{
+  --oat:#F4ECDC; --manila:#E3D0A6; --kraft:#C4A878;
+  --ink:#211B15; --ink-soft:#4A3F33; --orange:#FF5A1F; --teal:#14625F;
+  --disp:"Bricolage Grotesque",system-ui,sans-serif;
+  --body:"Newsreader",Georgia,serif;
+  --mono:"Courier Prime",ui-monospace,monospace;
+  --hand:"Caveat",cursive;
+  --lift-2:0 1px 0 rgba(33,27,21,.22), 0 3px 4px -1px rgba(96,64,28,.44), 0 7px 9px -7px rgba(96,64,28,.34);
+  --lift-3:0 1px 0 rgba(33,27,21,.22), 0 4px 5px -1px rgba(96,64,28,.48), 0 11px 13px -9px rgba(96,64,28,.4);
+  color-scheme:light;
+  --rail:clamp(18px,4vw,72px);
+  --pw:min(720px,58vw);
+  --ph:min(560px,64vh);
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--oat);color:var(--ink);font-family:var(--body);
+  font-size:1.1875rem;line-height:1.55;font-optical-sizing:auto;overflow:hidden;
+  -webkit-tap-highlight-color:rgba(255,90,31,.25);touch-action:manipulation}
+body::before{content:"";position:fixed;inset:0;z-index:-2;pointer-events:none;
+  background:
+    radial-gradient(110% 80% at 50% -14%, rgba(255,255,255,.8), transparent 56%),
+    radial-gradient(100% 80% at 82% 112%, rgba(196,168,120,.5), transparent 60%),
+    repeating-linear-gradient(94deg, rgba(150,120,80,.045) 0 1px, transparent 1px 7px),
+    var(--oat)}
+.grain{position:fixed;inset:0;width:100%;height:100%;z-index:9000;pointer-events:none;opacity:.08;mix-blend-mode:multiply}
+.defs{position:absolute;width:0;height:0;overflow:hidden}
+::selection{background:var(--orange);color:#fff}
+:focus-visible{outline:3px solid var(--teal);outline-offset:3px;border-radius:2px}
+a{color:var(--teal);text-underline-offset:.18em}
+a:hover{color:var(--ink);text-decoration-color:var(--orange);text-decoration-thickness:3px}
+h1,h2,h3{font-family:var(--disp);font-weight:700;margin:0;line-height:.96;letter-spacing:-.025em;text-wrap:balance}
+p{margin:0 0 .85em}
+.skip{position:absolute;left:8px;top:-60px;z-index:9999;background:var(--ink);color:var(--oat);
+  font-family:var(--mono);font-size:.8rem;padding:.6rem .9rem;text-decoration:none}
+.skip:focus{top:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.stamp{display:inline-block;font-family:var(--mono);font-weight:700;font-size:0.7rem;letter-spacing:.2em;
+  text-transform:uppercase;padding:.42em .7em .36em;border:2px solid currentColor;color:var(--orange);
+  filter:url(#inkspread);opacity:.9}
+.stamp--teal{color:var(--teal)}
+.stamp--ink{color:var(--ink-soft)}
+.hand{font-family:var(--hand);font-size:1.3rem;line-height:1.26;color:var(--teal)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.tape{position:relative;display:inline-block;
+  background:linear-gradient(176deg, rgba(255,255,255,.34), rgba(196,168,120,.5)),var(--manila);
+  box-shadow:0 1px 0 rgba(255,255,255,.4) inset, 0 2px 5px -2px rgba(80,58,30,.5);
+  clip-path:polygon(0 6%,4% 0,9% 5%,15% 1%,21% 6%,28% 2%,35% 6%,42% 1%,49% 6%,56% 2%,63% 6%,70% 1%,77% 6%,84% 2%,91% 6%,96% 1%,100% 6%,
+                    100% 94%,95% 100%,89% 95%,83% 99%,76% 94%,69% 99%,62% 94%,55% 99%,48% 94%,41% 99%,34% 94%,27% 99%,20% 94%,13% 99%,6% 94%,0 99%)}
+.tape::after{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg, rgba(150,120,80,.14) 0 1px, transparent 1px 4px);opacity:.7}
+
+/* nav */
+.topbar{position:fixed;inset:0 0 auto 0;z-index:8000;pointer-events:none;
+  padding:0 var(--rail);padding-top:max(0px,env(safe-area-inset-top));
+  display:flex;align-items:flex-start;gap:clamp(6px,1.4vw,18px)}
+.topbar>*{pointer-events:auto}
+.navtape{font-family:var(--mono);font-size:clamp(.7rem,1.5vw,.76rem);letter-spacing:.14em;text-transform:uppercase;
+  text-decoration:none;color:var(--ink);padding:1.05em .95em .8em;
+  transform:translateY(-6px) rotate(var(--r,-1deg));transition:transform .22s cubic-bezier(.2,.8,.3,1)}
+.navtape:nth-child(2){--r:1.2deg}
+.navtape:nth-child(3){--r:-1.6deg}
+.navtape:hover{transform:translateY(-1px) rotate(calc(var(--r,-1deg) * .3))}
+/* Flat second ink, not a lit lozenge — riso lays one colour down and stops. */
+.navtape[aria-current="page"]{background:var(--orange)}
+.navtape[aria-current="page"]::before{content:"▸ "}
+
+/* ============================================================
+   THE FOLD
+   ============================================================ */
+/* The deck fills the window and never scrolls, so the fixed nav tapes cannot
+   be scrolled out of the way as they are on the other two sheets. The deck
+   reserves their height instead, or the top of the active panel sits under
+   them. */
+.deck{position:fixed;inset:0;display:grid;grid-template-rows:1fr auto;
+  padding-top:clamp(3.1rem,7vh,4rem)}
+.viewport{position:relative;overflow:hidden}
+.camera{position:absolute;inset:0;perspective:1600px;perspective-origin:50% 46%}
+.strip{position:absolute;inset:0;transform-style:preserve-3d;
+  transition:transform .74s cubic-bezier(.22,.9,.24,1)}
+.panel{
+  position:absolute;left:50%;top:50%;
+  width:var(--pw);height:var(--ph);
+  margin-left:calc(var(--pw) / -2);margin-top:calc(var(--ph) / -2);
+  background:var(--oat);
+  box-shadow:var(--lift-3);
+  padding:clamp(1.3rem,2.6vw,2.6rem);
+  display:flex;flex-direction:column;
+  transition:transform .74s cubic-bezier(.22,.9,.24,1), box-shadow .5s ease;
+  transform-style:flat;cursor:pointer;
+}
+.panel[data-face="in"]{background:linear-gradient(0deg,rgba(196,168,120,.12),rgba(196,168,120,.12)),var(--oat)}
+/* the crease: a hard line of shade down the leading edge */
+.panel::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg, rgba(33,27,21,.2) 0 1.5px, rgba(255,255,255,.34) 1.5px 14%, transparent 42%,
+             transparent 60%, rgba(150,120,80,.2) 92%, rgba(33,27,21,.22) calc(100% - 1.5px))}
+/* the light: darkens as the panel turns away */
+.panel::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:rgba(33,27,21,1);opacity:var(--shade,0);transition:opacity .74s ease;mix-blend-mode:multiply}
+.panel.is-live{cursor:default}
+.panel.is-live{box-shadow:var(--lift-3), 0 0 0 1.5px rgba(33,27,21,.22)}
+
+.pnum{font-family:var(--mono);font-size:0.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);
+  display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+  border-bottom:1.5px solid rgba(33,27,21,.26);padding-bottom:.6rem;margin-bottom:auto;flex:none}
+.pnum b{font-family:var(--disp);font-size:1.1rem;color:var(--orange);letter-spacing:0}
+.pbody{margin:auto 0;min-height:0;overflow:auto;overscroll-behavior:contain;padding-right:.2rem}
+.pfoot{flex:none;font-family:var(--mono);font-size:0.7rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);border-top:1.5px dotted rgba(33,27,21,.3);padding-top:.6rem;margin-top:auto;
+  display:flex;justify-content:space-between;gap:1rem}
+.panel h2{font-size:clamp(1.5rem,3.1vw,3rem);font-variation-settings:"wdth" 86,"opsz" 72;margin:0 0 .7rem}
+.panel h1{font-size:clamp(2.1rem,5vw,4.4rem);font-variation-settings:"wdth" 80,"opsz" 96;
+  letter-spacing:-.04em;line-height:.86;margin:0 0 .8rem}
+.panel h1 .ink2{color:var(--orange);mix-blend-mode:multiply}
+.panel p{font-size:clamp(.98rem,1.25vw,1.16rem)}
+.panel .big{font-size:clamp(1.1rem,1.7vw,1.44rem);font-style:italic;line-height:1.36}
+.panel ul,.panel ol{margin:.5rem 0 .8rem;padding-left:1.15rem;font-size:clamp(.94rem,1.2vw,1.1rem)}
+.panel li{margin-bottom:.34rem}
+.panel .kv{display:grid;grid-template-columns:auto 1fr;gap:.4rem 1rem;font-family:var(--mono);
+  font-size:clamp(.74rem,1vw,.86rem);margin:.6rem 0 0}
+.panel .kv dt{color:var(--orange);letter-spacing:.1em;text-transform:uppercase;font-size:1em}
+.panel .kv dd{margin:0}
+.panel .badges{display:flex;gap:.45rem;flex-wrap:wrap;margin:.9rem 0 0}
+.panel figure{margin:0}
+.panel figure svg{width:100%;height:auto;display:block;max-height:min(250px,34vh)}
+.panel figcaption{font-family:var(--mono);font-size:0.7rem;line-height:1.55;color:var(--ink-soft);margin-top:.5rem}
+.readingnum{font-family:var(--disp);font-weight:800;font-variation-settings:"wdth" 78;
+  font-size:clamp(3rem,7vw,6rem);line-height:.8;color:var(--teal);display:block;margin:0 0 .2rem}
+
+/* ============================================================
+   THE FOLD GAUGE — your position drawn as the fold itself
+   ============================================================ */
+.controls{position:relative;z-index:20;padding:1.9rem var(--rail) max(1rem,env(safe-area-inset-bottom));
+  display:flex;align-items:center;gap:clamp(.8rem,2vw,2rem);flex-wrap:wrap}
+.foldgauge{flex:1 1 260px;min-width:0}
+.foldgauge svg{width:100%;height:clamp(46px,6vh,64px);display:block;overflow:visible}
+.foldgauge .bed{fill:none;stroke:rgba(33,27,21,.3);stroke-width:2;stroke-linejoin:round}
+.foldgauge .done{fill:none;stroke:var(--orange);stroke-width:3.4;stroke-linejoin:round;stroke-linecap:round;
+  transition:stroke-dashoffset .6s cubic-bezier(.22,.9,.24,1)}
+.foldgauge .node{fill:var(--oat);stroke:rgba(33,27,21,.42);stroke-width:1.6}
+.foldgauge .node.on{fill:var(--teal);stroke:var(--ink)}
+.foldgauge .head{fill:var(--orange);stroke:var(--ink);stroke-width:1.8;
+  transition:transform .6s cubic-bezier(.22,.9,.24,1)}
+.counter{font-family:var(--mono);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+  flex:none;white-space:nowrap}
+.counter b{font-family:var(--disp);font-weight:800;font-size:1.5rem;font-variation-settings:"wdth" 80;
+  color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:0}
+.steps{display:flex;gap:.5rem;flex:none}
+.sbtn{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+  background:var(--oat);color:var(--ink);border:2px solid var(--ink);padding:.7em 1em .6em;cursor:pointer;
+  box-shadow:3px 3px 0 var(--ink);transition:transform .12s ease, box-shadow .12s ease, background-color .12s ease}
+.sbtn:hover:not(:disabled){transform:translate(1.5px,1.5px);box-shadow:1.5px 1.5px 0 var(--orange);background:var(--manila)}
+.sbtn:active:not(:disabled){transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.sbtn:disabled{opacity:.34;cursor:not-allowed;box-shadow:3px 3px 0 rgba(33,27,21,.3)}
+.keyhint{font-family:var(--mono);font-size:0.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
+  flex:none;opacity:.8}
+.keyhint kbd{font-family:var(--mono);border:1.5px solid rgba(33,27,21,.45);padding:.14em .38em;
+  font-size:1em;background:rgba(255,255,255,.4)}
+/* The panel caption used to hang above the controls bar with
+   bottom:calc(100% + .7rem), which floats it over the viewport — at 390x844
+   the fold stack reaches that far down and the caption landed on top of slide
+   copy. It now lives inside the bar, in space the bar reserves for it. */
+.title{position:absolute;left:var(--rail);right:var(--rail);top:.45rem;font-family:var(--mono);
+  font-size:0.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin:0;
+  pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ---------- 390 × 844: the fold turns through the other axis ---------- */
+@media (max-width:860px), (max-aspect-ratio:9/11){
+  :root{--pw:min(500px,88vw);--ph:min(500px,52vh)}
+  .camera{perspective:1200px;perspective-origin:50% 50%}
+  .panel{padding:1.15rem 1.2rem}
+  .panel::before{background:linear-gradient(180deg, rgba(33,27,21,.2) 0 1.5px, rgba(255,255,255,.34) 1.5px 12%,
+    transparent 40%, transparent 62%, rgba(150,120,80,.2) 92%, rgba(33,27,21,.22) calc(100% - 1.5px))}
+  .controls{gap:.7rem}
+  .foldgauge{order:3;flex:1 1 100%}
+  .foldgauge svg{height:44px}
+  .keyhint{display:none}
+  .counter{order:1}
+  .steps{order:2;margin-left:auto}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .strip,.panel,.panel::after,.foldgauge .done,.foldgauge .head{transition:none !important}
+  .sbtn{transition:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#deck">Skip to the deck</a>
+
+<svg class="defs" aria-hidden="true" focusable="false">
+  <filter id="grainF"><feTurbulence type="fractalNoise" baseFrequency="0.92" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter>
+  <filter id="inkspread"><feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="1.7" xChannelSelector="R" yChannelSelector="G"/></filter>
+</svg>
+<svg class="grain" aria-hidden="true" focusable="false"><rect width="100%" height="100%" filter="url(#grainF)"/></svg>
+
+<nav class="topbar" aria-label="Primary">
+  <a class="navtape tape" href="index.html">The Course</a>
+  <a class="navtape tape" href="inner.html">Week 07</a>
+  <a class="navtape tape" href="deck.html" aria-current="page">Lecture Deck</a>
+</nav>
+
+<div class="deck" id="deck">
+  <div class="viewport">
+    <div class="camera">
+      <div class="strip" data-strip role="group" aria-label="Lecture 07 — eight panels on one folded strip">
+
+        <!-- 01 -->
+        <section class="panel" data-panel aria-roledescription="panel" aria-label="Panel 1 of 8: Registration and the off-register">
+          <p class="pnum"><span>Lecture 07 · shared</span><b class="num">01</b></p>
+          <div class="pbody">
+            <p class="stamp stamp--ink" style="margin-bottom:1rem">50&nbsp;minutes · all streams · no slides after this one</p>
+            <h1>Registration<br>&amp; the <span class="ink2">off-<br>register</span></h1>
+            <p class="big">Two passes over the same material never land in the same place. This is a lecture about the gap.</p>
+            <p class="badges">
+              <span class="stamp">Ink A first</span>
+              <span class="stamp stamp--teal">Ink B second</span>
+            </p>
+          </div>
+          <p class="pfoot"><span>The Course · Week 07</span><span>Walk right →</span></p>
+        </section>
+
+        <!-- 02 -->
+        <section class="panel" data-panel aria-roledescription="panel" aria-label="Panel 2 of 8: Two passes, never the same twice">
+          <p class="pnum"><span>The mechanical problem</span><b class="num">02</b></p>
+          <div class="pbody">
+            <h2>Two passes,<br>never the same<br>twice</h2>
+            <p>The sheet goes through the press once for the first ink and again for the second. Between those two passes the paper has been gripped, bent, warmed and released.</p>
+            <ul>
+              <li>Grain direction decides which way it stretches</li>
+              <li>Humidity changes the dimension between passes</li>
+              <li>The gripper edge is the only fixed reference, and it is one edge</li>
+            </ul>
+            <p class="hand" style="margin:1rem 0 0">Perfect registration is not a default that sometimes fails. It is an achievement that usually fails a little.</p>
+          </div>
+          <p class="pfoot"><span>Reading 7.1 · Halloran ch. 3</span><span>Fold 02</span></p>
+        </section>
+
+        <!-- 03 -->
+        <section class="panel" data-panel aria-roledescription="panel" aria-label="Panel 3 of 8: Figure 7.1, the offset">
+          <p class="pnum"><span>Figure 7.1</span><b class="num">03</b></p>
+          <div class="pbody">
+            <figure>
+              <svg viewBox="0 0 340 200" role="img" aria-label="Two identical rectangles printed out of line. The overlapping region is darker where the two inks multiply. Offset measured as 34 across and 24 down.">
+                <rect x="40" y="34" width="162" height="116" fill="#FF5A1F" fill-opacity=".75"/>
+                <rect x="74" y="58" width="162" height="116" fill="#14625F" fill-opacity=".75" style="mix-blend-mode:multiply"/>
+                <path d="M40 22 L40 10 M202 22 L202 10 M40 16 L202 16" stroke="#211B15" stroke-width="1.3" fill="none"/>
+                <path d="M248 58 L262 58 M248 174 L262 174 M255 58 L255 174" stroke="#211B15" stroke-width="1.3" fill="none"/>
+                <text x="268" y="106" font-family="Courier Prime, monospace" font-size="12" fill="#211B15">offset</text>
+                <text x="268" y="122" font-family="Courier Prime, monospace" font-size="12" fill="#211B15">34 / 24</text>
+                <circle cx="306" cy="30" r="10" fill="none" stroke="#FF5A1F" stroke-width="1.8"/>
+                <path d="M306 14v32M290 30h32" stroke="#14625F" stroke-width="1.3"/>
+              </svg>
+              <figcaption>The multiply region is the only part of the sheet that records both passes at once. Everything legible about the machine is in that overlap and in the two crescents beside it.</figcaption>
+            </figure>
+          </div>
+          <p class="pfoot"><span>Hold this one in mind for panel 08</span><span>Fold 03</span></p>
+        </section>
+
+        <!-- 04 -->
+        <section class="panel" data-panel aria-roledescription="panel" aria-label="Panel 4 of 8: Three readings, and they conflict">
+          <p class="pnum"><span>The turn</span><b class="num">04</b></p>
+          <div class="pbody">
+            <h2>Three readings,<br>and they conflict</h2>
+            <p>The same off-register sheet supports three incompatible interpretations. All three are defensible. Using one without noticing you chose is not.</p>
+            <dl class="kv">
+              <dt>One</dt><dd>Noise — characterise it, subtract it, move on.</dd>
+              <dt>Two</dt><dd>Signature — it identifies the press, the hand, the session.</dd>
+              <dt>Three</dt><dd>Resource — induce it deliberately, at a magnitude you pick.</dd>
+            </dl>
+            <p class="badges"><span class="stamp stamp--teal">Pick one aloud today</span></p>
+          </div>
+          <p class="pfoot"><span>Next three panels take one each</span><span>Fold 04</span></p>
+        </section>
+
+        <!-- 05 -->
+        <section class="panel" data-panel aria-roledescription="panel" aria-label="Panel 5 of 8: Reading one, the offset as noise">
+          <p class="pnum"><span>Reading one</span><b class="num">05</b></p>
+          <div class="pbody">
+            <span class="readingnum num">01</span>
+            <h2>Noise</h2>
+            <p>Treat the offset as error: measure its distribution across many sheets, report a mean and a spread, then design the process so the spread stops mattering.</p>
+            <p><strong>Strong when</strong> you need the thing to work a thousand times and nobody will look at any individual sheet.</p>
+            <p><strong>Costly when</strong> the variation was the only record you had of how the process actually behaves — subtract it and you have thrown away your instrument.</p>
+          </div>
+          <p class="pfoot"><span>The engineer’s reading</span><span>Fold 05</span></p>
+        </section>
+
+        <!-- 06 -->
+        <section class="panel" data-panel aria-roledescription="panel" aria-label="Panel 6 of 8: Reading two, the offset as signature">
+          <p class="pnum"><span>Reading two</span><b class="num">06</b></p>
+          <div class="pbody">
+            <span class="readingnum num" style="color:var(--orange);mix-blend-mode:multiply">02</span>
+            <h2>Signature</h2>
+            <p>Treat the offset as an identifier. A press drifts in a characteristic direction; so does a hand, a jig, a Tuesday afternoon. The imperfection is how you attribute the artefact.</p>
+            <p><strong>Strong when</strong> you need to know who or what made something, and the maker had no interest in telling you.</p>
+            <p><strong>Costly when</strong> you start reading intention into drift. A signature identifies a source. It does not explain a choice.</p>
+          </div>
+          <p class="pfoot"><span>Reading 7.2 · Njoku &amp; Weisz</span><span>Fold 06</span></p>
+        </section>
+
+        <!-- 07 -->
+        <section class="panel" data-panel aria-roledescription="panel" aria-label="Panel 7 of 8: Reading three, the offset as resource">
+          <p class="pnum"><span>Reading three</span><b class="num">07</b></p>
+          <div class="pbody">
+            <span class="readingnum num">03</span>
+            <h2>Resource</h2>
+            <p>Treat the offset as something to induce. Choose a direction and a magnitude, print it on purpose, and own the result as a decision rather than an accident.</p>
+            <p><strong>Strong when</strong> the misalignment does work the aligned version cannot — depth, vibration, the sense of two things nearly agreeing.</p>
+            <p><strong>Costly when</strong> it becomes a way of not having to register anything. An induced offset you cannot reproduce on demand is still an accident.</p>
+          </div>
+          <p class="pfoot"><span>Reading 7.3 · Sandoval</span><span>Fold 07</span></p>
+        </section>
+
+        <!-- 08 -->
+        <section class="panel" data-panel aria-roledescription="panel" aria-label="Panel 8 of 8: In the room, twenty minutes">
+          <p class="pnum"><span>Second half</span><b class="num">08</b></p>
+          <div class="pbody">
+            <h2>In the room,<br>twenty minutes</h2>
+            <p>Put your second version on top of your first. Mark the offset in orange at three points you chose <em>before</em> you had a story. Say one sentence naming which reading you are using.</p>
+            <p>Then somebody outside your stream marks a fourth point, and you say what that one shows that your three did not.</p>
+            <dl class="kv">
+              <dt>Bring</dt><dd>Two versions, the untidied one included</dd>
+              <dt>Filed Fri</dt><dd>Two hundred words naming your reading</dd>
+              <dt>Marked</dt><dd>Reversals left in the record, dated</dd>
+            </dl>
+            <p class="badges"><a class="stamp stamp--teal" href="inner.html" style="text-decoration:none">Full session sheet →</a></p>
+          </div>
+          <p class="pfoot"><span>End of the strip</span><span>Fold 08</span></p>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <p class="title" data-title>Panel 01 — Registration &amp; the off-register</p>
+    <p class="counter"><b class="num" data-cur>01</b> <span class="num">/ 08</span> <span>along the fold</span></p>
+    <div class="steps">
+      <button class="sbtn" type="button" data-prev disabled>← Back</button>
+      <button class="sbtn" type="button" data-next>Forward →</button>
+    </div>
+    <div class="foldgauge">
+      <svg data-gauge viewBox="0 0 400 60" preserveAspectRatio="none" role="img" aria-label="Progress along the folded strip">
+        <path class="bed" data-bed></path>
+        <path class="done" data-done></path>
+        <g data-nodes></g>
+        <circle class="head" data-head r="6.5" cx="0" cy="0"></circle>
+      </svg>
+    </div>
+    <p class="keyhint"><kbd>←</kbd> <kbd>→</kbd> walk the fold · <kbd>Home</kbd> <kbd>End</kbd> jump</p>
+    <p class="sr" role="status" aria-live="polite" data-live></p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var strip = document.querySelector("[data-strip]");
+  var panels = [].slice.call(document.querySelectorAll("[data-panel]"));
+  var N = panels.length;
+  var active = 0;
+
+  var elCur = document.querySelector("[data-cur]");
+  var elTitle = document.querySelector("[data-title]");
+  var elLive = document.querySelector("[data-live]");
+  var btnPrev = document.querySelector("[data-prev]");
+  var btnNext = document.querySelector("[data-next]");
+  var gauge = document.querySelector("[data-gauge]");
+  var bed = document.querySelector("[data-bed]");
+  var done = document.querySelector("[data-done]");
+  var nodes = document.querySelector("[data-nodes]");
+  var head = document.querySelector("[data-head]");
+
+  var FOLD = 34;                                   /* degrees at each crease */
+  var COS  = Math.cos(FOLD * Math.PI / 180);       /* projected foreshortening */
+  var SIN  = Math.sin(FOLD * Math.PI / 180);
+
+  function vertical(){
+    return window.matchMedia("(max-width:860px)").matches ||
+           window.matchMedia("(max-aspect-ratio:9/11)").matches;
+  }
+  function panelSize(){
+    var r = panels[0].getBoundingClientRect();
+    return vertical() ? r.height : r.width;
+  }
+
+  /* Geometry of a real concertina: alternate panels tilt +FOLD and
+     -FOLD about their own centres, and the step between centres is
+     the foreshortened panel size, so the creased edges meet exactly. */
+  function sign(i){ return (i % 2 === 0) ? 1 : -1; }
+
+  function layout(){
+    var S = panelSize() * COS;
+    var vert = vertical();
+
+    panels.forEach(function(p,i){
+      var pos = i * S;
+      var ry = sign(i) * FOLD;
+      p.style.transform = vert
+        ? "translate3d(0," + pos + "px,0) rotateX(" + (-ry) + "deg)"
+        : "translate3d(" + pos + "px,0,0) rotateY(" + ry + "deg)";
+      /* light: the face turned away from the lamp sits in shade */
+      var away = sign(i) !== sign(active) ? 0.17 : 0.0;
+      var dist = Math.min(Math.abs(i - active), 4) / 4;
+      p.style.setProperty("--shade", (away + dist * 0.26).toFixed(3));
+      p.dataset.face = sign(i) === 1 ? "out" : "in";
+      p.classList.toggle("is-live", i === active);
+      p.setAttribute("aria-current", i === active ? "true" : "false");
+      p.tabIndex = i === active ? 0 : -1;
+    });
+
+    /* counter-rotate and slide the whole strip so the read panel
+       lies flat to the camera. The strip rocks by one fold angle
+       each step — that rock is the whole motion of the deck. */
+    var pos = active * S;
+    var counter = -sign(active) * FOLD;
+    if(vert){
+      strip.style.transformOrigin = "50% calc(50% + " + pos + "px)";
+      strip.style.transform = "translate3d(0," + (-pos) + "px,0) rotateX(" + (-counter) + "deg)";
+    } else {
+      strip.style.transformOrigin = "calc(50% + " + pos + "px) 50%";
+      strip.style.transform = "translate3d(" + (-pos) + "px,0,0) rotateY(" + counter + "deg)";
+    }
+  }
+
+  /* ---------- the gauge IS the fold, drawn flat ---------- */
+  function drawGauge(){
+    var vert = vertical();
+    var W = 400, H = 60;
+    var pad = 14;
+    var pts = [];
+    for(var i=0;i<N;i++){
+      var t = pad + (W - pad*2) * (i/(N-1));
+      pts.push([t, sign(i) === 1 ? pad : H - pad]);
+    }
+    gauge.setAttribute("viewBox","0 0 "+W+" "+H);
+    var d = "M" + pts.map(function(p){ return p[0]+" "+p[1]; }).join(" L");
+    bed.setAttribute("d", d);
+    done.setAttribute("d", d);
+
+    nodes.innerHTML = "";
+    pts.forEach(function(p,i){
+      var c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("cx", p[0]); c.setAttribute("cy", p[1]); c.setAttribute("r", 3.4);
+      c.setAttribute("class", "node" + (i <= active ? " on" : ""));
+      nodes.appendChild(c);
+    });
+
+    var total = 0;
+    try{ total = done.getTotalLength(); }catch(e){ total = W; }
+    /* length of the traversed zig-zag, segment by segment */
+    var walked = 0;
+    for(var k=0;k<active;k++){
+      var a = pts[k], b = pts[k+1];
+      walked += Math.hypot(b[0]-a[0], b[1]-a[1]);
+    }
+    done.style.strokeDasharray = total;
+    done.style.strokeDashoffset = (total - walked);
+    head.setAttribute("transform","translate("+pts[active][0]+","+pts[active][1]+")");
+    gauge.setAttribute("aria-label","Panel "+(active+1)+" of "+N+" along the folded strip");
+  }
+
+  function titleOf(i){
+    var lbl = panels[i].getAttribute("aria-label") || "";
+    return lbl.replace(/^Panel \d+ of \d+:\s*/, "");
+  }
+
+  function go(next, announce){
+    next = Math.max(0, Math.min(N-1, next));
+    if(next === active && announce !== "force") return;
+    active = next;
+    layout();
+    drawGauge();
+    elCur.textContent = String(active+1).padStart(2,"0");
+    elTitle.textContent = "Panel " + String(active+1).padStart(2,"0") + " — " + titleOf(active);
+    btnPrev.disabled = active === 0;
+    btnNext.disabled = active === N-1;
+    if(announce !== false){
+      elLive.textContent = "Panel " + (active+1) + " of " + N + ". " + titleOf(active);
+    }
+    /* reset any inner scroll so a long panel always opens at its top */
+    var b = panels[active].querySelector(".pbody");
+    if(b) b.scrollTop = 0;
+  }
+
+  btnPrev.addEventListener("click", function(){ go(active-1); });
+  btnNext.addEventListener("click", function(){ go(active+1); });
+  panels.forEach(function(p,i){
+    p.addEventListener("click", function(){ if(i !== active) go(i); });
+  });
+
+  document.addEventListener("keydown", function(e){
+    var t = e.target;
+    if(t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+    var k = e.key;
+    if(k === "ArrowRight" || k === "ArrowDown" || k === "PageDown"){ e.preventDefault(); go(active+1); }
+    else if(k === "ArrowLeft" || k === "ArrowUp" || k === "PageUp"){ e.preventDefault(); go(active-1); }
+    else if(k === "Home"){ e.preventDefault(); go(0); }
+    else if(k === "End"){ e.preventDefault(); go(N-1); }
+    else if(k === " " && t === document.body){ e.preventDefault(); go(active+1); }
+  });
+
+  /* touch: swipe along whichever axis the fold currently runs */
+  (function(){
+    var sx=0, sy=0, tracking=false;
+    var vp = document.querySelector(".viewport");
+    vp.addEventListener("touchstart", function(e){
+      if(e.touches.length !== 1) return;
+      sx = e.touches[0].clientX; sy = e.touches[0].clientY; tracking = true;
+    }, {passive:true});
+    vp.addEventListener("touchend", function(e){
+      if(!tracking) return; tracking = false;
+      var t = e.changedTouches[0];
+      var dx = t.clientX - sx, dy = t.clientY - sy;
+      var vert = vertical();
+      var d = vert ? dy : dx;
+      var other = vert ? dx : dy;
+      if(Math.abs(d) < 44 || Math.abs(d) < Math.abs(other)) return;
+      go(active + (d < 0 ? 1 : -1));
+    }, {passive:true});
+  })();
+
+  var rt;
+  window.addEventListener("resize", function(){
+    clearTimeout(rt);
+    rt = setTimeout(function(){ layout(); drawGauge(); }, 150);
+  });
+
+  function start(){
+    if(REDUCED){
+      strip.style.transition = "none";
+      panels.forEach(function(p){ p.style.transition = "none"; });
+    }
+    go(0, "force");
+    /* let the strip settle in from a fully-closed fold on first paint */
+    if(!REDUCED){
+      strip.animate(
+        [{opacity:0, transform:strip.style.transform + " scale(.94)"},
+         {opacity:1, transform:strip.style.transform + " scale(1)"}],
+        {duration:720, easing:"cubic-bezier(.22,.9,.24,1)"}
+      );
+    }
+  }
+  if(document.readyState === "complete") start();
+  else window.addEventListener("load", start);
+})();
+</script>
+</body>
+</html>

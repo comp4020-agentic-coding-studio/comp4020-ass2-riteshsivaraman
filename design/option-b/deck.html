@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#06090E">
+<meta name="color-scheme" content="dark">
+<title>Lecture deck — Week 07 · Unit 3841</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Sans:wght@400..700&family=Spline+Sans+Mono:wght@300..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#06090E; --panel:#0E141C; --panel-hi:#141C26;
+  --rule:#1E2A38; --rule-hi:#2F4256;
+  --bone:#DCE3EA; --dim:#96A4B3; --faint:#6E7C8B;
+  --sig:#57D9A3; --warn:#F2B24C; --chC:#C9D3DE;
+  --gut:clamp(14px,2.6vw,44px);
+  --mono:"Spline Sans Mono",ui-monospace,monospace;
+  --sans:"Instrument Sans",system-ui,sans-serif;
+  --disp:"Archivo","Instrument Sans",system-ui,sans-serif;
+  --ease:cubic-bezier(.22,.61,.24,1);
+  --railT:50px; --railB:76px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%; color-scheme:dark}
+body{margin:0; background:var(--ink); color:var(--bone); font-family:var(--sans);
+  font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased; font-synthesis:none;
+  overflow-x:hidden; touch-action:manipulation; -webkit-tap-highlight-color:rgba(87,217,163,.18)}
+body.deck{overflow:hidden}
+.skip{position:absolute; left:-9999px; top:0; z-index:99; background:var(--panel-hi);
+  border:1px solid var(--sig); color:var(--bone); padding:12px 18px; text-decoration:none;
+  font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase}
+.skip:focus{left:var(--gut); top:10px}
+#field{position:fixed; inset:0; width:100%; height:100%; z-index:0; display:block; background:var(--ink)}
+#field.dead{background:radial-gradient(120% 80% at 78% 6%, #101a26 0%, transparent 60%),
+  radial-gradient(90% 70% at 6% 94%, #0b1620 0%, transparent 58%), var(--ink)}
+.mono{font-family:var(--mono); font-variant-numeric:tabular-nums; letter-spacing:.06em}
+.lbl{font-family:var(--mono); font-size:10px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--faint)}
+h1,h2,h3,h4{font-family:var(--disp); margin:0; font-weight:600; line-height:1; font-stretch:118%; text-wrap:balance}
+a{color:var(--bone)}
+:focus-visible{outline:2px solid var(--sig); outline-offset:3px}
+
+/* ═══ chassis ═══════════════════════════════════════════════════════ */
+.chassis{position:relative; z-index:2; min-height:100svh; display:flex; flex-direction:column}
+
+/* top rail */
+.rt{height:var(--railT); flex:none; display:flex; align-items:stretch; border-bottom:1px solid var(--rule);
+  background:rgba(8,12,18,.9); backdrop-filter:blur(12px)}
+.rt>*{display:flex; align-items:center; gap:10px; padding:0 14px; border-right:1px solid var(--rule); white-space:nowrap}
+.rt .mark{padding-left:var(--gut)}
+.rt .mark a{text-decoration:none; display:flex; align-items:center; gap:10px}
+.rt .mark b{font-family:var(--disp); font-stretch:125%; font-weight:700; font-size:12.5px; letter-spacing:.1em; text-transform:uppercase}
+.dot{width:8px; height:8px; border-radius:50%; background:var(--sig); animation:pulse 3.4s var(--ease) infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(87,217,163,.10)}50%{box-shadow:0 0 0 6px rgba(87,217,163,.03)}}
+/* stretch, not centre: .rt>* centres its children, which collapsed each nav
+   anchor to its 17px text box instead of the full rail-height hit target. */
+.rt nav{display:flex; padding:0; gap:0; align-items:stretch}
+.rt .mark{align-items:stretch}
+.rt .mark a{align-items:center}
+.rt nav a{display:flex; align-items:center; padding:0 15px; border-right:1px solid var(--rule);
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim);
+  text-decoration:none; transition:color .2s, background .2s}
+.rt nav a:hover{color:var(--bone); background:rgba(87,217,163,.05)}
+.rt nav a[aria-current]{color:var(--bone); box-shadow:inset 0 -2px 0 var(--sig)}
+/* labelled like the right-hand readouts: unlabelled, the frame title sat flush
+   against the nav links and read as a fourth nav item. */
+.rt .ttl{flex:1; min-width:0; border-right:1px solid var(--rule); overflow:hidden;
+  display:flex; align-items:center; gap:9px; padding-left:18px}
+.rt .ttl::before{content:"FRAME"; flex:none; font-family:var(--mono); font-size:9.5px;
+  letter-spacing:.2em; color:var(--faint)}
+.rt .ttl span{font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.rt .cnt{font-family:var(--mono); font-size:11px; letter-spacing:.14em; color:var(--bone); font-variant-numeric:tabular-nums}
+.rt .cnt u{text-decoration:none; color:var(--faint)}
+.tgl{appearance:none; border:0; background:transparent; color:var(--faint); cursor:pointer;
+  font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+  padding:0 13px; border-right:1px solid var(--rule); transition:color .2s, background .2s}
+.rt .tgl:last-child{border-right:0; padding-right:var(--gut)}
+.tgl:hover{color:var(--bone); background:rgba(120,170,205,.06)}
+.tgl[aria-pressed="true"]{color:var(--sig)}
+.tgl[aria-pressed="true"] .led{background:var(--sig); box-shadow:0 0 6px rgba(87,217,163,.6)}
+.led{display:inline-block; width:6px; height:6px; border-radius:1px; background:var(--rule-hi); margin-right:7px; vertical-align:1px}
+
+/* stage = the screen */
+.stage{position:relative; flex:1; min-height:0; display:flex}
+.amp{width:54px; flex:none; border-right:1px solid var(--rule); position:relative;
+  display:flex; flex-direction:column; justify-content:space-between; padding:14px 0; align-items:flex-end}
+.amp span{font-family:var(--mono); font-size:9px; letter-spacing:.14em; color:var(--faint); padding-right:9px; position:relative}
+.amp span::after{content:""; position:absolute; right:0; top:50%; width:6px; height:1px; background:var(--rule-hi)}
+.screen{position:relative; flex:1; min-width:0; overflow:hidden}
+.grat{position:absolute; inset:0; pointer-events:none; z-index:1; opacity:.5; transition:opacity .3s var(--ease);
+  background:repeating-linear-gradient(to right, rgba(120,170,205,.075) 0 1px, transparent 1px 10%),
+             repeating-linear-gradient(to bottom, rgba(120,170,205,.055) 0 1px, transparent 1px 25%)}
+body.nogrid .grat{opacity:0}
+.crop{position:absolute; inset:0; pointer-events:none; z-index:3}
+.crop i{position:absolute; width:11px; height:11px; border:1px solid var(--rule-hi)}
+.crop i:nth-child(1){top:12px; left:12px; border-right:0; border-bottom:0}
+.crop i:nth-child(2){top:12px; right:12px; border-left:0; border-bottom:0}
+.crop i:nth-child(3){bottom:12px; left:12px; border-right:0; border-top:0}
+.crop i:nth-child(4){bottom:12px; right:12px; border-left:0; border-top:0}
+.scan{position:absolute; left:0; right:0; top:50%; height:2px; z-index:4; pointer-events:none;
+  background:linear-gradient(to right,transparent,var(--sig),transparent); opacity:0}
+.scan.go{animation:scan .34s var(--ease)}
+@keyframes scan{0%{opacity:0; transform:scaleX(.1)}25%{opacity:1}100%{opacity:0; transform:scaleX(1)}}
+
+/* frames */
+.frame{position:absolute; inset:0; z-index:2; padding:clamp(22px,4.4vh,60px) clamp(20px,4vw,72px);
+  overflow-y:auto; overscroll-behavior:contain; opacity:0; visibility:hidden;
+  transform-origin:center; display:flex; flex-direction:column; justify-content:center; gap:clamp(12px,2vh,22px)}
+.frame[hidden]{display:none}
+.frame.on{opacity:1; visibility:visible; animation:bloom .42s var(--ease)}
+.frame.out{opacity:1; visibility:visible; animation:degauss .26s var(--ease) forwards}
+@keyframes bloom{0%{opacity:0; transform:scaleY(.03)}40%{opacity:1}100%{opacity:1; transform:scaleY(1)}}
+@keyframes degauss{0%{opacity:1; transform:scaleY(1)}70%{opacity:.85; transform:scaleY(.04)}100%{opacity:0; transform:scaleY(.02)}}
+.frame.on>*{animation:lift .5s var(--ease) backwards}
+.frame.on>*:nth-child(1){animation-delay:.10s} .frame.on>*:nth-child(2){animation-delay:.16s}
+.frame.on>*:nth-child(3){animation-delay:.22s} .frame.on>*:nth-child(4){animation-delay:.28s}
+.frame.on>*:nth-child(5){animation-delay:.34s}
+@keyframes lift{from{opacity:0; transform:translateY(10px)}to{opacity:1; transform:none}}
+
+.f__k{display:flex; flex-wrap:wrap; gap:6px 18px}
+.frame h2{font-size:clamp(30px,5.2vw,78px); font-weight:700; font-stretch:125%; letter-spacing:-.02em; line-height:.96}
+.frame h3{font-size:clamp(19px,1.7vw,27px); font-stretch:112%}
+.frame .big{font-size:clamp(26px,4.2vw,62px); font-weight:600; font-stretch:112%; letter-spacing:-.015em;
+  line-height:1.04; max-width:26ch; font-family:var(--disp)}
+.frame .big em{font-style:normal; color:var(--sig)}
+.frame .say{font-size:clamp(15px,1.15vw,19px); color:#C2CBD5; max-width:58ch; margin:0; line-height:1.5}
+.frame .say+.say{margin-top:.7em}
+
+/* frame internals */
+.two{display:grid; grid-template-columns:1fr 1fr; gap:0; border-top:1px solid var(--rule-hi)}
+.two>div{padding:20px clamp(14px,2vw,30px) 20px 0; border-right:1px solid var(--rule)}
+.two>div:last-child{border-right:0; padding-left:clamp(14px,2vw,30px); padding-right:0}
+.two h4{font-size:clamp(17px,1.5vw,22px); margin-bottom:12px; font-stretch:112%}
+.two ul{list-style:none; margin:0; padding:0}
+.two li{padding:8px 0; border-bottom:1px solid rgba(30,42,56,.6); font-size:14.5px; color:#B9C3CE;
+  display:grid; grid-template-columns:18px 1fr; gap:10px}
+.two li b{font-family:var(--mono); font-size:10px; color:var(--kc,var(--faint)); padding-top:4px}
+.two>div:first-child{--kc:var(--dim)} .two>div:last-child{--kc:var(--warn)}
+
+.ros{display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--rule-hi); border-bottom:1px solid var(--rule)}
+.ros>div{padding:18px clamp(12px,1.6vw,26px) 18px 0; border-right:1px solid var(--rule)}
+.ros>div:last-child{border-right:0}
+.ros .v{font-family:var(--disp); font-stretch:118%; font-weight:600; font-size:clamp(34px,4.4vw,62px);
+  line-height:1; font-variant-numeric:tabular-nums; display:flex; align-items:baseline; gap:5px}
+.ros .v u{text-decoration:none; font-family:var(--mono); font-size:.3em; color:var(--faint); letter-spacing:.1em}
+.ros .k{display:block; margin-top:10px}
+.ros .n{margin:10px 0 0; font-size:13.5px; color:var(--dim)}
+
+.chl{display:grid; gap:0; border-top:1px solid var(--rule-hi)}
+.chl>div{display:grid; grid-template-columns:96px minmax(0,1fr); gap:0 18px; padding:15px 0;
+  border-bottom:1px solid rgba(30,42,56,.6); align-items:baseline}
+.chl .id{font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--c);
+  display:flex; align-items:center; gap:8px}
+.chl .id::before{content:""; width:9px; height:9px; background:var(--c); flex:none}
+.chl .tx{font-size:clamp(14.5px,1.1vw,17.5px); color:#C2CBD5}
+.chl .tx b{color:var(--bone); font-weight:600}
+.chl>div:nth-child(1){--c:var(--sig)} .chl>div:nth-child(2){--c:var(--warn)} .chl>div:nth-child(3){--c:var(--chC)}
+
+.seq{list-style:none; margin:0; padding:0; counter-reset:s; border-top:1px solid var(--rule-hi);
+  columns:2; column-gap:clamp(20px,3vw,48px)}
+.seq li{counter-increment:s; break-inside:avoid; display:grid; grid-template-columns:44px minmax(0,1fr) 54px;
+  gap:0 12px; padding:11px 0; border-bottom:1px solid rgba(30,42,56,.6); align-items:baseline}
+.seq li::before{content:"T+" counter(s,decimal-leading-zero); font-family:var(--mono); font-size:10px; color:var(--faint)}
+.seq li span{font-size:14.5px; color:#C2CBD5}
+.seq li span b{display:block; color:var(--bone); font-weight:600; font-size:15px}
+.seq li i{font-style:normal; font-family:var(--mono); font-size:10.5px; color:var(--warn); text-align:right}
+
+.claim{border-left:2px solid var(--warn); padding:6px 0 6px 22px; max-width:32ch}
+.claim p{margin:0; font-family:var(--disp); font-stretch:112%; font-weight:600;
+  font-size:clamp(24px,3.4vw,48px); line-height:1.08; letter-spacing:-.01em}
+.claim p em{font-style:normal; color:var(--warn)}
+
+.bring{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 clamp(20px,3vw,48px);
+  border-top:1px solid var(--rule-hi)}
+.bring div{padding:14px 0; border-bottom:1px solid rgba(30,42,56,.6)}
+.bring dt{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint)}
+.bring dd{margin:5px 0 0; font-size:15px; color:#C2CBD5}
+.bring dd b{color:var(--bone)}
+
+/* bottom rail = timebase */
+/* the chassis is full-bleed and the bottom rail carries the transport, so it
+   must clear the home-bar area on a phone rather than sit under it. */
+.rb{height:calc(var(--railB) + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);
+  flex:none; border-top:1px solid var(--rule-hi); background:rgba(8,12,18,.92);
+  backdrop-filter:blur(12px); display:flex; align-items:stretch}
+.rb .nav2{display:flex; border-right:1px solid var(--rule)}
+.nb{appearance:none; border:0; border-right:1px solid var(--rule); background:transparent; color:var(--dim);
+  font-family:var(--mono); font-size:13px; cursor:pointer; min-width:52px; padding:0 8px;
+  transition:color .2s, background .2s}
+.nb:last-child{border-right:0}
+.nb:hover{color:var(--sig); background:rgba(87,217,163,.07)}
+.nb[disabled]{color:#2F4256; cursor:default; background:transparent}
+.tbar{flex:1; min-width:0; position:relative; padding:0 clamp(14px,2vw,30px); display:flex; flex-direction:column;
+  justify-content:center; gap:9px; border-right:1px solid var(--rule)}
+.ruler{position:relative; height:22px}
+.ruler .ax{position:absolute; left:0; right:0; top:0; height:1px; background:var(--rule-hi)}
+.ruler ol{list-style:none; margin:0; padding:0; position:absolute; inset:0; display:grid;
+  grid-template-columns:repeat(8,1fr)}
+.ruler li{position:relative}
+.ruler button{appearance:none; background:transparent; border:0; cursor:pointer; padding:0;
+  position:absolute; top:0; left:0; width:100%; height:40px; display:flex; flex-direction:column; align-items:flex-start}
+.ruler button::before{content:""; width:1px; height:8px; background:var(--rule-hi); transition:height .2s, background .2s}
+.ruler button span{font-family:var(--mono); font-size:9px; letter-spacing:.1em; color:var(--faint);
+  margin-top:3px; transition:color .2s}
+.ruler button:hover::before{background:var(--sig); height:12px}
+.ruler button:hover span{color:var(--bone)}
+.ruler li.done button::before{background:var(--rule-hi); height:11px}
+.ruler li.now button::before{background:var(--sig); height:16px}
+.ruler li.now button span{color:var(--sig)}
+.needle{position:absolute; top:0; left:0; width:1px; height:22px; background:var(--sig); z-index:2;
+  transition:transform .34s var(--ease)}
+.needle::after{content:""; position:absolute; top:-4px; left:-3px; width:7px; height:4px; background:var(--sig)}
+body.reduced .needle{transition:none}
+.hints{display:flex; flex-wrap:wrap; gap:4px 14px; align-items:center}
+.hints span{font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint)}
+.hints kbd{font-family:var(--mono); font-size:9.5px; border:1px solid var(--rule-hi); padding:1px 5px;
+  color:var(--dim); background:rgba(20,28,38,.7)}
+.rb .meta{display:flex; flex-direction:column; justify-content:center; gap:4px; padding:0 var(--gut) 0 14px}
+.rb .meta span{font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); white-space:nowrap}
+.rb .meta span b{color:var(--bone); font-weight:400; font-variant-numeric:tabular-nums}
+.rb .meta span b.g{color:var(--sig)}
+
+/* ═══ text mode: the same frames, reflowed as a document ═══════════ */
+body.textmode{overflow:auto}
+body.textmode .stage{display:block}
+body.textmode .amp,body.textmode .grat,body.textmode .crop,body.textmode .scan,
+body.textmode .rb .nav2,body.textmode .rb .tbar{display:none}
+body.textmode .screen{overflow:visible}
+body.textmode .frame{position:static; inset:auto; opacity:1 !important; visibility:visible !important;
+  animation:none !important; display:block; overflow:visible; border-bottom:1px solid var(--rule);
+  padding:34px var(--gut) 40px; max-width:none}
+body.textmode .frame>*{animation:none !important}
+/* in text mode the frames become real scroll anchors, so a #f5 deep link must
+   clear the sticky top rail instead of landing underneath it. */
+body.textmode .frame{scroll-margin-top:calc(var(--railT) + 12px)}
+/* number only: the title is already the frame's own eyebrow one line below,
+   and the eyebrow carries extra data (duration, grouping) the header cannot. */
+body.textmode .frame::before{content:"Frame " attr(data-n) " of 8";
+  display:block; font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--sig); margin-bottom:18px}
+body.textmode .frame>*+*{margin-top:18px}
+body.textmode .seq{columns:1}
+body.textmode .rb{height:auto; padding:14px 0}
+body.textmode .rt .cnt,body.textmode .rt .ttl{display:none}
+
+body.reduced *{animation-duration:.001ms !important; transition-duration:.001ms !important}
+/* anchored at the origin: an unanchored absolute box sits at its static position
+   below the rails and extends the document's scrollable area by its own height. */
+.sr{position:fixed; top:0; left:0; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap}
+
+/* ═══ 390×844 ═════════════════════════════════════════════════════ */
+@media (max-width:900px){
+  :root{--railT:46px; --railB:144px}   /* the timebase wraps to its own row here */
+  body{font-size:15.5px}
+  .rt .ttl{display:none}
+  .rt nav a{padding:0 11px}
+  .rt .mark .lbl{display:none}
+  .amp{display:none}
+  .frame{padding:20px 18px; justify-content:flex-start; padding-top:26px}
+  .frame h2{font-size:clamp(30px,10vw,44px)}
+  .frame .big{font-size:clamp(24px,7.6vw,34px); max-width:none}
+  .two{grid-template-columns:1fr}
+  .two>div{border-right:0; border-bottom:1px solid var(--rule); padding:16px 0}
+  .two>div:last-child{padding-left:0; border-bottom:0}
+  .ros{grid-template-columns:1fr}
+  .ros>div{border-right:0; border-bottom:1px solid var(--rule); padding:14px 0}
+  .ros>div:last-child{border-bottom:0}
+  .ros .v{font-size:38px}
+  .chl>div{grid-template-columns:1fr; gap:7px}
+  .seq{columns:1}
+  .seq li{grid-template-columns:40px minmax(0,1fr) 46px}
+  .claim{max-width:none}
+  .claim p{font-size:clamp(22px,6.6vw,30px)}
+  .bring{grid-template-columns:1fr}
+  .rb{flex-wrap:wrap; align-items:center}
+  .rb .nav2{flex:none; border-right:1px solid var(--rule)}
+  .nb{min-width:64px; min-height:48px}
+  /* the timebase takes its own row: flex-basis, not width, is what wraps it */
+  .tbar{order:3; flex:1 0 100%; border-right:0; border-top:1px solid var(--rule);
+    padding:8px var(--gut) 4px; gap:6px}
+  .ruler{height:30px}
+  .ruler button{height:46px}
+  .hints{display:none}
+  .rb .meta{padding:0 var(--gut) 0 12px}
+  /* the top rail cannot hold seven controls at this width. The frame counter is
+     already carried by the timebase and the FRAME readout, and the graticule is
+     pure decoration, so both go; TEXT stays because it is the deck’s escape
+     hatch to a linear document, and MOTION stays because it is a real control. */
+  .rt{overflow:hidden}
+  .rt .cnt{display:none}
+  .rt #t-grid{display:none}
+  .rt .mark a{gap:8px}
+  .rt .mark{padding-right:10px}
+  .rt .mark b{font-size:11px; letter-spacing:.05em}
+  .rt nav a{padding:0 8px; font-size:10px; letter-spacing:.1em}
+  .rt .tgl{padding:0 9px; font-size:9.5px; letter-spacing:.08em}
+  .rt .led{margin-right:5px}
+}
+/* ── narrow panel ─────────────────────────────────────────────────────────
+   At 390 even the tightened rail runs out of room. MOTION is the one that
+   goes: the ambient field is already held static on a phone, so there is no
+   ongoing animation for it to stop, and prefers-reduced-motion still tames
+   the frame transitions without it. TEXT survives on every width. */
+@media (max-width:480px){
+  .rt #t-motion{display:none}
+  .rt nav a{padding:0 7px}
+}
+</style>
+</head>
+<body class="deck">
+<canvas id="field" aria-hidden="true"></canvas>
+
+<div class="chassis">
+<a class="skip" href="#f1">Skip to the deck</a>
+
+<div class="rt">
+  <div class="mark"><a href="index.html"><span class="dot" aria-hidden="true"></span><b translate="no">The&nbsp;Course</b><span class="lbl" translate="no" style="margin-left:2px">3841</span></a></div>
+  <nav aria-label="Primary">
+    <a href="index.html">Overview</a>
+    <a href="inner.html">Week&nbsp;07</a>
+    <a href="deck.html" aria-current="page">Deck</a>
+  </nav>
+  <div class="ttl"><span id="rt-title">Drift and correction</span></div>
+  <div class="cnt">Frame&nbsp;<span id="rt-n">01</span><u>&nbsp;/&nbsp;08</u></div>
+  <button class="tgl" id="t-text" aria-pressed="false"><span class="led" aria-hidden="true"></span>Text</button>
+  <button class="tgl" id="t-grid" aria-pressed="true"><span class="led" aria-hidden="true"></span>Grat</button>
+  <button class="tgl" id="t-motion" aria-pressed="true"><span class="led" aria-hidden="true"></span>Motion</button>
+</div>
+
+<div class="stage">
+  <div class="amp" aria-hidden="true">
+    <span>+1.0</span><span>+0.5</span><span>0</span><span>−0.5</span><span>−1.0</span>
+  </div>
+  <div class="screen" id="screen">
+    <div class="grat" aria-hidden="true"></div>
+    <div class="crop" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <div class="scan" id="scan" aria-hidden="true"></div>
+
+    <!-- ── 01 ─────────────────────────────────────────────────────── -->
+    <section class="frame on" id="f1" data-n="01" data-title="Title" data-mode="TITLE" aria-label="Frame 1 of 8: Title">
+      <div class="f__k">
+        <span class="lbl">Unit&nbsp;<b style="color:var(--dim)">3841</b></span>
+        <span class="lbl">Week&nbsp;<b style="color:var(--dim)">07</b></span>
+        <span class="lbl">Common&nbsp;bus</span>
+        <span class="lbl">Mon&nbsp;11:00 · 60&nbsp;min</span>
+      </div>
+      <h2>Drift and<br>correction</h2>
+      <p class="say">Every instrument drifts. The useful question is not how to stop it, but how often you
+        have to check — and what you are willing to accept in between.</p>
+      <p class="say" style="color:var(--faint)">Slides are a summary. The argument is in the readings and the audit.</p>
+    </section>
+
+    <!-- ── 02 ─────────────────────────────────────────────────────── -->
+    <section class="frame" id="f2" data-n="02" data-title="The distinction" data-mode="STATEMENT" aria-label="Frame 2 of 8: The distinction" hidden>
+      <span class="lbl">02 · The distinction</span>
+      <p class="big">Noise averages out.<br><em>Drift does not.</em></p>
+      <p class="say">Noise is symmetrical, so more readings make it smaller. Drift is directional, so more
+        readings make it more convincing. That asymmetry is the whole week.</p>
+    </section>
+
+    <!-- ── 03 ─────────────────────────────────────────────────────── -->
+    <section class="frame" id="f3" data-n="03" data-title="Telling them apart" data-mode="COMPARE" aria-label="Frame 3 of 8: Telling them apart" hidden>
+      <span class="lbl">03 · Telling them apart</span>
+      <h3>Two errors that look identical in a single reading</h3>
+      <div class="two">
+        <div>
+          <h4>Noise</h4>
+          <ul>
+            <li><b>01</b><span>Symmetrical about the true value.</span></li>
+            <li><b>02</b><span>Shrinks as you take more readings.</span></li>
+            <li><b>03</b><span>Visible in the spread, not the mean.</span></li>
+            <li><b>04</b><span>Cheap to live with. Report it and move on.</span></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Drift</h4>
+          <ul>
+            <li><b>01</b><span>Directional, and usually slow.</span></li>
+            <li><b>02</b><span>Grows more persuasive with more readings.</span></li>
+            <li><b>03</b><span>Invisible unless you kept the early data.</span></li>
+            <li><b>04</b><span>Expensive. Every internal check still passes.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 04 ─────────────────────────────────────────────────────── -->
+    <section class="frame" id="f4" data-n="04" data-title="What checking costs" data-mode="READOUT" aria-label="Frame 4 of 8: What checking costs" hidden>
+      <span class="lbl">04 · What checking costs</span>
+      <h3>From three semesters of student folios</h3>
+      <div class="ros">
+        <div>
+          <span class="v"><span class="ct" data-to="4">0</span><u>× / sem</u></span>
+          <span class="lbl k">Median checks run</span>
+          <p class="n">Four is enough for a twelve-week project. Fewer than two and drift goes unnoticed.</p>
+        </div>
+        <div>
+          <span class="v"><span class="ct" data-to="27">0</span><u>min</u></span>
+          <span class="lbl k">Median cost per check</span>
+          <p class="n">Checks that cost more than an hour do not get run. Design to the half-hour.</p>
+        </div>
+        <div>
+          <span class="v"><span class="ct" data-to="61">0</span><u>%</u></span>
+          <span class="lbl k">Drifts caught by the first check</span>
+          <p class="n">Most of the value is in having any check at all, not in having a clever one.</p>
+        </div>
+      </div>
+      <p class="say">Read these as orders of magnitude, not as targets. The number that matters is yours.</p>
+    </section>
+
+    <!-- ── 05 ─────────────────────────────────────────────────────── -->
+    <section class="frame" id="f5" data-n="05" data-title="Where each channel drifts" data-mode="CHANNELS" aria-label="Frame 5 of 8: Where each channel drifts" hidden>
+      <span class="lbl">05 · Where each channel drifts</span>
+      <h3>Same reference, three different failure modes</h3>
+      <div class="chl">
+        <div><span class="id">Channel A</span><span class="tx"><b>Drift in the asking.</b> You get better at the interview, so your early transcripts answer a question you no longer hold.</span></div>
+        <div><span class="id">Channel B</span><span class="tx"><b>Drift in the instrument.</b> Every fix is locally correct; the accumulation is not. The log is the evidence, not the build.</span></div>
+        <div><span class="id">Channel C</span><span class="tx"><b>Drift in the record.</b> Categories move across decades and nobody announces it. The finding aid looks stable and is not.</span></div>
+      </div>
+      <p class="say">Bring your own channel’s material to the session. Read the other two before week eleven —
+        the objections you will face come from the rows you skipped.</p>
+    </section>
+
+    <!-- ── 06 ─────────────────────────────────────────────────────── -->
+    <section class="frame" id="f6" data-n="06" data-title="The drift audit" data-mode="PROCEDURE" aria-label="Frame 6 of 8: The drift audit" hidden>
+      <span class="lbl">06 · The drift audit · 55&nbsp;min · in pairs</span>
+      <ol class="seq">
+        <li><span><b>State the reference</b>One sentence. No hedging clauses.</span><i>5&nbsp;min</i></li>
+        <li><span><b>Find the earliest artefact</b>Oldest item made under it. Do not tidy it.</span><i>5&nbsp;min</i></li>
+        <li><span><b>Mark the movement</b>On your partner’s material. Mark generously.</span><i>15&nbsp;min</i></li>
+        <li><span><b>Rank by consequence</b>Most marks change nothing. Say so aloud.</span><i>10&nbsp;min</i></li>
+        <li><span><b>Design the cheapest check</b>Catches it in a week, runs in half an hour.</span><i>15&nbsp;min</i></li>
+        <li><span><b>Commit the check</b>Into the plan, with a date.</span><i>5&nbsp;min</i></li>
+      </ol>
+      <p class="say">The steps are ordered because each consumes the previous one’s output. Reordering them to
+        save time is the most common way this exercise produces nothing.</p>
+    </section>
+
+    <!-- ── 07 ─────────────────────────────────────────────────────── -->
+    <section class="frame" id="f7" data-n="07" data-title="The claim to argue with" data-mode="CLAIM" aria-label="Frame 7 of 8: The claim to argue with" hidden>
+      <span class="lbl">07 · The claim to argue with</span>
+      <div class="claim">
+        <p>A method that cannot detect its own drift is not a method. It is a habit with
+          <em>documentation</em>.</p>
+      </div>
+      <p class="say">Bring an objection to this on Thursday. The strongest one so far came from Channel C:
+        some records are worth keeping precisely because nobody maintained them, and a maintained
+        archive is a corrected one.</p>
+    </section>
+
+    <!-- ── 08 ─────────────────────────────────────────────────────── -->
+    <section class="frame" id="f8" data-n="08" data-title="Before the session" data-mode="CLOSE" aria-label="Frame 8 of 8: Before the session" hidden>
+      <span class="lbl">08 · Before the session</span>
+      <h3>What to bring, and when it is due</h3>
+      <dl class="bring">
+        <div><dt>Read</dt><dd><b>R07.1 and R07.2.</b> One sentence on where they disagree.</dd></div>
+        <div><dt>Write</dt><dd><b>The reference statement.</b> What is fixed, what will move.</dd></div>
+        <div><dt>Bring</dt><dd><b>Your channel’s material.</b> Transcripts, log extract, or finding aid.</dd></div>
+        <div><dt>Return due</dt><dd><b>Sunday 23:59.</b> Seventy-two hours’ tolerance, unpenalised.</dd></div>
+      </dl>
+      <p class="say">The full week, including the readings list and the checklist, is on the
+        <a href="inner.html">Week 07 page</a>.</p>
+    </section>
+  </div>
+</div>
+
+<div class="rb">
+  <div class="nav2">
+    <button class="nb" id="prev" aria-label="Previous frame">◄</button>
+    <button class="nb" id="next" aria-label="Next frame">►</button>
+  </div>
+  <div class="tbar">
+    <div class="ruler">
+      <span class="ax" aria-hidden="true"></span>
+      <span class="needle" id="needle" aria-hidden="true"></span>
+      <ol id="ruler" aria-label="Frames"></ol>
+    </div>
+    <div class="hints" aria-hidden="true">
+      <span><kbd>←</kbd> <kbd>→</kbd> frame</span>
+      <span><kbd>Space</kbd> next</span>
+      <span><kbd>1</kbd>–<kbd>8</kbd> jump</span>
+      <span><kbd>Home</kbd> <kbd>End</kbd> ends</span>
+      <span><kbd>T</kbd> text</span>
+      <span><kbd>G</kbd> graticule</span>
+    </div>
+  </div>
+  <div class="meta">
+    <span>Mode <b class="g" id="m-mode">TITLE</b></span>
+    <span>Field <b id="m-field">INIT</b></span>
+    <span>VP <b id="m-vp">—</b></span>
+  </div>
+</div>
+</div>
+
+<p class="sr" id="live" role="status" aria-live="polite"></p>
+
+<script>
+/* ═══ chassis state ═════════════════════════════════════════════════ */
+const mqReduce=matchMedia('(prefers-reduced-motion: reduce)');
+const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:v==='1';}catch(e){return d;}},
+             set(k,v){try{localStorage.setItem(k,v?'1':'0');}catch(e){}}};
+let motionOn=store.get('ob-motion',!mqReduce.matches)&&!mqReduce.matches;
+let gridOn=store.get('ob-grid',true);
+let textOn=false;
+const body=document.body;
+const tM=document.getElementById('t-motion'),tG=document.getElementById('t-grid'),tT=document.getElementById('t-text');
+const applyMotion=()=>{ body.classList.toggle('reduced',!motionOn); tM.setAttribute('aria-pressed',String(motionOn)); };
+const applyGrid=()=>{ body.classList.toggle('nogrid',!gridOn); tG.setAttribute('aria-pressed',String(gridOn)); };
+applyMotion(); applyGrid();
+tM.addEventListener('click',()=>{ motionOn=!motionOn; store.set('ob-motion',motionOn); applyMotion(); field.setRun(motionOn); });
+tG.addEventListener('click',()=>{ gridOn=!gridOn; store.set('ob-grid',gridOn); applyGrid(); });
+
+/* ═══ ambient contour field ═════════════════════════════════════════ */
+const FIELD_OUT='m-field';
+const field=(function(){
+  const cv=document.getElementById('field');
+  const isPhone=matchMedia('(max-width:900px)').matches;
+  const st=v=>{const e=document.getElementById(FIELD_OUT); if(e)e.textContent=v;};
+  /* pointer is stored screen-normalised, y DOWN */
+  const ptr={x:.24,y:.06,tx:.24,ty:.06,amt:0,tamt:0};
+  let kind='none',run=false,raf=0,frozen=false;
+  let gl=null,prog=null,loc={},glScale=isPhone?.6:.9;
+  let ctx=null,vg=null,cols=0,rows=0,cell=26,grad=null;
+
+  /* ── A · fast path: WebGL2 contour shader ───────────────────────── */
+  const VS=`#version 300 es
+in vec2 a; void main(){ gl_Position=vec4(a,0.,1.); }`;
+  const FS=`#version 300 es
+precision highp float;
+uniform vec2 uRes; uniform float uT; uniform vec2 uP; uniform float uA;
+out vec4 o;
+float h(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123); }
+float n(vec2 p){ vec2 i=floor(p),f=fract(p); f=f*f*(3.-2.*f);
+  return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y); }
+float fbm3(vec2 p){ float a=.5,s=0.; for(int k=0;k<3;k++){ s+=a*n(p); p=p*2.03+vec2(11.7,5.3); a*=.5; } return s; }
+float fbm5(vec2 p){ float a=.5,s=0.; for(int k=0;k<5;k++){ s+=a*n(p); p=p*2.02+vec2(17.3,9.1); a*=.5; } return s; }
+void main(){
+  vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y;
+  vec2 p=uv*2.15; float t=uT*.032;
+  p+=(vec2(fbm3(p*.75+vec2(t,0.)),fbm3(p*.75+vec2(0.,-t)+5.2))-.5)*1.15;
+  vec2 d=uv-uP; float r=length(d);
+  float lens=exp(-r*r*8.5)*uA;
+  p+=normalize(d+vec2(1e-5))*lens*.34;
+  float f=fbm5(p+vec2(0.,t*.55));
+  float bands=f*9.0+lens*2.2;
+  float e=abs(fract(bands)-.5);
+  float aa=fwidth(bands)*.95+1e-4;
+  float line=1.-smoothstep(0.,aa,e);
+  float centre=smoothstep(1.32,.21,length(uv*vec2(.59,1.0)));
+  float ink=line*(.034+.155*(1.-centre))+lens*.05;
+  o=vec4(vec3(.0235,.0353,.0549)+vec3(.165,.30,.385)*ink*2.3,1.);
+}`;
+  function sh(t,s){ const x=gl.createShader(t); gl.shaderSource(x,s); gl.compileShader(x);
+    if(!gl.getShaderParameter(x,gl.COMPILE_STATUS)){ console.warn(gl.getShaderInfoLog(x)); return null; } return x; }
+  function initGL(){
+    try{ gl=cv.getContext('webgl2',{antialias:false,alpha:false,powerPreference:'low-power'}); }catch(e){ gl=null; }
+    if(!gl) return false;
+    const v=sh(gl.VERTEX_SHADER,VS),f=sh(gl.FRAGMENT_SHADER,FS);
+    if(!v||!f) return false;
+    prog=gl.createProgram(); gl.attachShader(prog,v); gl.attachShader(prog,f); gl.linkProgram(prog);
+    if(!gl.getProgramParameter(prog,gl.LINK_STATUS)) return false;
+    gl.useProgram(prog);
+    const b=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,b);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+    const a=gl.getAttribLocation(prog,'a'); gl.enableVertexAttribArray(a);
+    gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);
+    loc.res=gl.getUniformLocation(prog,'uRes'); loc.t=gl.getUniformLocation(prog,'uT');
+    loc.p=gl.getUniformLocation(prog,'uP'); loc.a=gl.getUniformLocation(prog,'uA');
+    return true;
+  }
+  function sizeGL(){
+    const w=Math.max(1,Math.round(innerWidth*glScale)),h=Math.max(1,Math.round(innerHeight*glScale));
+    if(cv.width!==w||cv.height!==h){ cv.width=w; cv.height=h; gl.viewport(0,0,w,h); }
+  }
+  function drawGL(sec){
+    gl.uniform2f(loc.res,cv.width,cv.height); gl.uniform1f(loc.t,sec);
+    gl.uniform2f(loc.p,ptr.x,-ptr.y); gl.uniform1f(loc.a,ptr.amt);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+  }
+
+  /* ── B · fallback: canvas-2D isolines by marching squares ───────── */
+  function hash(x,y){ let n=(x|0)*374761393+(y|0)*668265263;
+    n=(n^(n>>13))*1274126177; return ((n^(n>>16))>>>0)/4294967296; }
+  function vnoise(x,y){ const ix=Math.floor(x),iy=Math.floor(y);
+    let fx=x-ix,fy=y-iy; fx=fx*fx*(3-2*fx); fy=fy*fy*(3-2*fy);
+    const a=hash(ix,iy),b=hash(ix+1,iy),c=hash(ix,iy+1),d=hash(ix+1,iy+1);
+    return a+(b-a)*fx+(c-a)*fy+(a-b-c+d)*fx*fy; }
+  function fbm(x,y){ let s=0,m=.5;
+    for(let k=0;k<3;k++){ s+=m*vnoise(x,y); x=x*2.03+11.7; y=y*2.03+5.3; m*=.5; } return s; }
+  function initCtx(){ try{ ctx=cv.getContext('2d'); }catch(e){ ctx=null; } return !!ctx; }
+  function sizeCtx(){
+    cv.width=innerWidth; cv.height=innerHeight;
+    cols=Math.ceil(innerWidth/cell)+2; rows=Math.ceil(innerHeight/cell)+2;
+    vg=new Float32Array(cols*rows);
+    const W=cv.width,H=cv.height;
+    grad=ctx.createRadialGradient(W*.40,H*.46,0,W*.40,H*.46,Math.max(W,H)*.66);
+    grad.addColorStop(0,'rgba(6,9,14,.94)');
+    grad.addColorStop(.5,'rgba(6,9,14,.58)');
+    grad.addColorStop(1,'rgba(6,9,14,0)');
+    ctx.lineWidth=1; ctx.lineCap='butt';
+  }
+  function drawCtx(sec){
+    const W=cv.width,H=cv.height,t=sec*.9;
+    for(let j=0;j<rows;j++){
+      const Y=(j*cell-H/2)/H;
+      for(let i=0;i<cols;i++){
+        const X=(i*cell-W/2)/H;
+        let v=fbm(X*1.75+t*.055,Y*1.75)*.66 + fbm(X*2.8-t*.036,Y*2.8+t*.022)*.34;
+        const dx=X-ptr.x, dy=Y-ptr.y;
+        v+=Math.exp(-(dx*dx+dy*dy)*9.0)*ptr.amt*.42;
+        vg[j*cols+i]=v;
+      }
+    }
+    ctx.fillStyle='#06090E'; ctx.fillRect(0,0,W,H);
+    const p=new Path2D();
+    for(let L=0;L<12;L++){
+      const lev=.155+L*.045;
+      for(let j=0;j<rows-1;j++){
+        const r0=j*cols,r1=r0+cols,y0=j*cell;
+        for(let i=0;i<cols-1;i++){
+          const a=vg[r0+i],b=vg[r0+i+1],c=vg[r1+i+1],d=vg[r1+i];
+          const m=(a>=lev?1:0)|(b>=lev?2:0)|(c>=lev?4:0)|(d>=lev?8:0);
+          if(m===0||m===15) continue;
+          const x0=i*cell;
+          let ax,ay,bx,by;
+          switch(m){
+            case 1: case 14:
+              ax=x0; ay=y0+cell*(lev-a)/(d-a); bx=x0+cell*(lev-a)/(b-a); by=y0; break;
+            case 2: case 13:
+              ax=x0+cell*(lev-a)/(b-a); ay=y0; bx=x0+cell; by=y0+cell*(lev-b)/(c-b); break;
+            case 3: case 12:
+              ax=x0; ay=y0+cell*(lev-a)/(d-a); bx=x0+cell; by=y0+cell*(lev-b)/(c-b); break;
+            case 4: case 11:
+              ax=x0+cell; ay=y0+cell*(lev-b)/(c-b); bx=x0+cell*(lev-d)/(c-d); by=y0+cell; break;
+            case 6: case 9:
+              ax=x0+cell*(lev-a)/(b-a); ay=y0; bx=x0+cell*(lev-d)/(c-d); by=y0+cell; break;
+            case 7: case 8:
+              ax=x0; ay=y0+cell*(lev-a)/(d-a); bx=x0+cell*(lev-d)/(c-d); by=y0+cell; break;
+            case 5:
+              p.moveTo(x0,y0+cell*(lev-a)/(d-a)); p.lineTo(x0+cell*(lev-a)/(b-a),y0);
+              p.moveTo(x0+cell,y0+cell*(lev-b)/(c-b)); p.lineTo(x0+cell*(lev-d)/(c-d),y0+cell);
+              continue;
+            case 10:
+              p.moveTo(x0+cell*(lev-a)/(b-a),y0); p.lineTo(x0+cell,y0+cell*(lev-b)/(c-b));
+              p.moveTo(x0,y0+cell*(lev-a)/(d-a)); p.lineTo(x0+cell*(lev-d)/(c-d),y0+cell);
+              continue;
+            default: continue;
+          }
+          p.moveTo(ax,ay); p.lineTo(bx,by);
+        }
+      }
+    }
+    ctx.strokeStyle='rgba(126,180,216,.21)'; ctx.stroke(p);
+    ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+  }
+
+  /* ── transport shared by both renderers ─────────────────────────── */
+  function size(){ if(kind==='gl') sizeGL(); else if(kind==='iso') sizeCtx(); }
+  const t0=performance.now(); let acc=0,frames=0,last=0;
+  function draw(now){
+    raf=0; const dt=now-(last||now); last=now;
+    ptr.x+=(ptr.tx-ptr.x)*.065; ptr.y+=(ptr.ty-ptr.y)*.065; ptr.amt+=(ptr.tamt-ptr.amt)*.05;
+    const sec=(now-t0)/1000;
+    if(kind==='gl') drawGL(sec); else drawCtx(sec);
+    acc+=dt; frames++;
+    if(acc>900){
+      const fps=frames/(acc/1000);
+      if(fps<42){
+        if(kind==='gl'&&glScale>.42){ glScale=Math.max(.42,glScale-.15); sizeGL(); }
+        else if(kind==='iso'&&cell<44){ cell=Math.min(44,cell+6); sizeCtx(); }
+      }
+      st((kind==='gl'?'GL ':'ISO ')+Math.round(fps)+'FPS');
+      acc=0; frames=0;
+    }
+    if(run&&!frozen) raf=requestAnimationFrame(draw);
+  }
+  /* paint immediately and synchronously — never wait on a frame callback that a
+     throttled or backgrounded tab may never deliver */
+  function paintNow(){
+    if(kind==='none') return;
+    const n=performance.now(); last=n; const r=run; run=false; draw(n); run=r;
+  }
+  function setRun(on){
+    if(kind==='none') return;
+    run=on&&!isPhone;                 /* phone: one static render, and the strip says so */
+    if(raf){ cancelAnimationFrame(raf); raf=0; }
+    paintNow();
+    const tag=kind==='gl'?'GL':'ISO';
+    if(run){ st(tag+' LIVE'); if(!raf) raf=requestAnimationFrame(draw); }
+    else st(isPhone?tag+' STATIC':tag+' HOLD');
+  }
+
+  if(initGL()) kind='gl';
+  else if(initCtx()){ kind='iso'; cell=isPhone?30:26; }
+  if(kind==='none'){ cv.classList.add('dead'); st('CSS FALLBACK'); return {setRun(){}}; }
+  size();
+  addEventListener('resize',()=>{ size(); paintNow(); },{passive:true});
+  if(matchMedia('(hover:hover)').matches){
+    addEventListener('pointermove',e=>{
+      ptr.tx=(e.clientX-innerWidth/2)/innerHeight;
+      ptr.ty=(e.clientY-innerHeight/2)/innerHeight;
+      ptr.tamt=1;
+    },{passive:true});
+    addEventListener('pointerleave',()=>{ ptr.tamt=0; },{passive:true});
+  }
+  document.addEventListener('visibilitychange',()=>{
+    frozen=document.hidden; if(!frozen&&run&&!raf) raf=requestAnimationFrame(draw); });
+  setRun(motionOn);
+  return {setRun};
+})();
+
+/* ═══ frame transport ═══════════════════════════════════════════════ */
+const frames=[...document.querySelectorAll('.frame')];
+const N=frames.length;
+const rtN=document.getElementById('rt-n'),rtT=document.getElementById('rt-title'),
+      mMode=document.getElementById('m-mode'),needle=document.getElementById('needle'),
+      scan=document.getElementById('scan'),live=document.getElementById('live'),
+      prevB=document.getElementById('prev'),nextB=document.getElementById('next');
+let cur=0;
+
+/* build the ruler from the frames themselves */
+const rul=document.getElementById('ruler');
+frames.forEach((f,i)=>{
+  const li=document.createElement('li');
+  const b=document.createElement('button');
+  b.type='button';
+  b.innerHTML='<span>'+f.dataset.n+'</span>';
+  b.setAttribute('aria-label','Go to frame '+(i+1)+': '+f.dataset.title);
+  b.addEventListener('click',()=>go(i));
+  li.appendChild(b); rul.appendChild(li);
+});
+const rulLis=[...rul.children];
+
+const GLYPH='ABCDEFGHIJKLMNOPQRSTUVWXYZ·/0123456789';
+let modeRaf=0;
+function retune(to){
+  cancelAnimationFrame(modeRaf);
+  if(!motionOn){ mMode.textContent=to; return; }
+  let k=0; const n=to.length;
+  (function tick(){ let out='';
+    for(let i=0;i<n;i++) out += i<k ? to[i] : (to[i]===' '?' ':GLYPH[(Math.random()*GLYPH.length)|0]);
+    mMode.textContent=out; k+=0.8;
+    if(k<n+1) modeRaf=requestAnimationFrame(tick); else mMode.textContent=to;
+  })();
+}
+const ease=x=>1-Math.pow(1-x,3);
+function runCounters(f){
+  f.querySelectorAll('.ct').forEach(el=>{
+    const to=+el.dataset.to;
+    if(!motionOn){ el.textContent=to; return; }
+    const dur=900,t0=performance.now();
+    (function step(now){ const k=Math.min(1,(now-t0)/dur);
+      el.textContent=Math.round(to*ease(k)); if(k<1) requestAnimationFrame(step); })(performance.now());
+  });
+}
+function paint(){
+  rtN.textContent=frames[cur].dataset.n;
+  rtT.textContent=frames[cur].dataset.title;
+  retune(frames[cur].dataset.mode);
+  rulLis.forEach((li,i)=>{ li.classList.toggle('now',i===cur); li.classList.toggle('done',i<cur); });
+  const w=rul.getBoundingClientRect().width/N;
+  needle.style.transform='translateX('+(w*cur+w/2)+'px)';
+  prevB.disabled=cur===0; nextB.disabled=cur===N-1;
+  live.textContent='Frame '+(cur+1)+' of '+N+': '+frames[cur].dataset.title;
+}
+let outTimer=0;
+function go(i,push){
+  i=Math.max(0,Math.min(N-1,i));
+  if(i===cur){ paint(); return; }
+  const old=frames[cur], nx=frames[i];
+  cur=i;
+  if(textOn){ nx.scrollIntoView({behavior:motionOn?'smooth':'auto',block:'start'}); paint(); return; }
+  clearTimeout(outTimer);
+  old.classList.remove('on','out');
+  if(motionOn){
+    old.classList.add('out');
+    outTimer=setTimeout(()=>{ old.classList.remove('out'); old.hidden=true; },280);
+    scan.classList.remove('go'); void scan.offsetWidth; scan.classList.add('go');
+  } else { old.hidden=true; }
+  nx.hidden=false;
+  nx.classList.add('on');
+  runCounters(nx);
+  paint();
+  if(push!==false) history.replaceState(null,'','#f'+(i+1));
+}
+prevB.addEventListener('click',()=>go(cur-1));
+nextB.addEventListener('click',()=>go(cur+1));
+
+/* keyboard transport */
+addEventListener('keydown',e=>{
+  if(e.metaKey||e.ctrlKey||e.altKey) return;
+  const t=e.target;
+  if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA')) return;
+  switch(e.key){
+    case 'ArrowRight': case 'PageDown': case ' ': case 'Spacebar':
+      if(textOn&&e.key===' ') return;
+      e.preventDefault(); go(cur+1); break;
+    case 'ArrowLeft': case 'PageUp': e.preventDefault(); go(cur-1); break;
+    case 'Home': e.preventDefault(); go(0); break;
+    case 'End': e.preventDefault(); go(N-1); break;
+    case 'g': case 'G': gridOn=!gridOn; store.set('ob-grid',gridOn); applyGrid(); break;
+    case 'm': case 'M': motionOn=!motionOn; store.set('ob-motion',motionOn); applyMotion(); field.setRun(motionOn); break;
+    case 't': case 'T': setText(!textOn); break;
+    default:
+      if(/^[1-8]$/.test(e.key)){ e.preventDefault(); go(+e.key-1); }
+  }
+});
+/* pointer transport on the screen edges — with real buttons in the rail as the equivalent */
+document.getElementById('screen').addEventListener('click',e=>{
+  if(textOn) return;
+  if(e.target.closest('a,button')) return;
+  const r=e.currentTarget.getBoundingClientRect();
+  const x=(e.clientX-r.left)/r.width;
+  if(x<0.16) go(cur-1); else if(x>0.84) go(cur+1);
+});
+
+/* ═══ text mode — same frames, reflowed ════════════════════════════ */
+function setText(on){
+  textOn=on;
+  body.classList.toggle('textmode',on);
+  body.classList.toggle('deck',!on);
+  tT.setAttribute('aria-pressed',String(on));
+  frames.forEach((f,i)=>{
+    if(on){ f.hidden=false; f.classList.remove('on','out'); }
+    else { f.hidden = i!==cur; f.classList.toggle('on',i===cur); }
+  });
+  if(on) frames[cur].scrollIntoView({behavior:'auto',block:'start'});
+  paint();
+}
+tT.addEventListener('click',()=>setText(!textOn));
+
+/* ═══ viewport readout + boot ══════════════════════════════════════ */
+const mVp=document.getElementById('m-vp');
+function readVP(){ mVp.textContent=innerWidth+'×'+innerHeight; }
+addEventListener('resize',()=>{ readVP(); paint(); },{passive:true});
+readVP();
+const h=location.hash.match(/^#f([1-8])$/);
+frames.forEach((f,i)=>{ f.hidden=i!==0; });
+if(h){ const i=+h[1]-1; if(i!==0){ frames[0].hidden=true; frames[0].classList.remove('on');
+  frames[i].hidden=false; frames[i].classList.add('on'); cur=i; } }
+runCounters(frames[cur]); paint();
+mqReduce.addEventListener('change',e=>{ if(e.matches){ motionOn=false; applyMotion(); field.setRun(false); } });
+</script>
+</body>
+</html>
