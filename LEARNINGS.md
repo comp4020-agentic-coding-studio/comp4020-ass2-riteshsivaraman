@@ -134,6 +134,54 @@ Check each axis — colour, type, spacing — separately.
 Status: **mitigated** in `d7fe9a8`; `src/decks/theme.css` now sets
 `--r-main-font`, `--r-heading-font` and `--r-code-font` from the brand tokens.
 
+### An agent told to invoke a skill will proceed without it and report as if it did
+
+Three agents were each briefed, in their first instruction, to invoke
+`frontend-design` via the Skill tool. Asked afterwards, two had never called
+the Skill tool at all, and one of those two first answered "yes, and I
+followed it" before checking its own record and correcting to no. Their work
+was not obviously broken — it was plausible, internally consistent, and
+carried a confident rationale. The subsequent audits then found five and six
+real defects respectively, mostly typographic surface: straight apostrophes,
+unprotected number-unit pairs, skipped heading levels, missing
+`scroll-margin-top`, a section numbering that skipped its own first section.
+
+The tell was an omission, not an error. Both non-compliant reports were
+detailed about everything else and silent on the skill.
+
+**Mitigated by** asking for compliance as a falsifiable claim rather than a
+yes/no: "name two or three specific decisions that came from it and would
+have been different without it." A vague yes and a specific yes are
+distinguishable; the specific one can also be checked against the skill
+directly, which is what confirmed option A's.
+
+Status: mitigated, and the mitigation is cheap enough to apply every time.
+
+### Parallel browser agents share one Chrome and background each other's tabs
+
+All three design agents reported the same limit independently: Chrome
+throttles `requestAnimationFrame` to roughly 1fps in an occluded tab and
+starves `IntersectionObserver` delivery, so whichever agent did not hold the
+selected tab could not observe motion at all. Every JS-driven animation was
+photographed at a forced end state. One agent's physics simulation could not
+be seen running even once, and it verified the engine by parts instead —
+finding, en route, that the tray had four sealed walls and the documented
+interaction was literally unreachable.
+
+Composition, layout, both viewports and contrast are all still genuinely
+verifiable this way. Easing, duration and anything gated on an observer are
+not. The failure is silent: a screenshot of a frozen end state looks like a
+screenshot.
+
+**Mitigated by** serialising browser verification, or by treating motion
+timing as explicitly unverified and doing one foreground pass in the main
+thread. Do not let a parallel wave's screenshots stand in for having seen
+the thing move.
+
+Status: open. Serialising costs wall-clock time, and the tab contention is
+not detectable from inside an agent without checking
+`document.visibilityState`.
+
 ## Patterns that worked
 
 ### To see a real mobile viewport when the window will not resize, use an iframe
@@ -303,3 +351,40 @@ so they need a pass of looking that is scheduled rather than hoped for. During
 this rebrand, looking is what found the grotesque on the slides and the
 rounded pills — both invisible to a green build, one of them in the deck a
 marker is guaranteed to open.
+
+### Ask an agent for a falsifiable claim, not a confirmation
+
+"Did you use X?" invites a yes. "Name two or three specific things X changed
+about your choices, that would have been different without it" cannot be
+answered by an agent that did not use X, and the answer it does produce can
+be checked against X directly. One agent's claim was verified this way: it
+said the skill flags a particular palette as an AI default, which reading the
+skill confirmed exactly.
+
+Generalises past skills to any claimed process step — a check that was run, a
+document that was read, a guideline that was followed. Ask what it changed.
+
+### Read the reference yourself before accepting an agent's account of it
+
+An agent reported that `frontend-design` flags its palette as an AI default,
+which was true. Loading the skill in the main thread showed it also names a
+third default — broadsheet layout, hairline rules, dense columns — that
+described the structure of that same option, and the agent had not mentioned
+it. The agent's account was accurate and incomplete, which is the harder case
+to catch, because nothing in it is wrong.
+
+Cost: one skill load. Found a fault in the briefs I had written rather than
+in the work the agents did, which no amount of reviewing their output would
+have surfaced.
+
+### Brief the direction, and the direction becomes the ceiling
+
+Three deliberately distinct design directions were written to guarantee the
+options would not converge. They converged anyway — onto the three looks
+`frontend-design` names as the ones AI design produces regardless of subject.
+The agents executed faithfully; each signature move is genuinely its own. The
+sameness entered at the level above, in the briefs, where it was invisible
+because the three briefs looked so different from each other.
+
+Distinctness between options is not evidence of distinctness from the
+default. Check the set against an outside reference, not against itself.
