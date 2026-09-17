@@ -177,3 +177,92 @@ First moves 1 and 2 are done. Do not re-ask these; they are settled:
 
 Outstanding before planning: the `/cost` number, and one foreground pass on
 motion *feel*. Then write the port plan into `PLAN.md`.
+
+---
+
+## Update 2026-09-18 — plan written, skills built, ready to implement
+
+The plan is ready to execute. Read, in this order, before touching `src/`:
+
+1. `CLAUDE.md` — unchanged in force, plus one new rule since last handoff:
+   every frontend change needing your own eyes now comes with an exact
+   scroll/hover checklist, not "take a look" (`c948e6a`).
+2. This file, in full — the settled design decisions above are not to be
+   re-asked.
+3. `PLAN.md`, section **"Port to option A — plan"** (bottom of the file,
+   commit `6e5b619`) — the actual sequencing, the role/model table for a
+   multi-agent team, and why this port has almost no natural parallelism
+   (three shared, globally-wired files: `src/styles/notepad.css`,
+   `src/layouts/PageLayout.astro`, `src/decks/theme.css` — main thread
+   authors all three itself, agents only run read-only fan-out audits).
+4. `design/option-a/README.md` — the spec. Still the port's ground truth for
+   tokens, type stack, the velocity-axis mechanic and the port-risk list.
+
+### What's built, not just planned
+
+Two repo-local skills exist and are usable right now — `.claude/skills/`
+was carved out of the otherwise-blanket `.claude/` gitignore for exactly
+this (commit `c7ee007`):
+
+- **`verify-frontend`** — `pnpm check` + `pnpm check:evidence`, then the six
+  real marker routes (confirmed against actual content slugs: `/`,
+  `/sessions/week-02/`, `/sessions/week-09/`,
+  `/assessments/01-role-teardown/`, `/decks/week-06-varnish/`,
+  `/policies/`) at both marking viewports, ending in the exact checklist
+  `CLAUDE.md` now requires.
+- **`axe-risk-sweep`** — read-only scan for the five axe-risk shapes named
+  in the port plan's step 7, for the fan-out audit role in the table, not
+  for main thread's own use of the build's real axe pass.
+
+Neither skill has been dry-run yet. Per this repo's own rule ("before
+trusting a new check, mutation-test it"), the first real use of each — the
+first `pnpm check` run in step 8 of the sequence, the first sweep in step
+7 — is also its first trial. Watch for the skill silently not catching what
+it claims to, not just for the port bug it's checking for.
+
+### What is genuinely not yet done
+
+Nothing in `src/` has changed for the port. Zero of the ten sequencing steps
+in `PLAN.md` have been executed. Specifically still open:
+
+- The `:root` axis-token risk (step 1) has not been prototyped — it is the
+  port's biggest named risk and the plan says verify it first, not last.
+  Do not skip straight to the token rewrite.
+- The `rgba(237,235,228,.78)` translucent-body-copy fix (step 2) has not
+  been made.
+- Font delivery mechanics (preconnect + `<link>` for Anybody / Newsreader /
+  Martian Mono in `PageLayout.astro`'s head) are named in the plan but no
+  actual URLs or weights have been chosen yet — decide these against
+  `design/option-a/README.md`'s exact axis ranges, not generic defaults.
+- **Motion feel is still unverified**, across three sessions now
+  (background-tab throttling twice, an unreliable review agent once). This
+  stays the last gate before the port is signed off — see `LEARNINGS.md`'s
+  newest gotcha for exactly how a fresh agent's account of this went wrong
+  last time, and do not accept a screenshot-only account of it again.
+
+### Constraints to carry forward
+
+- Deadline: noon Mon 21 Sep 2026. As of this handoff that's **~2.5 days**.
+- Budget: 22.30 of 120 AUD weekly credits used as of 2026-09-17 — check the
+  current `/cost` figure before committing to a large multi-agent fan-out,
+  since the port plan's own agent count is modest by design (two grep
+  sweeps + one axe re-check + one motion observer) precisely because the
+  three shared files don't parallelise.
+- No amend, no rebase, no force-push — flat ban, not a confirm-first default
+  — because `check:evidence` resolves `PROCESS.md` citations via local
+  `git cat-file -e`.
+- Main thread is sole committer and sole build-runner. Every agent brief
+  states its exclusive scope; no file has two owners in a wave.
+
+### First moves for the new session
+
+1. Read the four documents above, in order.
+2. Prototype the `:root` axis engine in isolation (`PLAN.md` step 1) before
+   any visual token work — confirm a `.d`-classed element's computed
+   `font-variation-settings` actually moves on scroll, in a real page.
+3. Fix the translucent-text axe risk (step 2) before the first full build.
+4. Proceed through the remaining sequencing steps in `PLAN.md`, invoking
+   `verify-frontend` after the token/layout/deck rewrites and before
+   reporting anything as done, and `axe-risk-sweep` for the fan-out audit
+   role rather than re-deriving that checklist by hand.
+5. Do not sign off the port without the foreground motion-feel pass.
