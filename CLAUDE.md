@@ -164,6 +164,13 @@ default above to a flat ban.
 - Custom visual/CSS work is where accessibility regresses quietly — check
   it against `pnpm build`'s axe pass and both marking viewports before
   it's considered done, not just under the general checks rule.
+- **Every time a frontend change needs the user's own eyes, hand over an
+  exact checklist, not "take a look."** State precisely what to do (scroll at
+  what pace, hover what, stop where) and what behaviour is expected at each
+  step — the things sensors structurally cannot catch: motion feel, easing,
+  whether an effect reads as alive or as jank. A vague "check it out" makes
+  the user re-derive what "working" means from scratch, and a check they
+  don't know to run doesn't get run.
 
 ## Session handoff
 
