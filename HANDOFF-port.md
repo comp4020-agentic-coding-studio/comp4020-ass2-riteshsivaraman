@@ -157,3 +157,23 @@ user, before the design is locked.
 4. Write the port plan into `PLAN.md` — sequenced, with the `:root` axis risk
    verified early rather than at the end.
 5. Only then build.
+
+---
+
+## Update 2026-09-17 — the consultation happened; the plan has not been written
+
+First moves 1 and 2 are done. Do not re-ask these; they are settled:
+
+- **Option A plus the full geometry lock** — `white-space: nowrap`, height
+  reserved in `em`, `--kv-wdth` clamped **78–96**. The clamp is accepted
+  knowing it narrows the signature's range.
+- **Defect 3 declined.** The editorial/broadsheet structure and the vermilion
+  `#C92000` accent stay; no indigo, no syllabus-table restructure. v3's
+  body-type discipline also declined.
+- **Motion: signature only.** Velocity axes + Lenis + the CSS-only effects.
+  **GSAP is dropped** — no pinned horizontal act, no pinned rotator.
+- **Deck: re-skin `src/decks/theme.css` only.** The 8.5px mobile body stays
+  accepted-and-logged.
+
+Outstanding before planning: the `/cost` number, and one foreground pass on
+motion *feel*. Then write the port plan into `PLAN.md`.
