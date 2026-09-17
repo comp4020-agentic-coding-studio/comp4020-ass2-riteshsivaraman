@@ -11,10 +11,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Instrument+Sans:wght@400..700&family=Spline+Sans+Mono:wght@300..700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#06090E; --panel:#0E141C; --panel-hi:#141C26;
+  /* ═══ THEME TOKENS ═══ every colour on the page resolves through these.
+     The theme lab overrides them on <html>; nothing else hardcodes a value. */
+  --ink:#06090E; --ink2:#0A0F16; --panel:#0E141C; --panel-hi:#141C26;
   --rule:#1E2A38; --rule-hi:#2F4256;
-  --bone:#DCE3EA; --dim:#96A4B3; --faint:#6E7C8B;
+  --bone:#DCE3EA; --prose:#C3CCD6; --dim:#96A4B3; --faint:#6E7C8B;
   --sig:#57D9A3; --warn:#F2B24C; --chC:#C9D3DE;
+  /* rgb triplets for the alpha-composited layers (grid, rules, wells, glows) */
+  --ink-rgb:6,9,14; --panel-rgb:14,20,28; --panel-hi-rgb:20,28,38;
+  --rule-rgb:30,42,56; --rule-hi-rgb:47,66,86; --sig-rgb:87,217,163;
+  --grid-rgb:120,170,205;
+  --glow1:#101a26; --glow2:#0b1620; --shad:rgba(0,0,0,.9);
+  /* the contour field reads these three at paint time, both renderers */
+  --field-base:#06090E; --field-line:#7EB4D8; --field-line-rgb:126,180,216;
+  --field-line-a:.21;
+  /* structural knobs a palette may move: hairline weight, chrome blur */
+  --hair:1px; --blur:14px;
+  /* type knobs a type preset may move: width-axis authority, display ceiling */
+  --str:1; --dmax:1;
   --gut:clamp(14px,2.6vw,44px);
   --mono:"Spline Sans Mono",ui-monospace,monospace;
   --sans:"Instrument Sans",system-ui,sans-serif;
@@ -26,18 +40,18 @@
 html{-webkit-text-size-adjust:100%; color-scheme:dark}
 body{margin:0; background:var(--ink); color:var(--bone); font-family:var(--sans);
   font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased; font-synthesis:none;
-  overflow-x:hidden; touch-action:manipulation; -webkit-tap-highlight-color:rgba(87,217,163,.18)}
+  overflow-x:hidden; touch-action:manipulation; -webkit-tap-highlight-color:rgba(var(--sig-rgb),.18)}
 body.deck{overflow:hidden}
 .skip{position:absolute; left:-9999px; top:0; z-index:99; background:var(--panel-hi);
   border:1px solid var(--sig); color:var(--bone); padding:12px 18px; text-decoration:none;
   font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase}
 .skip:focus{left:var(--gut); top:10px}
 #field{position:fixed; inset:0; width:100%; height:100%; z-index:0; display:block; background:var(--ink)}
-#field.dead{background:radial-gradient(120% 80% at 78% 6%, #101a26 0%, transparent 60%),
-  radial-gradient(90% 70% at 6% 94%, #0b1620 0%, transparent 58%), var(--ink)}
+#field.dead{background:radial-gradient(120% 80% at 78% 6%, var(--glow1) 0%, transparent 60%),
+  radial-gradient(90% 70% at 6% 94%, var(--glow2) 0%, transparent 58%), var(--ink)}
 .mono{font-family:var(--mono); font-variant-numeric:tabular-nums; letter-spacing:.06em}
 .lbl{font-family:var(--mono); font-size:10px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--faint)}
-h1,h2,h3,h4{font-family:var(--disp); margin:0; font-weight:600; line-height:1; font-stretch:118%; text-wrap:balance}
+h1,h2,h3,h4{font-family:var(--disp); margin:0; font-weight:600; line-height:1; font-stretch:calc(100% + 18% * var(--str)); text-wrap:balance}
 a{color:var(--bone)}
 :focus-visible{outline:2px solid var(--sig); outline-offset:3px}
 
@@ -45,27 +59,27 @@ a{color:var(--bone)}
 .chassis{position:relative; z-index:2; min-height:100svh; display:flex; flex-direction:column}
 
 /* top rail */
-.rt{height:var(--railT); flex:none; display:flex; align-items:stretch; border-bottom:1px solid var(--rule);
-  background:rgba(8,12,18,.9); backdrop-filter:blur(12px)}
-.rt>*{display:flex; align-items:center; gap:10px; padding:0 14px; border-right:1px solid var(--rule); white-space:nowrap}
+.rt{height:var(--railT); flex:none; display:flex; align-items:stretch; border-bottom:var(--hair) solid var(--rule);
+  background:rgba(var(--ink-rgb),.9); backdrop-filter:blur(var(--blur))}
+.rt>*{display:flex; align-items:center; gap:10px; padding:0 14px; border-right:var(--hair) solid var(--rule); white-space:nowrap}
 .rt .mark{padding-left:var(--gut)}
 .rt .mark a{text-decoration:none; display:flex; align-items:center; gap:10px}
-.rt .mark b{font-family:var(--disp); font-stretch:125%; font-weight:700; font-size:12.5px; letter-spacing:.1em; text-transform:uppercase}
+.rt .mark b{font-family:var(--disp); font-stretch:calc(100% + 25% * var(--str)); font-weight:700; font-size:12.5px; letter-spacing:.1em; text-transform:uppercase}
 .dot{width:8px; height:8px; border-radius:50%; background:var(--sig); animation:pulse 3.4s var(--ease) infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(87,217,163,.10)}50%{box-shadow:0 0 0 6px rgba(87,217,163,.03)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(var(--sig-rgb),.10)}50%{box-shadow:0 0 0 6px rgba(var(--sig-rgb),.03)}}
 /* stretch, not centre: .rt>* centres its children, which collapsed each nav
    anchor to its 17px text box instead of the full rail-height hit target. */
 .rt nav{display:flex; padding:0; gap:0; align-items:stretch}
 .rt .mark{align-items:stretch}
 .rt .mark a{align-items:center}
-.rt nav a{display:flex; align-items:center; padding:0 15px; border-right:1px solid var(--rule);
+.rt nav a{display:flex; align-items:center; padding:0 15px; border-right:var(--hair) solid var(--rule);
   font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim);
   text-decoration:none; transition:color .2s, background .2s}
-.rt nav a:hover{color:var(--bone); background:rgba(87,217,163,.05)}
+.rt nav a:hover{color:var(--bone); background:rgba(var(--sig-rgb),.05)}
 .rt nav a[aria-current]{color:var(--bone); box-shadow:inset 0 -2px 0 var(--sig)}
 /* labelled like the right-hand readouts: unlabelled, the frame title sat flush
    against the nav links and read as a fourth nav item. */
-.rt .ttl{flex:1; min-width:0; border-right:1px solid var(--rule); overflow:hidden;
+.rt .ttl{flex:1; min-width:0; border-right:var(--hair) solid var(--rule); overflow:hidden;
   display:flex; align-items:center; gap:9px; padding-left:18px}
 .rt .ttl::before{content:"FRAME"; flex:none; font-family:var(--mono); font-size:9.5px;
   letter-spacing:.2em; color:var(--faint)}
@@ -75,26 +89,26 @@ a{color:var(--bone)}
 .rt .cnt u{text-decoration:none; color:var(--faint)}
 .tgl{appearance:none; border:0; background:transparent; color:var(--faint); cursor:pointer;
   font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
-  padding:0 13px; border-right:1px solid var(--rule); transition:color .2s, background .2s}
+  padding:0 13px; border-right:var(--hair) solid var(--rule); transition:color .2s, background .2s}
 .rt .tgl:last-child{border-right:0; padding-right:var(--gut)}
-.tgl:hover{color:var(--bone); background:rgba(120,170,205,.06)}
+.tgl:hover{color:var(--bone); background:rgba(var(--grid-rgb),.06)}
 .tgl[aria-pressed="true"]{color:var(--sig)}
-.tgl[aria-pressed="true"] .led{background:var(--sig); box-shadow:0 0 6px rgba(87,217,163,.6)}
+.tgl[aria-pressed="true"] .led{background:var(--sig); box-shadow:0 0 6px rgba(var(--sig-rgb),.6)}
 .led{display:inline-block; width:6px; height:6px; border-radius:1px; background:var(--rule-hi); margin-right:7px; vertical-align:1px}
 
 /* stage = the screen */
 .stage{position:relative; flex:1; min-height:0; display:flex}
-.amp{width:54px; flex:none; border-right:1px solid var(--rule); position:relative;
+.amp{width:54px; flex:none; border-right:var(--hair) solid var(--rule); position:relative;
   display:flex; flex-direction:column; justify-content:space-between; padding:14px 0; align-items:flex-end}
 .amp span{font-family:var(--mono); font-size:9px; letter-spacing:.14em; color:var(--faint); padding-right:9px; position:relative}
 .amp span::after{content:""; position:absolute; right:0; top:50%; width:6px; height:1px; background:var(--rule-hi)}
 .screen{position:relative; flex:1; min-width:0; overflow:hidden}
-.grat{position:absolute; inset:0; pointer-events:none; z-index:1; opacity:.5; transition:opacity .3s var(--ease);
-  background:repeating-linear-gradient(to right, rgba(120,170,205,.075) 0 1px, transparent 1px 10%),
-             repeating-linear-gradient(to bottom, rgba(120,170,205,.055) 0 1px, transparent 1px 25%)}
+.grat{position:absolute; inset:0; pointer-events:none; z-index:1; opacity:calc(.5 * var(--grid-o,1)); transition:opacity .3s var(--ease);
+  background:repeating-linear-gradient(to right, rgba(var(--grid-rgb),.075) 0 1px, transparent 1px 10%),
+             repeating-linear-gradient(to bottom, rgba(var(--grid-rgb),.055) 0 1px, transparent 1px 25%)}
 body.nogrid .grat{opacity:0}
 .crop{position:absolute; inset:0; pointer-events:none; z-index:3}
-.crop i{position:absolute; width:11px; height:11px; border:1px solid var(--rule-hi)}
+.crop i{position:absolute; width:11px; height:11px; border:var(--hair) solid var(--rule-hi)}
 .crop i:nth-child(1){top:12px; left:12px; border-right:0; border-bottom:0}
 .crop i:nth-child(2){top:12px; right:12px; border-left:0; border-bottom:0}
 .crop i:nth-child(3){bottom:12px; left:12px; border-right:0; border-top:0}
@@ -120,63 +134,63 @@ body.nogrid .grat{opacity:0}
 @keyframes lift{from{opacity:0; transform:translateY(10px)}to{opacity:1; transform:none}}
 
 .f__k{display:flex; flex-wrap:wrap; gap:6px 18px}
-.frame h2{font-size:clamp(30px,5.2vw,78px); font-weight:700; font-stretch:125%; letter-spacing:-.02em; line-height:.96}
-.frame h3{font-size:clamp(19px,1.7vw,27px); font-stretch:112%}
-.frame .big{font-size:clamp(26px,4.2vw,62px); font-weight:600; font-stretch:112%; letter-spacing:-.015em;
+.frame h2{font-size:clamp(30px,5.2vw,calc(78px * var(--dmax))); font-weight:700; font-stretch:calc(100% + 25% * var(--str)); letter-spacing:-.02em; line-height:.96}
+.frame h3{font-size:clamp(19px,1.7vw,27px); font-stretch:calc(100% + 12% * var(--str))}
+.frame .big{font-size:clamp(26px,4.2vw,62px); font-weight:600; font-stretch:calc(100% + 12% * var(--str)); letter-spacing:-.015em;
   line-height:1.04; max-width:26ch; font-family:var(--disp)}
 .frame .big em{font-style:normal; color:var(--sig)}
-.frame .say{font-size:clamp(15px,1.15vw,19px); color:#C2CBD5; max-width:58ch; margin:0; line-height:1.5}
+.frame .say{font-size:clamp(15px,1.15vw,19px); color:var(--prose); max-width:58ch; margin:0; line-height:1.5}
 .frame .say+.say{margin-top:.7em}
 
 /* frame internals */
-.two{display:grid; grid-template-columns:1fr 1fr; gap:0; border-top:1px solid var(--rule-hi)}
-.two>div{padding:20px clamp(14px,2vw,30px) 20px 0; border-right:1px solid var(--rule)}
+.two{display:grid; grid-template-columns:1fr 1fr; gap:0; border-top:var(--hair) solid var(--rule-hi)}
+.two>div{padding:20px clamp(14px,2vw,30px) 20px 0; border-right:var(--hair) solid var(--rule)}
 .two>div:last-child{border-right:0; padding-left:clamp(14px,2vw,30px); padding-right:0}
-.two h4{font-size:clamp(17px,1.5vw,22px); margin-bottom:12px; font-stretch:112%}
+.two h4{font-size:clamp(17px,1.5vw,22px); margin-bottom:12px; font-stretch:calc(100% + 12% * var(--str))}
 .two ul{list-style:none; margin:0; padding:0}
-.two li{padding:8px 0; border-bottom:1px solid rgba(30,42,56,.6); font-size:14.5px; color:#B9C3CE;
+.two li{padding:8px 0; border-bottom:var(--hair) solid rgba(var(--rule-rgb),.6); font-size:14.5px; color:var(--prose);
   display:grid; grid-template-columns:18px 1fr; gap:10px}
 .two li b{font-family:var(--mono); font-size:10px; color:var(--kc,var(--faint)); padding-top:4px}
 .two>div:first-child{--kc:var(--dim)} .two>div:last-child{--kc:var(--warn)}
 
-.ros{display:grid; grid-template-columns:repeat(3,1fr); border-top:1px solid var(--rule-hi); border-bottom:1px solid var(--rule)}
-.ros>div{padding:18px clamp(12px,1.6vw,26px) 18px 0; border-right:1px solid var(--rule)}
+.ros{display:grid; grid-template-columns:repeat(3,1fr); border-top:var(--hair) solid var(--rule-hi); border-bottom:var(--hair) solid var(--rule)}
+.ros>div{padding:18px clamp(12px,1.6vw,26px) 18px 0; border-right:var(--hair) solid var(--rule)}
 .ros>div:last-child{border-right:0}
-.ros .v{font-family:var(--disp); font-stretch:118%; font-weight:600; font-size:clamp(34px,4.4vw,62px);
+.ros .v{font-family:var(--disp); font-stretch:calc(100% + 18% * var(--str)); font-weight:600; font-size:clamp(34px,4.4vw,62px);
   line-height:1; font-variant-numeric:tabular-nums; display:flex; align-items:baseline; gap:5px}
 .ros .v u{text-decoration:none; font-family:var(--mono); font-size:.3em; color:var(--faint); letter-spacing:.1em}
 .ros .k{display:block; margin-top:10px}
 .ros .n{margin:10px 0 0; font-size:13.5px; color:var(--dim)}
 
-.chl{display:grid; gap:0; border-top:1px solid var(--rule-hi)}
+.chl{display:grid; gap:0; border-top:var(--hair) solid var(--rule-hi)}
 .chl>div{display:grid; grid-template-columns:96px minmax(0,1fr); gap:0 18px; padding:15px 0;
-  border-bottom:1px solid rgba(30,42,56,.6); align-items:baseline}
+  border-bottom:var(--hair) solid rgba(var(--rule-rgb),.6); align-items:baseline}
 .chl .id{font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--c);
   display:flex; align-items:center; gap:8px}
 .chl .id::before{content:""; width:9px; height:9px; background:var(--c); flex:none}
-.chl .tx{font-size:clamp(14.5px,1.1vw,17.5px); color:#C2CBD5}
+.chl .tx{font-size:clamp(14.5px,1.1vw,17.5px); color:var(--prose)}
 .chl .tx b{color:var(--bone); font-weight:600}
 .chl>div:nth-child(1){--c:var(--sig)} .chl>div:nth-child(2){--c:var(--warn)} .chl>div:nth-child(3){--c:var(--chC)}
 
-.seq{list-style:none; margin:0; padding:0; counter-reset:s; border-top:1px solid var(--rule-hi);
+.seq{list-style:none; margin:0; padding:0; counter-reset:s; border-top:var(--hair) solid var(--rule-hi);
   columns:2; column-gap:clamp(20px,3vw,48px)}
 .seq li{counter-increment:s; break-inside:avoid; display:grid; grid-template-columns:44px minmax(0,1fr) 54px;
-  gap:0 12px; padding:11px 0; border-bottom:1px solid rgba(30,42,56,.6); align-items:baseline}
+  gap:0 12px; padding:11px 0; border-bottom:var(--hair) solid rgba(var(--rule-rgb),.6); align-items:baseline}
 .seq li::before{content:"T+" counter(s,decimal-leading-zero); font-family:var(--mono); font-size:10px; color:var(--faint)}
-.seq li span{font-size:14.5px; color:#C2CBD5}
+.seq li span{font-size:14.5px; color:var(--prose)}
 .seq li span b{display:block; color:var(--bone); font-weight:600; font-size:15px}
 .seq li i{font-style:normal; font-family:var(--mono); font-size:10.5px; color:var(--warn); text-align:right}
 
 .claim{border-left:2px solid var(--warn); padding:6px 0 6px 22px; max-width:32ch}
-.claim p{margin:0; font-family:var(--disp); font-stretch:112%; font-weight:600;
+.claim p{margin:0; font-family:var(--disp); font-stretch:calc(100% + 12% * var(--str)); font-weight:600;
   font-size:clamp(24px,3.4vw,48px); line-height:1.08; letter-spacing:-.01em}
 .claim p em{font-style:normal; color:var(--warn)}
 
 .bring{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 clamp(20px,3vw,48px);
-  border-top:1px solid var(--rule-hi)}
-.bring div{padding:14px 0; border-bottom:1px solid rgba(30,42,56,.6)}
+  border-top:var(--hair) solid var(--rule-hi)}
+.bring div{padding:14px 0; border-bottom:var(--hair) solid rgba(var(--rule-rgb),.6)}
 .bring dt{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--faint)}
-.bring dd{margin:5px 0 0; font-size:15px; color:#C2CBD5}
+.bring dd{margin:5px 0 0; font-size:15px; color:var(--prose)}
 .bring dd b{color:var(--bone)}
 
 /* bottom rail = timebase */
@@ -184,17 +198,17 @@ body.nogrid .grat{opacity:0}
    must clear the home-bar area on a phone rather than sit under it. */
 .rb{height:calc(var(--railB) + env(safe-area-inset-bottom));
   padding-bottom:env(safe-area-inset-bottom);
-  flex:none; border-top:1px solid var(--rule-hi); background:rgba(8,12,18,.92);
-  backdrop-filter:blur(12px); display:flex; align-items:stretch}
-.rb .nav2{display:flex; border-right:1px solid var(--rule)}
-.nb{appearance:none; border:0; border-right:1px solid var(--rule); background:transparent; color:var(--dim);
+  flex:none; border-top:var(--hair) solid var(--rule-hi); background:rgba(var(--ink-rgb),.92);
+  backdrop-filter:blur(var(--blur)); display:flex; align-items:stretch}
+.rb .nav2{display:flex; border-right:var(--hair) solid var(--rule)}
+.nb{appearance:none; border:0; border-right:var(--hair) solid var(--rule); background:transparent; color:var(--dim);
   font-family:var(--mono); font-size:13px; cursor:pointer; min-width:52px; padding:0 8px;
   transition:color .2s, background .2s}
 .nb:last-child{border-right:0}
-.nb:hover{color:var(--sig); background:rgba(87,217,163,.07)}
-.nb[disabled]{color:#2F4256; cursor:default; background:transparent}
+.nb:hover{color:var(--sig); background:rgba(var(--sig-rgb),.07)}
+.nb[disabled]{color:var(--rule-hi); cursor:default; background:transparent}
 .tbar{flex:1; min-width:0; position:relative; padding:0 clamp(14px,2vw,30px); display:flex; flex-direction:column;
-  justify-content:center; gap:9px; border-right:1px solid var(--rule)}
+  justify-content:center; gap:9px; border-right:var(--hair) solid var(--rule)}
 .ruler{position:relative; height:22px}
 .ruler .ax{position:absolute; left:0; right:0; top:0; height:1px; background:var(--rule-hi)}
 .ruler ol{list-style:none; margin:0; padding:0; position:absolute; inset:0; display:grid;
@@ -216,8 +230,8 @@ body.nogrid .grat{opacity:0}
 body.reduced .needle{transition:none}
 .hints{display:flex; flex-wrap:wrap; gap:4px 14px; align-items:center}
 .hints span{font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint)}
-.hints kbd{font-family:var(--mono); font-size:9.5px; border:1px solid var(--rule-hi); padding:1px 5px;
-  color:var(--dim); background:rgba(20,28,38,.7)}
+.hints kbd{font-family:var(--mono); font-size:9.5px; border:var(--hair) solid var(--rule-hi); padding:1px 5px;
+  color:var(--dim); background:rgba(var(--panel-hi-rgb),.7)}
 .rb .meta{display:flex; flex-direction:column; justify-content:center; gap:4px; padding:0 var(--gut) 0 14px}
 .rb .meta span{font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--faint); white-space:nowrap}
 .rb .meta span b{color:var(--bone); font-weight:400; font-variant-numeric:tabular-nums}
@@ -230,7 +244,7 @@ body.textmode .amp,body.textmode .grat,body.textmode .crop,body.textmode .scan,
 body.textmode .rb .nav2,body.textmode .rb .tbar{display:none}
 body.textmode .screen{overflow:visible}
 body.textmode .frame{position:static; inset:auto; opacity:1 !important; visibility:visible !important;
-  animation:none !important; display:block; overflow:visible; border-bottom:1px solid var(--rule);
+  animation:none !important; display:block; overflow:visible; border-bottom:var(--hair) solid var(--rule);
   padding:34px var(--gut) 40px; max-width:none}
 body.textmode .frame>*{animation:none !important}
 /* in text mode the frames become real scroll anchors, so a #f5 deep link must
@@ -263,10 +277,10 @@ body.reduced *{animation-duration:.001ms !important; transition-duration:.001ms 
   .frame h2{font-size:clamp(30px,10vw,44px)}
   .frame .big{font-size:clamp(24px,7.6vw,34px); max-width:none}
   .two{grid-template-columns:1fr}
-  .two>div{border-right:0; border-bottom:1px solid var(--rule); padding:16px 0}
+  .two>div{border-right:0; border-bottom:var(--hair) solid var(--rule); padding:16px 0}
   .two>div:last-child{padding-left:0; border-bottom:0}
   .ros{grid-template-columns:1fr}
-  .ros>div{border-right:0; border-bottom:1px solid var(--rule); padding:14px 0}
+  .ros>div{border-right:0; border-bottom:var(--hair) solid var(--rule); padding:14px 0}
   .ros>div:last-child{border-bottom:0}
   .ros .v{font-size:38px}
   .chl>div{grid-template-columns:1fr; gap:7px}
@@ -276,10 +290,10 @@ body.reduced *{animation-duration:.001ms !important; transition-duration:.001ms 
   .claim p{font-size:clamp(22px,6.6vw,30px)}
   .bring{grid-template-columns:1fr}
   .rb{flex-wrap:wrap; align-items:center}
-  .rb .nav2{flex:none; border-right:1px solid var(--rule)}
+  .rb .nav2{flex:none; border-right:var(--hair) solid var(--rule)}
   .nb{min-width:64px; min-height:48px}
   /* the timebase takes its own row: flex-basis, not width, is what wraps it */
-  .tbar{order:3; flex:1 0 100%; border-right:0; border-top:1px solid var(--rule);
+  .tbar{order:3; flex:1 0 100%; border-right:0; border-top:var(--hair) solid var(--rule);
     padding:8px var(--gut) 4px; gap:6px}
   .ruler{height:30px}
   .ruler button{height:46px}
@@ -308,7 +322,139 @@ body.reduced *{animation-duration:.001ms !important; transition-duration:.001ms 
   .rt #t-motion{display:none}
   .rt nav a{padding:0 7px}
 }
+
+/* ═════════════════════════════════════════════════════════════════════════
+   THEME LAB — evaluation tool. Everything from here to the closing tag is
+   deletable in one cut; see README "Stripping the theme lab".
+   ═════════════════════════════════════════════════════════════════════ */
+:root{ color-scheme:dark;
+  --ink:#06090E; --ink2:#0A0F16; --panel:#0E141C; --panel-hi:#141C26;
+  --rule:#1E2A38; --rule-hi:#2F4256;
+  --bone:#DCE3EA; --prose:#C3CCD6; --dim:#96A4B3; --faint:#8494A5;
+  --sig:#57D9A3; --warn:#F2B24C; --chC:#C9D3DE;
+  --ink-rgb:6,9,14; --panel-rgb:14,20,28; --panel-hi-rgb:20,28,38;
+  --rule-rgb:30,42,56; --rule-hi-rgb:47,66,86; --sig-rgb:87,217,163;
+  --grid-rgb:120,170,205; --grid-o:1; --glow1:#101a26; --glow2:#0b1620; --shad:rgba(0,0,0,.9);
+  --field-base:#06090E; --field-line:#7EB4D8; --field-line-rgb:126,180,216; --field-line-a:.21;
+  --hair:1px; --blur:14px; }
+html[data-pal="paper"]{ color-scheme:light;
+  --ink:#F7F4EE; --ink2:#EFEBE2; --panel:#FCFAF6; --panel-hi:#FFFFFF;
+  --rule:#D8D0C2; --rule-hi:#B2A896;
+  --bone:#23272C; --prose:#3C424A; --dim:#545B64; --faint:#5F6771;
+  --sig:#1B4F9B; --warn:#8A5A0B; --chC:#454C55;
+  --ink-rgb:247,244,238; --panel-rgb:252,250,246; --panel-hi-rgb:255,255,255;
+  --rule-rgb:216,208,194; --rule-hi-rgb:178,168,150; --sig-rgb:27,79,155;
+  --grid-rgb:92,80,58; --grid-o:1.25; --glow1:#EDE7DA; --glow2:#F2EDE2; --shad:rgba(86,74,52,.26);
+  --field-base:#F7F4EE; --field-line:#A79B85; --field-line-rgb:167,155,133; --field-line-a:.34;
+  --hair:1px; --blur:10px; }
+html[data-pal="manual"]{ color-scheme:light;
+  --ink:#E8DFC9; --ink2:#DFD5BB; --panel:#F0E9D8; --panel-hi:#F7F2E4;
+  --rule:#C4B693; --rule-hi:#9C8D66;
+  --bone:#1E1A14; --prose:#332C21; --dim:#4A4132; --faint:#554B3A;
+  --sig:#A0261B; --warn:#6E5010; --chC:#3E3628;
+  --ink-rgb:232,223,201; --panel-rgb:240,233,216; --panel-hi-rgb:247,242,228;
+  --rule-rgb:196,182,147; --rule-hi-rgb:156,141,102; --sig-rgb:160,38,27;
+  --grid-rgb:70,58,34; --grid-o:1.2; --glow1:#DED3B6; --glow2:#E3D9C0; --shad:rgba(70,58,34,.3);
+  --field-base:#E8DFC9; --field-line:#9A8A61; --field-line-rgb:154,138,97; --field-line-a:.38;
+  --hair:1px; --blur:8px; }
+html[data-pal="datum"]{ color-scheme:light;
+  --ink:#FBFCFD; --ink2:#F1F4F8; --panel:#FFFFFF; --panel-hi:#EEF2F7;
+  --rule:#DCE2EA; --rule-hi:#AFB9C5;
+  --bone:#0F141A; --prose:#2B323B; --dim:#48515C; --faint:#5C6672;
+  --sig:#0B4FD8; --warn:#3F4A57; --chC:#626B77;
+  --ink-rgb:251,252,253; --panel-rgb:255,255,255; --panel-hi-rgb:238,242,247;
+  --rule-rgb:220,226,234; --rule-hi-rgb:175,185,197; --sig-rgb:11,79,216;
+  --grid-rgb:40,60,90; --grid-o:1.3; --glow1:#EAF0F7; --glow2:#F2F6FA; --shad:rgba(30,45,65,.16);
+  --field-base:#FBFCFD; --field-line:#A9B7C6; --field-line-rgb:169,183,198; --field-line-a:.34;
+  --hair:1px; --blur:12px; }
+html[data-pal="bench"]{ color-scheme:dark;
+  --ink:#4E504A; --ink2:#45473F; --panel:#42443D; --panel-hi:#383A34;
+  --rule:#6A6C63; --rule-hi:#888A7F;
+  --bone:#F6F4EC; --prose:#E7E4D9; --dim:#D6D3C7; --faint:#C8C5B8;
+  --sig:#B8E08E; --warn:#F2C77A; --chC:#DAD7CA;
+  --ink-rgb:78,80,74; --panel-rgb:66,68,61; --panel-hi-rgb:56,58,52;
+  --rule-rgb:106,108,99; --rule-hi-rgb:136,138,127; --sig-rgb:184,224,142;
+  --grid-rgb:245,243,235; --grid-o:1.5; --glow1:#5A5C54; --glow2:#46483F; --shad:rgba(18,18,14,.45);
+  --field-base:#4E504A; --field-line:#7E8076; --field-line-rgb:126,128,118; --field-line-a:.5;
+  --hair:1px; --blur:12px; }
+html[data-pal="manifesto"]{ color-scheme:light;
+  --ink:#F2EFE6; --ink2:#E9E5D9; --panel:#F7F5EE; --panel-hi:#FFFFFF;
+  --rule:#111111; --rule-hi:#111111;
+  --bone:#0B0B0B; --prose:#181818; --dim:#303030; --faint:#3D3D3D;
+  --sig:#C02008; --warn:#0B0B0B; --chC:#0B0B0B;
+  --ink-rgb:242,239,230; --panel-rgb:247,245,238; --panel-hi-rgb:255,255,255;
+  --rule-rgb:17,17,17; --rule-hi-rgb:17,17,17; --sig-rgb:192,32,8;
+  --grid-rgb:17,17,17; --grid-o:.7; --glow1:#ECE8DC; --glow2:#F2EFE6; --shad:rgba(17,17,17,.2);
+  --field-base:#F2EFE6; --field-line:#C7C0AD; --field-line-rgb:199,192,173; --field-line-a:.5;
+  --hair:1.5px; --blur:0px; }
+:root{ --disp:"Archivo","Instrument Sans",system-ui,sans-serif; --sans:"Instrument Sans",system-ui,sans-serif; --mono:"Spline Sans Mono",ui-monospace,monospace; --str:1; --dmax:1; }
+html[data-type="read"]{ --disp:"Spectral",Georgia,serif; --sans:"Source Serif 4",Georgia,serif; --mono:"IBM Plex Mono",ui-monospace,monospace; --str:0; --dmax:.80; }
+html[data-type="broad"]{ --disp:"Fraunces",Georgia,serif; --sans:"Public Sans",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace; --str:0; --dmax:.82; }
+html[data-type="sem"]{ --disp:"Bricolage Grotesque","Source Sans 3",system-ui,sans-serif; --sans:"Source Sans 3",system-ui,sans-serif; --mono:"DM Mono",ui-monospace,monospace; --str:0; --dmax:.86; }
+html[data-type="draft"]{ --disp:"Chivo",system-ui,sans-serif; --sans:"Karla",system-ui,sans-serif; --mono:"Azeret Mono",ui-monospace,monospace; --str:0; --dmax:.84; }
+
+.lab{position:fixed; right:0; z-index:60; bottom:calc(var(--railB) + env(safe-area-inset-bottom));
+  font-family:var(--mono); font-size:11px; letter-spacing:.06em;
+  display:flex; flex-direction:column; align-items:flex-end}
+.lab[hidden]{display:none}
+.lab__tab{appearance:none; display:flex; align-items:center; gap:9px; min-height:34px;
+  padding:0 14px; cursor:pointer; font:inherit; letter-spacing:.16em; text-transform:uppercase;
+  background:var(--panel-hi); color:var(--dim);
+  border:var(--hair) solid var(--rule-hi); border-right:0;
+  transition:color .18s var(--ease), background .18s var(--ease)}
+.lab__tab:hover{color:var(--bone); background:var(--panel)}
+.lab__tab b{color:var(--sig); font-weight:500; letter-spacing:.1em; text-transform:none}
+.lab[data-open="true"] .lab__tab{display:none}
+.lab__panel{width:312px; max-height:min(74vh,560px); overflow-y:auto;
+  background:var(--panel-hi); border:var(--hair) solid var(--rule-hi); border-right:0;
+  box-shadow:0 20px 54px -26px var(--shad)}
+.lab[data-open="false"] .lab__panel{display:none}
+.lab__hd{position:sticky; top:0; z-index:1; display:flex; align-items:center; justify-content:space-between;
+  padding:0 8px 0 14px; min-height:34px; background:var(--panel-hi);
+  border-bottom:var(--hair) solid var(--rule-hi)}
+.lab__hd span{letter-spacing:.2em; text-transform:uppercase; color:var(--faint)}
+.lab__x{appearance:none; background:none; border:0; cursor:pointer; color:var(--dim);
+  font:inherit; min-width:34px; min-height:34px; line-height:1}
+.lab__x:hover{color:var(--sig)}
+.lab fieldset{margin:0; padding:10px 0 4px; border:0; border-bottom:var(--hair) solid var(--rule)}
+.lab legend{padding:0 14px 6px; letter-spacing:.2em; text-transform:uppercase; color:var(--faint); font-size:10px}
+.lab__opt{display:block; cursor:pointer; padding:9px 14px; min-height:44px;
+  border-left:3px solid transparent; transition:background .16s var(--ease)}
+.lab__opt:hover{background:var(--panel)}
+.lab__opt input{position:absolute; opacity:0; width:0; height:0}
+.lab__opt input:focus-visible ~ .lab__nm{outline:2px solid var(--sig); outline-offset:3px}
+.lab__opt:has(input:checked){border-left-color:var(--sig); background:var(--panel)}
+.lab__nm{display:block; font-family:var(--sans); font-size:13px; letter-spacing:0;
+  color:var(--bone); font-weight:600; line-height:1.3}
+.lab__opt:has(input:checked) .lab__nm{color:var(--sig)}
+.lab__ds{display:block; font-size:10.5px; color:var(--dim); letter-spacing:.02em; line-height:1.45; margin-top:2px}
+.lab details{border-bottom:var(--hair) solid var(--rule)}
+.lab summary{cursor:pointer; padding:0 14px; min-height:44px; display:flex; align-items:center;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--faint); font-size:10px}
+.lab summary:hover{color:var(--bone)}
+.lab__mix{padding:2px 14px 14px; display:grid; gap:10px}
+.lab__mix label{display:block; letter-spacing:.2em; text-transform:uppercase; color:var(--faint); font-size:10px; margin-bottom:5px}
+.lab__mix select{width:100%; min-height:38px; padding:0 10px; font:inherit; letter-spacing:.04em;
+  background:var(--panel); color:var(--bone); border:var(--hair) solid var(--rule-hi); border-radius:0}
+.lab__ft{display:flex; align-items:stretch; justify-content:space-between; gap:10px; padding:11px 14px 13px}
+.lab__ft p{margin:0; font-size:10px; color:var(--faint); line-height:1.5; letter-spacing:.04em; max-width:19ch}
+.lab__hide{appearance:none; cursor:pointer; font:inherit; font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+  background:none; color:var(--dim); border:var(--hair) solid var(--rule-hi); padding:0 12px; min-height:34px; white-space:nowrap}
+.lab__hide:hover{color:var(--sig); border-color:var(--sig)}
+.lab__sr{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; margin:0}
+@media (max-width:640px){
+  .lab{left:0; align-items:stretch}
+  .lab__tab{justify-content:center; border-right:var(--hair) solid var(--rule-hi)}
+  .lab__panel{width:auto; max-height:62vh; border-right:var(--hair) solid var(--rule-hi)}
+  .lab__ft{flex-direction:column; align-items:flex-start}
+  .lab__ft p{max-width:none}
+}
+@media (prefers-reduced-motion:reduce){ .lab *{transition:none !important} }
+/* ═══ end theme lab CSS ═══════════════════════════════════════════════ */
 </style>
+<script id="lab-boot">/* THEME LAB boot — delete with the lab */
+window.LABFONT={read:"https://fonts.googleapis.com/css2?family=Spectral:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,300..700&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap",broad:"https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..900&family=Public+Sans:wght@300..800&family=JetBrains+Mono:wght@300..700&display=swap",sem:"https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,200..800&family=Source+Sans+3:wght@300..700&family=DM+Mono:wght@300;400;500&display=swap",draft:"https://fonts.googleapis.com/css2?family=Chivo:wght@300..900&family=Karla:wght@300..800&family=Azeret+Mono:wght@300..700&display=swap"};window.LABFONT.load=function(k){if(!this[k]||document.getElementById("lab-font-"+k))return;var l=document.createElement("link");l.rel="stylesheet";l.id="lab-font-"+k;l.href=this[k];document.head.appendChild(l);};
+(function(){try{var d=document.documentElement,p=localStorage.getItem("ob-pal"),t=localStorage.getItem("ob-type");if(p)d.dataset.pal=p;if(t){d.dataset.type=t;window.LABFONT.load(t);}}catch(e){}})();</script>
 </head>
 <body class="deck">
 <canvas id="field" aria-hidden="true"></canvas>
@@ -497,6 +643,42 @@ body.reduced *{animation-duration:.001ms !important; transition-duration:.001ms 
 
 <p class="sr" id="live" role="status" aria-live="polite"></p>
 
+
+<!-- ═══ THEME LAB — evaluation tool, one node, delete whole ═══════════ -->
+<div class="lab" id="lab" data-open="false">
+  <button type="button" class="lab__tab" id="lab-tab" aria-expanded="false" aria-controls="lab-panel">
+    Theme <b id="lab-tabv">Instrument</b>
+  </button>
+  <div class="lab__panel" id="lab-panel">
+    <div class="lab__hd">
+      <span>Theme lab</span>
+      <button type="button" class="lab__x" id="lab-x" aria-label="Collapse theme lab">&#10005;</button>
+    </div>
+    <fieldset>
+      <legend>Preset</legend>
+      <label class="lab__opt"><input type="radio" name="lab-preset" value="instrument/inst" checked><span class="lab__nm">Instrument</span><span class="lab__ds">The original. Near-black panel, Archivo, readout green.</span></label>
+      <label class="lab__opt"><input type="radio" name="lab-preset" value="paper/sem"><span class="lab__nm">Paper Instrument</span><span class="lab__ds">The same panel printed on warm stock. Humanist type, ink blue, muted ochre.</span></label>
+      <label class="lab__opt"><input type="radio" name="lab-preset" value="manual/read"><span class="lab__nm">Field Manual</span><span class="lab__ds">Manila, brown-black, one signal red. Serif body. Heavier and older.</span></label>
+      <label class="lab__opt"><input type="radio" name="lab-preset" value="datum/draft"><span class="lab__nm">Datum</span><span class="lab__ds">Near-white studio sheet. One live blue, everything else graphite.</span></label>
+      <label class="lab__opt"><input type="radio" name="lab-preset" value="bench/draft"><span class="lab__nm">Drafting Bench</span><span class="lab__ds">Warm slate mid-tone, cream ink. Neither light nor dark.</span></label>
+      <label class="lab__opt"><input type="radio" name="lab-preset" value="manifesto/broad"><span class="lab__nm">Manifesto</span><span class="lab__ds">Bone ground, hard 1.5px rules, one vermilion. Loud editorial.</span></label>
+    </fieldset>
+    <details id="lab-mix">
+      <summary>Mix palette and type</summary>
+      <div class="lab__mix">
+        <div><label for="lab-pal">Palette</label><select id="lab-pal"><option value="instrument">Instrument &#183; the original dark panel</option><option value="paper">Paper Instrument &#183; graphite on warm stock</option><option value="manual">Field Manual &#183; manila stock, signal red</option><option value="datum">Datum &#183; near-white, one live blue</option><option value="bench">Drafting Bench &#183; warm slate, cream ink</option><option value="manifesto">Manifesto &#183; bone, hard rules, vermilion</option></select></div>
+        <div><label for="lab-typ">Type pair</label><select id="lab-typ"><option value="inst">Instrument &#183; Archivo · Instrument Sans · Spline Sans Mono</option><option value="read">Reading Room &#183; Spectral · Source Serif 4 · IBM Plex Mono</option><option value="broad">Broadsheet &#183; Fraunces · Public Sans · JetBrains Mono</option><option value="sem">Seminar &#183; Bricolage Grotesque · Source Sans 3 · DM Mono</option><option value="draft">Drafting &#183; Chivo · Karla · Azeret Mono</option></select></div>
+      </div>
+    </details>
+    <div class="lab__ft">
+      <p>Evaluation tool. Not part of the design.</p>
+      <button type="button" class="lab__hide" id="lab-hide">Hide &#183; Shift+L</button>
+    </div>
+  </div>
+  <p class="lab__sr" id="lab-live" role="status" aria-live="polite"></p>
+</div>
+<!-- ═══ end theme lab markup ═══════════════════════════════════════════ -->
+
 <script>
 /* ═══ chassis state ═════════════════════════════════════════════════ */
 const mqReduce=matchMedia('(prefers-reduced-motion: reduce)');
@@ -525,12 +707,37 @@ const field=(function(){
   let gl=null,prog=null,loc={},glScale=isPhone?.6:.9;
   let ctx=null,vg=null,cols=0,rows=0,cell=26,grad=null;
 
+  /* ── theme bridge ───────────────────────────────────────────────
+     The field owns no colours. It reads --field-base / --field-line /
+     --field-line-rgb / --field-line-a off <html> at paint time, so a
+     palette change is a repaint, not a rewrite. retheme() re-reads and
+     repaints; without it a light palette would leave a dark field behind
+     the page, which is the whole trap. */
+  const TH={};
+  function rgbOf(v){ v=(v||'').trim();
+    if(v.charAt(0)==='#'){ if(v.length===4) v='#'+v[1]+v[1]+v[2]+v[2]+v[3]+v[3];
+      return [parseInt(v.substr(1,2),16),parseInt(v.substr(3,2),16),parseInt(v.substr(5,2),16)]; }
+    const m=v.match(/[0-9.]+/g); return m&&m.length>2?[+m[0],+m[1],+m[2]]:[6,9,14]; }
+  function readTheme(){
+    const cs=getComputedStyle(document.documentElement);
+    const g=k=>cs.getPropertyValue(k).trim();
+    const base=rgbOf(g('--field-base')||'#06090E');
+    const line=rgbOf(g('--field-line')||'#7EB4D8');
+    TH.base=base;
+    TH.baseF=new Float32Array([base[0]/255,base[1]/255,base[2]/255]);
+    TH.lineF=new Float32Array([line[0]/255,line[1]/255,line[2]/255]);
+    TH.baseCss='rgb('+base.join(',')+')';
+    TH.lineCss='rgba('+(g('--field-line-rgb')||'126,180,216')+','+(g('--field-line-a')||'.21')+')';
+  }
+  readTheme();
+
   /* ── A · fast path: WebGL2 contour shader ───────────────────────── */
   const VS=`#version 300 es
 in vec2 a; void main(){ gl_Position=vec4(a,0.,1.); }`;
   const FS=`#version 300 es
 precision highp float;
 uniform vec2 uRes; uniform float uT; uniform vec2 uP; uniform float uA;
+uniform vec3 uBase; uniform vec3 uLine;
 out vec4 o;
 float h(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453123); }
 float n(vec2 p){ vec2 i=floor(p),f=fract(p); f=f*f*(3.-2.*f);
@@ -551,7 +758,7 @@ void main(){
   float line=1.-smoothstep(0.,aa,e);
   float centre=smoothstep(1.32,.21,length(uv*vec2(.59,1.0)));
   float ink=line*(.034+.155*(1.-centre))+lens*.05;
-  o=vec4(vec3(.0235,.0353,.0549)+vec3(.165,.30,.385)*ink*2.3,1.);
+  o=vec4(mix(uBase,uLine,clamp(ink*2.3*.42,0.,1.)),1.);
 }`;
   function sh(t,s){ const x=gl.createShader(t); gl.shaderSource(x,s); gl.compileShader(x);
     if(!gl.getShaderParameter(x,gl.COMPILE_STATUS)){ console.warn(gl.getShaderInfoLog(x)); return null; } return x; }
@@ -569,6 +776,7 @@ void main(){
     gl.vertexAttribPointer(a,2,gl.FLOAT,false,0,0);
     loc.res=gl.getUniformLocation(prog,'uRes'); loc.t=gl.getUniformLocation(prog,'uT');
     loc.p=gl.getUniformLocation(prog,'uP'); loc.a=gl.getUniformLocation(prog,'uA');
+    loc.base=gl.getUniformLocation(prog,'uBase'); loc.line=gl.getUniformLocation(prog,'uLine');
     return true;
   }
   function sizeGL(){
@@ -578,6 +786,7 @@ void main(){
   function drawGL(sec){
     gl.uniform2f(loc.res,cv.width,cv.height); gl.uniform1f(loc.t,sec);
     gl.uniform2f(loc.p,ptr.x,-ptr.y); gl.uniform1f(loc.a,ptr.amt);
+    gl.uniform3fv(loc.base,TH.baseF); gl.uniform3fv(loc.line,TH.lineF);
     gl.drawArrays(gl.TRIANGLES,0,3);
   }
 
@@ -597,9 +806,10 @@ void main(){
     vg=new Float32Array(cols*rows);
     const W=cv.width,H=cv.height;
     grad=ctx.createRadialGradient(W*.40,H*.46,0,W*.40,H*.46,Math.max(W,H)*.66);
-    grad.addColorStop(0,'rgba(6,9,14,.94)');
-    grad.addColorStop(.5,'rgba(6,9,14,.58)');
-    grad.addColorStop(1,'rgba(6,9,14,0)');
+    const vg3=TH.base.join(',');
+    grad.addColorStop(0,'rgba('+vg3+',.94)');
+    grad.addColorStop(.5,'rgba('+vg3+',.58)');
+    grad.addColorStop(1,'rgba('+vg3+',0)');
     ctx.lineWidth=1; ctx.lineCap='butt';
   }
   function drawCtx(sec){
@@ -614,7 +824,7 @@ void main(){
         vg[j*cols+i]=v;
       }
     }
-    ctx.fillStyle='#06090E'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle=TH.baseCss; ctx.fillRect(0,0,W,H);
     const p=new Path2D();
     for(let L=0;L<12;L++){
       const lev=.155+L*.045;
@@ -653,7 +863,7 @@ void main(){
         }
       }
     }
-    ctx.strokeStyle='rgba(126,180,216,.21)'; ctx.stroke(p);
+    ctx.strokeStyle=TH.lineCss; ctx.stroke(p);
     ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
   }
 
@@ -683,6 +893,13 @@ void main(){
     if(kind==='none') return;
     const n=performance.now(); last=n; const r=run; run=false; draw(n); run=r;
   }
+  /* re-read the tokens and repaint. Rebuilds the 2D vignette gradient too,
+     which caches its stops and would otherwise keep the old ground. */
+  function retheme(){
+    readTheme();
+    if(kind==='iso'&&ctx) sizeCtx();
+    paintNow();
+  }
   function setRun(on){
     if(kind==='none') return;
     run=on&&!isPhone;                 /* phone: one static render, and the strip says so */
@@ -695,7 +912,7 @@ void main(){
 
   if(initGL()) kind='gl';
   else if(initCtx()){ kind='iso'; cell=isPhone?30:26; }
-  if(kind==='none'){ cv.classList.add('dead'); st('CSS FALLBACK'); return {setRun(){}}; }
+  if(kind==='none'){ cv.classList.add('dead'); st('CSS FALLBACK'); return {setRun(){}, retheme(){}}; }
   size();
   addEventListener('resize',()=>{ size(); paintNow(); },{passive:true});
   if(matchMedia('(hover:hover)').matches){
@@ -709,7 +926,7 @@ void main(){
   document.addEventListener('visibilitychange',()=>{
     frozen=document.hidden; if(!frozen&&run&&!raf) raf=requestAnimationFrame(draw); });
   setRun(motionOn);
-  return {setRun};
+  return {setRun, retheme};
 })();
 
 /* ═══ frame transport ═══════════════════════════════════════════════ */
@@ -843,6 +1060,59 @@ if(h){ const i=+h[1]-1; if(i!==0){ frames[0].hidden=true; frames[0].classList.re
   frames[i].hidden=false; frames[i].classList.add('on'); cur=i; } }
 runCounters(frames[cur]); paint();
 mqReduce.addEventListener('change',e=>{ if(e.matches){ motionOn=false; applyMotion(); field.setRun(false); } });
+
+/* ═════════════════════════════════════════════════════════════════════════
+   THEME LAB wiring — delete this whole block with the rest of the lab.
+   It writes two data attributes on <html>; every colour and face follows
+   from CSS. The only imperative work is telling the canvas field to
+   re-read its tokens, and keeping <meta theme-color> honest.
+   ═════════════════════════════════════════════════════════════════════ */
+(function(){
+  const lab=document.getElementById('lab'); if(!lab) return;
+  const root=document.documentElement, live=document.getElementById('lab-live');
+  const tab=document.getElementById('lab-tab'), tabv=document.getElementById('lab-tabv');
+  const selP=document.getElementById('lab-pal'), selT=document.getElementById('lab-typ');
+  const NAMES={"instrument": "Instrument", "paper": "Paper Instrument", "manual": "Field Manual", "datum": "Datum", "bench": "Drafting Bench", "manifesto": "Manifesto"}, TNAMES={"inst": "Instrument", "read": "Reading Room", "broad": "Broadsheet", "sem": "Seminar", "draft": "Drafting"}, COMBO=[["instrument", "inst", "Instrument"], ["paper", "sem", "Paper Instrument"], ["manual", "read", "Field Manual"], ["datum", "draft", "Datum"], ["bench", "draft", "Drafting Bench"], ["manifesto", "broad", "Manifesto"]];
+  const ls={get(k,d){try{return localStorage.getItem(k)||d;}catch(e){return d;}},
+            set(k,v){try{localStorage.setItem(k,v);}catch(e){}}};
+
+  function apply(p,t,announce){
+    if(p==='instrument') delete root.dataset.pal; else root.dataset.pal=p;
+    if(t==='inst') delete root.dataset.type; else root.dataset.type=t;
+    window.LABFONT.load(t);
+    ls.set('ob-pal',p); ls.set('ob-type',t);
+    selP.value=p; selT.value=t;
+    /* the contour field caches its colours; make it re-read them */
+    try{ field.retheme(); }catch(e){}
+    /* keep the browser chrome matching the ground */
+    const m=document.querySelector('meta[name="theme-color"]');
+    if(m) m.setAttribute('content', getComputedStyle(root).getPropertyValue('--ink').trim());
+    const c=COMBO.find(x=>x[0]===p&&x[1]===t);
+    const name=c?c[2]:NAMES[p]+' + '+TNAMES[t];
+    tabv.textContent=name;
+    [...lab.querySelectorAll('input[name="lab-preset"]')].forEach(r=>{ r.checked = r.value===p+'/'+t; });
+    if(announce) live.textContent='Theme set to '+name+'. Palette '+NAMES[p]+', type '+TNAMES[t]+'.';
+  }
+  function open(o){ lab.dataset.open=String(o); tab.setAttribute('aria-expanded',String(o));
+    if(o) lab.querySelector('input[name="lab-preset"]:checked, input[name="lab-preset"]').focus(); else tab.focus(); }
+
+  lab.addEventListener('change', e=>{
+    if(e.target.name==='lab-preset'){ const [p,t]=e.target.value.split('/'); apply(p,t,true); }
+    else if(e.target===selP||e.target===selT){ apply(selP.value,selT.value,true); }
+  });
+  tab.addEventListener('click',()=>open(true));
+  document.getElementById('lab-x').addEventListener('click',()=>open(false));
+  document.getElementById('lab-hide').addEventListener('click',()=>{
+    lab.hidden=true; live.textContent='Theme lab hidden. Press Shift and L to bring it back.'; });
+  addEventListener('keydown',e=>{
+    if(e.shiftKey&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&(e.key==='L'||e.key==='l')){
+      const tg=e.target.tagName; if(tg==='INPUT'||tg==='SELECT'||tg==='TEXTAREA') return;
+      e.preventDefault(); lab.hidden=!lab.hidden; if(!lab.hidden) open(true);
+    } else if(e.key==='Escape'&&lab.dataset.open==='true'){ open(false); }
+  });
+  apply(ls.get('ob-pal','instrument'), ls.get('ob-type','inst'), false);
+})();
+/* ═══ end theme lab wiring ════════════════════════════════════════════ */
 </script>
 </body>
 </html>

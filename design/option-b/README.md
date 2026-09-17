@@ -111,41 +111,255 @@ the pointer, which is the one thing on the page that is not right-angled —
 the restraint everywhere else is what makes it read as expensive rather
 than as sci-fi kitsch.
 
-## Type stack
+## The theme lab
 
-One stylesheet request to Google Fonts; nothing else is loaded from the
-network.
+The pages now carry a **theme lab**: a panel, present on all three, that
+switches the whole design between six palettes and five type pairs. It
+exists because the first round of this direction read *too technical where
+it should be student friendly*, and the cheapest way to settle that is to
+look at the same layout wearing different material rather than to argue
+about it.
 
-| Role | Face | Notes |
+It is an **evaluation tool and is meant to be deleted** before the real
+port. See *Stripping the theme lab* below for the exact cut.
+
+**Using it.** A `Theme ·` tab sits in the bottom-right corner, above the
+status strip. Open it for six named presets; a `Mix palette and type`
+disclosure underneath free-mixes all 6 × 5 = 30 combinations. The choice
+is written to `localStorage` (`ob-pal`, `ob-type`) and re-applied in
+`<head>` before first paint, so navigating from the home page to a week or
+to the deck keeps the theme with no flash of the previous ground. `Esc`
+collapses the panel, `Shift`+`L` hides and restores it entirely, every
+control is reachable by keyboard, and each change is announced through a
+polite live region.
+
+### How it is wired
+
+Two data attributes on `<html>` — `data-pal` and `data-type` — and nothing
+else. Every palette is a block of CSS custom properties behind an
+attribute selector, so a palette change is a style recalculation, not a
+script that walks the DOM repainting things. The lab's JavaScript only
+sets the attributes, persists them, injects the type preset's font link,
+keeps `<meta name="theme-color">` honest, and tells the canvas field to
+re-read its colours.
+
+Getting there needed the pages fully tokenised first. Roughly a hundred
+composited `rgba()` literals (the engineering grid, the rule hairlines,
+the panel wells, the signal glows) were hoisted onto rgb-triplet tokens
+(`--ink-rgb`, `--rule-rgb`, `--sig-rgb`, `--grid-rgb`) so their alpha
+survives a palette change; the four near-identical prose greys that had
+drifted apart (`#C3CCD6`, `#C2CBD5`, `#B7C1CC`, `#B9C3CE`) collapsed into
+one `--prose`. Three structural knobs were tokenised at the same time,
+because a palette is not only colour: `--hair` (rule weight — Manifesto
+needs a hard 1.5px), `--blur` (chrome backdrop blur — Manifesto needs
+none) and `--grid-o` (grid overlay opacity, since a light line at 6%
+alpha reads differently on a mid-tone ground than on black).
+
+**The contour field was the real trap.** It paints from JavaScript, and it
+had `#06090E` and `rgba(126,180,216,.21)` baked into both renderers — so a
+light palette would have left a black field sitting behind a bone page.
+Both renderers now read `--field-base` / `--field-line` / `--field-line-a`
+off `<html>` at paint time. The shader gained two `vec3` uniforms and
+resolves ink as `mix(uBase, uLine, …)` instead of *adding* light onto a
+dark base, which is what lets it invert cleanly — a light ground gets dark
+contours from the same code path, with no special case. `field.retheme()`
+re-reads the tokens, rebuilds the canvas-2D vignette gradient (which
+caches its colour stops and would otherwise keep the old ground) and
+repaints synchronously.
+
+Verified by sampling the live canvas pixel after each switch: the field
+tracked the ground exactly through `instrument → paper → manifesto →
+bench → instrument → paper`, including back to dark.
+
+### Palettes
+
+Every value below was checked for body-copy contrast against all four
+grounds it can land on (`--ink`, `--ink2`, `--panel`, `--panel-hi`), not
+assumed. Light grounds fail differently from dark ones: the ochres and
+reds that look right on paper are the ones that quietly drop under 4.5:1.
+
+**1 · Instrument** — the original, as the reference point.
+
+| ground | ink | rules | text | signals |
+| --- | --- | --- | --- | --- |
+| near-black | `#06090E` `#0A0F16` | `#1E2A38` `#2F4256` | `#DCE3EA` `#C3CCD6` `#96A4B3` `#8494A5` | `#57D9A3` `#F2B24C` `#C9D3DE` |
+
+Unchanged except `--faint`, raised `#6E7C8B` → `#8494A5`. The old value sat
+at 3.9:1 and this README flagged it as the thing that would regress
+quietly; tokenisation was the moment to close it. It is now 6.4:1.
+
+**2 · Paper Instrument** — the flagship. Graphite on warm stock.
+
+| ground | ink | rules | text | signals |
+| --- | --- | --- | --- | --- |
+| warm white | `#F7F4EE` `#EFEBE2` | `#D8D0C2` `#B2A896` | `#23272C` `#3C424A` `#545B64` `#5F6771` | `#1B4F9B` `#8A5A0B` `#454C55` |
+
+Panels go *lighter* than the stock, so a panel still reads as a printed
+card laid on the sheet rather than a hole cut in it. One ink blue for live
+state, one muted ochre for the second channel — both darkened well past
+their screen-native values to hold on a light ground.
+
+**3 · Field Manual** — manila, brown-black, one signal red.
+
+| ground | ink | rules | text | signals |
+| --- | --- | --- | --- | --- |
+| manila | `#E8DFC9` `#DFD5BB` | `#C4B693` `#9C8D66` | `#1E1A14` `#332C21` `#4A4132` `#554B3A` | `#A0261B` `#6E5010` `#3E3628` |
+
+Heavier and older than Paper. The ink is brown-black rather than
+graphite, which is what makes it read as printed decades ago rather than
+laser-printed this morning.
+
+**4 · Datum** — cool light, the most studio of the set.
+
+| ground | ink | rules | text | signals |
+| --- | --- | --- | --- | --- |
+| near-white | `#FBFCFD` `#F1F4F8` | `#DCE2EA` `#AFB9C5` | `#0F141A` `#2B323B` `#48515C` `#5C6672` | `#0B4FD8` `#3F4A57` `#626B77` |
+
+The brief asked for a single saturated accent, so this one takes it
+literally: `--warn` and `--chC`, which are a second and third colour in
+every other palette, are desaturated slates here. Exactly one thing on the
+page is allowed to be a colour.
+
+**5 · Drafting Bench** — mid-tone. Warm slate ground, cream ink.
+
+| ground | ink | rules | text | signals |
+| --- | --- | --- | --- | --- |
+| warm slate | `#4E504A` `#45473F` | `#6A6C63` `#888A7F` | `#F6F4EC` `#E7E4D9` `#D6D3C7` `#C8C5B8` | `#B8E08E` `#F2C77A` `#DAD7CA` |
+
+This one taught the most. On every other palette the panels are *raised*
+away from the ground; on a mid-tone that direction costs contrast in both
+directions at once, and the first draft failed eleven checks. The fix was
+to invert the chassis logic — panels recess to `#42443D` and `#383A34`
+instead of rising — which both restores the numbers and reads more like an
+instrument than the raised version did. `--grid-o` goes to 1.5 because a
+light grid line at 6% alpha all but vanishes on a mid ground.
+
+**6 · Manifesto** — option B's layout wearing a different direction.
+
+| ground | ink | rules | text | signals |
+| --- | --- | --- | --- | --- |
+| bone | `#F2EFE6` `#E9E5D9` | `#111111` `#111111` (at `--hair: 1.5px`) | `#0B0B0B` `#181818` `#303030` `#3D3D3D` | `#C02008` |
+
+The only palette that moves structure as well as colour: hairlines become
+hard 1.5px black rules, `--blur` drops to `0px` so no chrome is frosted,
+and `--grid-o` goes *down* to 0.7 because the loudness belongs to the
+rules and the type, not to the background. Exactly one accent, and it is
+the only non-black ink on the page. The vermilion is `#C02008` rather than
+a hotter `#D4290A`: the hotter one measured 4.43:1 on bone and had to be
+darkened to clear 4.5.
+
+### Contrast results
+
+Measured in Chrome against the actual composited backgrounds — including
+the alpha-blended nav and status strip, which are the two places a naive
+check gets wrong. Every text node on all three pages, every palette:
+
+| palette | worst ratio | failures |
 | --- | --- | --- |
-| Display | **Archivo** (variable `wdth` 62–125, `wght` 100–900) | Headings sit at `font-stretch:118–125%`; the width axis is what lets a long heading condense to fit a 390px gutter instead of overflowing it. |
-| Prose | **Instrument Sans** 400–700 | 16px / 1.62 body. |
-| Metadata | **Spline Sans Mono** 300–700 | Every label, stamp, readout and table cell. `font-variant-numeric: tabular-nums` throughout so digits do not jitter as they count. |
+| Instrument | 6.42 | none |
+| Paper Instrument | 5.22 | none |
+| Field Manual | 4.94 | none |
+| Datum | 5.26 | none |
+| Drafting Bench | 4.55 | none |
+| Manifesto | 4.58 | none |
 
-Fallbacks are `system-ui` / `ui-monospace`, and `font-synthesis:none` stops
-the browser faking a weight before the webfont lands.
+One element is below 4.5 on every palette including the original: the
+deck's disabled `◄` transport button, at 1.9–2.5:1. Disabled controls are
+exempt under WCAG 1.4.3, it is pre-existing rather than introduced here,
+and tokenising it to `--rule-hi` preserved the original appearance
+exactly.
 
-## Palette
+The smallest type on the page is 10px, on the uppercase mono label layer.
+That is unchanged from the original design and is not body copy; no
+sentence-shaped text is set below 13.5px.
 
-| Token | Hex | Use |
-| --- | --- | --- |
-| `--ink` | `#06090E` | Page ground |
-| `--ink2` | `#0A0F16` | Secondary ground |
-| `--panel` | `#0E141C` | Panel fill |
-| `--panel-hi` | `#141C26` | Raised panel / active cell |
-| `--rule` | `#1E2A38` | Hairline rule |
-| `--rule-hi` | `#2F4256` | Emphasised rule, tick marks |
-| `--bone` | `#DCE3EA` | Body copy and headings |
-| `--dim` | `#96A4B3` | Secondary prose |
-| `--faint` | `#6E7C8B` | Labels and stamps |
-| `--sig` | `#57D9A3` | Signal green — live state, Channel A |
-| `--warn` | `#F2B24C` | Amber — Channel B, cautionary tags |
-| `--chC` | `#C9D3DE` | Channel C (deliberately neutral, so three channels do not become a rainbow) |
+### Type pairs
 
-Contrast against `--ink` `#06090E`: `--bone` ≈ 14.4:1, `--dim` ≈ 7.3:1,
-`--faint` ≈ 3.9:1, `--sig` ≈ 10.4:1, `--warn` ≈ 9.8:1. `--faint` is used
-only for uppercase mono labels at 9.5–11px, never for body copy. No text
-is set below 9px, and nothing carrying meaning falls under 3:1.
+| Preset | Display | Body | Mono |
+| --- | --- | --- | --- |
+| **Instrument** | Archivo | Instrument Sans | Spline Sans Mono |
+| **Reading Room** | Spectral | Source Serif 4 | IBM Plex Mono |
+| **Broadsheet** | Fraunces | Public Sans | JetBrains Mono |
+| **Seminar** | Bricolage Grotesque | Source Sans 3 | DM Mono |
+| **Drafting** | Chivo | Karla | Azeret Mono |
+
+**Reading Room** is the academic one, and the only one with a serif body.
+It pairs two serifs deliberately: Spectral is high-contrast and does the
+display work, Source Serif 4 is a text face with the x-height to survive
+16px on screen. Spectral alone as body was tried and reads too small.
+
+**Broadsheet** is serif display over sans body — Fraunces' optical-size
+axis lets the hero go genuinely editorial without the body copy following
+it. This is the pairing Manifesto wears.
+
+**Seminar** is the direct answer to *too technical*. Warmth here is
+Source Sans 3's humanist skeleton, open apertures and generous x-height,
+not a rounded or friendly face; Bricolage Grotesque carries just enough
+irregularity above it to stop the page reading as a spec sheet. DM Mono's
+low stroke contrast keeps the telemetry layer from turning brittle.
+
+**Drafting** is the fifth on my own judgement: Chivo's grotesque
+neutrality over Karla, which has real character in the body size where
+Inter would have been the default answer, with Azeret Mono's rectangular
+drafting-instrument fit for the readouts.
+
+**Loading.** Only the Instrument stack ships in `<head>`. The other four
+fetch on selection, once, deduplicated by link id — nothing loads twenty
+families up front. All four URLs were checked live for HTTP 200 before
+being committed, since a typo'd Google Fonts request fails silently into
+the system fallback and looks like a design decision.
+
+**Width axis.** Archivo's `wdth` axis is what lets a long heading condense
+into a 390px gutter, and only Archivo has it. `font-stretch` is therefore
+tokenised as `calc(100% + N% * var(--str))`, and the four non-Archivo
+presets set `--str: 0`, collapsing every stretch to a true 100% rather
+than letting `font-synthesis: none` silently drop the declaration. They
+also take `--dmax` down to 0.80–0.86, trimming the display ceiling so an
+uncondensable face at 142px does not run out of line.
+
+### Stripping the theme lab
+
+Four cuts, all fenced with comments. Nothing outside them depends on the
+lab — the tokenisation, the field's theme bridge and the `--hair` /
+`--blur` / `--grid-o` / `--str` / `--dmax` knobs are all improvements to
+the base design and should survive the port.
+
+In each of `index.html`, `inner.html` and `deck.html`:
+
+1. `<script id="lab-boot">` in `<head>` — the pre-paint restore.
+2. In `<style>`: everything from `/* ═══ THEME LAB` to
+   `/* ═══ end theme lab CSS ═══ */`. **Keep** the `:root` blocks inside it
+   for whichever palette and type preset you ship; delete the
+   `html[data-pal=…]` and `html[data-type=…]` blocks and all `.lab*` rules.
+3. The `<div class="lab" id="lab">` node, fenced by
+   `<!-- ═══ THEME LAB` and `<!-- ═══ end theme lab markup ═══ -->`.
+4. In the final `<script>`: the IIFE from `/* ═══ THEME LAB wiring` to
+   `/* ═══ end theme lab wiring ═══ */`.
+
+Then set the winning palette and type preset as the plain `:root` values,
+drop the losing `<link>` for fonts you are not shipping, and delete
+`field.retheme()` if nothing will ever call it — though it is four lines
+and worth keeping if a light/dark toggle is ever wanted.
+
+### Which combination I would pick
+
+**Paper Instrument + Seminar.** It is the one that answers the actual
+complaint. The instrument grammar is entirely intact — the same measured
+grid, the same hairlines meeting at right angles, the same labelled
+readouts and mono telemetry strip, the same contour field — but printed
+rather than illuminated, so it reads as a well-made lab manual instead of
+a control room at night. The warmth comes from the stock and from a
+humanist body face, not from softening the structure, which is what keeps
+it out of the corporate-neutral failure mode. Against the other candidate
+described as *too market-y*, this keeps every piece of the credibility and
+loses the only thing that was costing it: the near-black ground that makes
+a course website look like a product launch for developers.
+
+Second choice is **Field Manual + Reading Room**, which is more distinctive
+and more committed but narrower — the manila and the serif body make it
+excellent for the week pages and slightly heavy on the home page. Manifesto
+is the most striking of the six and the least appropriate: it is a poster
+aesthetic, and a twelve-week course website has to be read, not glanced at.
 
 ## Dynamic behaviour inventory
 
