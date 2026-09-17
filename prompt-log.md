@@ -266,3 +266,36 @@ prompt invited them): format, content, constraints, scope.
 **Still undecided and owned by the user:** which option wins; whether the
 winner ports wholesale or only its layout grammar; how much of the "anything
 goes" dynamism survives the axe gate.
+
+---
+
+## 2026-09-17 — "Read handoff port, and consult me before you create a plan"
+
+**Prompt (verbatim):** "Read handoff port, and consult me before you create a
+plan."
+
+**Context:** fresh session opened against `935edae`. Short and precise, and it
+names both the input (`HANDOFF-port.md`) and the gate (consult before
+planning), so no sharper prompt was needed. Read in the handoff's stated
+order: `CLAUDE.md`, `WORKLOG.md`, `PLAN.md`, the `c9c50aa` `LEARNINGS.md`
+entries, `design/option-a/README.md`.
+
+**Consultation, and what it settled:**
+- **Option A's three deferred defects** — put as a costed choice per the
+  handoff. The first answer selected both "reflow/geometry lock" and "port A
+  unmodified", which are mutually exclusive; re-asked rather than guessed,
+  noting that the lock's third component (the `wdth` 78–96 clamp) is not a
+  pure bug fix because it visibly narrows the signature's range. Resolved to
+  the **full lock including the clamp**. Defect 3 (reads editorial rather than
+  as a course site) and v3's body-type discipline are **declined** — vermilion
+  and A's editorial structure stay.
+- **Motion scope: signature only.** Velocity-driven `wght`/`wdth` axes plus
+  Lenis and the CSS-only effects; **GSAP is dropped entirely** — no pinned
+  horizontal twelve-week act, no pinned rotator. Removes ~70KB and the
+  pin-vs-hydration desync risk.
+- **Deck: re-skin `src/decks/theme.css` only.** No attempt on the 8.5px mobile
+  body problem, no rebuild of A's ribbon.
+
+**Still undecided at the time of writing:** the `/cost` calibration number,
+and who does the one foreground pass on motion *feel*, which has never been
+observed on any demo this project has built.
