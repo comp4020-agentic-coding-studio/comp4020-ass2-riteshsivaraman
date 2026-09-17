@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UNIT 3841 — Course handbook</title>
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#E6E7E0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Source+Serif+4:opsz,wght@8..60,200..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   UNIT 3841 — "LECTURE"
+   Variant 3. Chalkboard green and oxblood on warm chalk.
+   Serif prose, calm authority, exactly one kinetic moment.
+   ============================================================ */
+:root{
+  --chalk:#E6E7E0;        /* ground */
+  --paper:#EFF0EA;        /* raised panel */
+  --board:#22352B;        /* chalkboard green — ink, rules, inverted grounds */
+  --board2:#4E5A53;       /* secondary text */
+  --ox:#7A2230;           /* the single accent */
+  --ox-soft:#F0DFE1;      /* accent wash */
+  --line:rgba(34,53,43,.20);
+  --line2:rgba(34,53,43,.42);
+
+  /* the one kinetic moment. range is small on purpose. */
+  --kv-wght:430;
+  --kv-wdth:92;
+
+  --gut:clamp(18px,4vw,72px);
+  --maxw:1320px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth}
+body{
+  margin:0; background:var(--chalk); color:var(--board);
+  font-family:"Source Serif 4",Georgia,serif;
+  font-variation-settings:"opsz" 18;
+  font-size:18px; line-height:1.62;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+@media (max-width:640px){ body{font-size:17px; line-height:1.58} }
+
+h1,h2,h3,h4{font-family:"Archivo",system-ui,sans-serif; letter-spacing:-.012em; text-wrap:balance}
+.mono{
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-weight:500;
+  font-size:12px; letter-spacing:.08em; text-transform:uppercase;
+  font-variant-numeric:tabular-nums; line-height:1.4;
+}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:var(--maxw); margin:0 auto; padding-inline:var(--gut)}
+
+/* ============================================================
+   THE ONE KINETIC MOMENT — and the reflow fix.
+
+   Only .kin responds to scroll. Its guarantees:
+   (1) white-space:nowrap  — one line, always. A width-axis
+       change physically cannot alter the line count.
+   (2) min-block-size + block-size in em — the box height comes
+       from the line-height ratio, not from rendered glyphs,
+       so it measures identically at every axis value.
+   (3) the axis range is 430..680 wght / 92..104 wdth. Even the
+       widest render of this string is narrower than its column.
+   Nothing below it can be pushed, because nothing above it moves.
+   ============================================================ */
+.kin{
+  display:inline-block;
+  white-space:nowrap;
+  line-height:1.02;
+  block-size:1.02em;             /* fixed, axis-independent */
+  vertical-align:baseline;
+  font-family:"Archivo",sans-serif;
+  font-variation-settings:"wght" var(--kv-wght),"wdth" var(--kv-wdth);
+  color:var(--ox);
+  contain:layout;
+}
+
+.skip{position:absolute; left:-9999px; top:0; z-index:99; background:var(--board); color:var(--chalk); padding:12px 20px}
+.skip:focus{left:0}
+:focus-visible{outline:3px solid var(--ox); outline-offset:3px; border-radius:2px}
+a{color:inherit}
+
+/* ---------- masthead ---------- */
+.mast{position:sticky; top:0; z-index:40; background:var(--chalk); border-bottom:1px solid var(--line2)}
+.mast__in{display:flex; align-items:center; gap:clamp(14px,3vw,var(--gut)); min-inline-size:0; padding-block:13px; max-width:var(--maxw); margin:0 auto; padding-inline:var(--gut)}
+.mast__code{font-family:"Archivo",sans-serif; font-variation-settings:"wght" 700,"wdth" 96; font-size:16px; text-decoration:none; white-space:nowrap}
+.mast__code span{color:var(--ox)}
+.mast__nav{margin-left:auto; display:flex; gap:clamp(12px,2.2vw,30px); min-inline-size:0; overflow-x:auto; scrollbar-width:none}
+.mast__nav::-webkit-scrollbar{display:none}
+.mast__nav a{white-space:nowrap}
+.mast__nav a{text-decoration:none; padding:3px 0; border-bottom:2px solid transparent}
+.mast__nav a:hover{border-bottom-color:var(--ox)}
+@media (max-width:860px){ .mast__code .sub2{display:none} }
+@media (max-width:680px){ .mast__nav a:nth-child(n+3){display:none} }
+
+/* ---------- hero ---------- */
+.hero{padding-block:clamp(40px,7vw,96px) clamp(30px,4.6vw,60px)}
+.hero__eyebrow{color:var(--board2); margin:0 0 clamp(20px,3vw,34px)}
+.hero__h{
+  margin:0; font-size:clamp(36px,5.6vw,74px); line-height:1.06;
+  font-variation-settings:"wght" 420,"wdth" 94; max-inline-size:17ch;
+}
+.hero__h .kin{font-size:1em}
+.hero__cols{display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,.9fr); gap:clamp(26px,5vw,80px); margin-top:clamp(26px,4vw,50px); align-items:start}
+@media (max-width:900px){ .hero__cols{grid-template-columns:1fr; gap:30px} }
+.hero__p{margin:0; max-inline-size:56ch; font-size:clamp(18px,1.35vw,20.5px); font-variation-settings:"opsz" 26; color:#2E3D35}
+.hero__p+.hero__p{margin-top:.85em}
+
+/* "where we are" — the calm equivalent of a status banner */
+.now{background:var(--paper); border:1px solid var(--line2); padding:clamp(18px,2.2vw,26px)}
+.now h2{margin:0 0 3px; font-size:13px; font-variation-settings:"wght" 600,"wdth" 100; letter-spacing:.08em; text-transform:uppercase; color:var(--board2); font-family:"IBM Plex Mono",monospace; font-weight:500}
+.now__wk{display:flex; align-items:baseline; gap:10px; margin:8px 0 6px}
+.now__n{font-family:"Archivo",sans-serif; font-variation-settings:"wght" 700,"wdth" 88; font-size:clamp(40px,4.4vw,58px); line-height:.9; color:var(--ox); font-variant-numeric:tabular-nums}
+.now__of{color:var(--board2)}
+.now__t{margin:0 0 12px; font-size:clamp(19px,1.8vw,23px); font-variation-settings:"wght" 600,"wdth" 96; line-height:1.2}
+.now dl{margin:0; display:grid; grid-template-columns:auto 1fr; gap:7px 16px; border-top:1px solid var(--line); padding-top:12px; font-size:16px}
+.now dt{color:var(--board2); font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; padding-top:4px; font-weight:500}
+.now dd{margin:0}
+.now dd b{font-weight:600; color:var(--ox)}
+.now__go{display:inline-block; margin-top:16px; padding:10px 18px; background:var(--board); color:var(--chalk);
+  text-decoration:none; font-family:"Archivo",sans-serif; font-variation-settings:"wght" 600,"wdth" 98; font-size:16px;
+  transition:background .18s ease}
+.now__go:hover{background:var(--ox)}
+
+/* ---------- section scaffolding ---------- */
+section{scroll-margin-top:70px}
+.band{border-top:1px solid var(--line2); padding-block:clamp(34px,5vw,68px)}
+.sec__head{margin-bottom:clamp(22px,3vw,38px); display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(20px,4vw,64px); align-items:end}
+@media (max-width:860px){ .sec__head{grid-template-columns:1fr; gap:12px; align-items:start} }
+.sec__t{margin:6px 0 0; font-size:clamp(26px,3.2vw,42px); line-height:1.08; font-variation-settings:"wght" 500,"wdth" 94}
+.sec__lab{color:var(--ox); display:block}
+.sec__note{margin:0; color:var(--board2); max-inline-size:48ch; font-size:17px}
+
+/* ============================================================
+   THE SCHEDULE — twelve weeks in three parts.
+   The parts are real: each ends with something being handed in.
+   ============================================================ */
+.part{margin-bottom:clamp(26px,3.4vw,44px)}
+.part:last-child{margin-bottom:0}
+.part__h{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; padding-bottom:9px; border-bottom:2px solid var(--board); margin-bottom:0}
+.part__n{color:var(--ox)}
+.part__t{margin:0; font-size:clamp(18px,1.9vw,23px); font-variation-settings:"wght" 600,"wdth" 96; line-height:1.2}
+.part__r{margin:0 0 0 auto; color:var(--board2); font-size:15.5px}
+@media (max-width:640px){ .part__r{margin-left:0; flex-basis:100%} }
+
+.wkrow{
+  display:grid; grid-template-columns:52px 88px minmax(0,1.55fr) minmax(0,1.1fr) auto;
+  gap:clamp(10px,2vw,28px); align-items:baseline;
+  padding:14px 10px 14px 0; border-bottom:1px solid var(--line);
+  text-decoration:none; transition:background .15s ease;
+}
+.wkrow:hover{background:var(--paper)}
+.wkrow:last-child{border-bottom:0}
+.wkrow__n{font-family:"Archivo",sans-serif; font-variation-settings:"wght" 600,"wdth" 90; font-size:24px; line-height:1; font-variant-numeric:tabular-nums; color:var(--board2)}
+.wkrow__d{font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--board2); font-variant-numeric:tabular-nums; white-space:nowrap; font-weight:500}
+.wkrow__t{font-size:18.5px; line-height:1.3; font-variation-settings:"opsz" 20}
+.wkrow__s{color:var(--board2); font-size:15.5px; line-height:1.35}
+.wkrow__due{white-space:nowrap; font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.06em;
+  text-transform:uppercase; font-weight:600; padding:4px 9px; background:var(--ox-soft); color:var(--ox)}
+.wkrow__due--none{background:none; color:var(--board2); font-weight:500; opacity:.8}
+.wkrow[data-done]{color:var(--board2)}
+.wkrow[data-done] .wkrow__n::after{content:" \2713"; color:#3E6B44; font-size:15px}
+.wkrow[data-now]{background:var(--paper); box-shadow:inset 4px 0 0 var(--ox)}
+.wkrow[data-now] .wkrow__n{color:var(--ox); font-variation-settings:"wght" 750,"wdth" 90}
+.wkrow[data-now] .wkrow__t{font-variation-settings:"opsz" 20; font-weight:600}
+.wkrow[data-now]{padding-left:14px}
+@media (max-width:980px){
+  .wkrow{grid-template-columns:48px minmax(0,1fr) auto; row-gap:4px; padding-left:0}
+  .wkrow__d{grid-column:2; order:1; grid-row:1}
+  .wkrow__t{grid-column:2; grid-row:2}
+  .wkrow__s{grid-column:2; grid-row:3}
+  .wkrow__n{grid-row:1/4}
+  .wkrow__due{grid-column:3; grid-row:1}
+  .wkrow[data-now]{padding-left:12px}
+}
+
+/* ---------- assessment ---------- */
+.as{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1px; background:var(--line2); border:1px solid var(--line2)}
+.as__i{background:var(--chalk); padding:clamp(18px,2.2vw,26px); display:flex; flex-direction:column}
+.as__id{color:var(--ox); margin-bottom:10px}
+.as__w{font-family:"Archivo",sans-serif; font-variation-settings:"wght" 700,"wdth" 86; font-size:clamp(38px,4.4vw,58px); line-height:.88; font-variant-numeric:tabular-nums; margin-bottom:10px}
+.as__t{margin:0 0 8px; font-size:19px; font-variation-settings:"wght" 600,"wdth" 96; line-height:1.2}
+.as__p{margin:0 0 16px; font-size:16px; color:var(--board2); flex:1}
+.as__d{margin:0; padding-top:11px; border-top:1px solid var(--line); color:var(--board2)}
+.as__sum{display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-top:14px; color:var(--board2)}
+.as__sum b{color:var(--board); font-weight:600}
+
+/* ---------- streams: inverted board panel ---------- */
+.board{background:var(--board); color:#DDE2DC}
+.board .sec__t{color:var(--chalk)}
+.board .sec__lab{color:#E0A6AE}
+.board .sec__note{color:#B4BEB6}
+.str{display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:1px; background:rgba(221,226,220,.3); border:1px solid rgba(221,226,220,.3)}
+.str__i{background:var(--board); padding:clamp(18px,2.2vw,28px)}
+.str__l{display:flex; align-items:baseline; gap:11px; margin-bottom:12px; padding-bottom:11px; border-bottom:1px solid rgba(221,226,220,.3)}
+.str__g{font-family:"Archivo",sans-serif; font-variation-settings:"wght" 700,"wdth" 90; font-size:30px; line-height:1; color:#E0A6AE}
+.str__t{margin:0; font-size:19px; font-variation-settings:"wght" 600,"wdth" 96; line-height:1.2; color:var(--chalk)}
+.str__m{margin:0 0 12px; color:#AAB5AC; font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; font-weight:500}
+.str__p{margin:0 0 .75em; font-size:16.5px; color:#D3DAD3}
+.str__p:last-child{margin-bottom:0}
+
+/* ---------- practicalities ---------- */
+.pr{display:grid; grid-template-columns:repeat(auto-fit,minmax(270px,1fr)); gap:clamp(20px,3vw,44px)}
+.pr__i h3{margin:0 0 7px; font-size:18px; font-variation-settings:"wght" 600,"wdth" 96; line-height:1.25}
+.pr__i p{margin:0; color:var(--board2); font-size:16.5px; max-inline-size:44ch}
+.pr__i{padding-top:14px; border-top:2px solid var(--board)}
+
+footer{border-top:1px solid var(--line2); padding-block:26px; color:var(--board2)}
+footer .wrap{display:flex; flex-wrap:wrap; gap:12px 34px}
+footer a{text-decoration:none; border-bottom:1px solid currentColor}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important; transition-duration:.001ms!important}
+  :root{--kv-wght:560; --kv-wdth:98}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="mast">
+  <div class="mast__in">
+    <a class="mast__code" href="#main">UNIT 3841<span class="sub2"> <span>&middot;</span> Course handbook</span></a>
+    <nav class="mast__nav mono" aria-label="Sections">
+      <a href="#schedule">Schedule</a>
+      <a href="#assessment">Assessment</a>
+      <a href="#streams">Streams</a>
+      <a href="#practical">Practicalities</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="hero__eyebrow mono">Level 3 &middot; 6 units &middot; Semester 2, 2026 &middot; No field prerequisite</p>
+      <h1 class="hero__h">A twelve-week course in making your working <span class="kin" id="kin">legible.</span></h1>
+      <div class="hero__cols">
+        <div>
+          <p class="hero__p">Most of what you learn in a studio or a lab never leaves the room. It stays in drafts, in half-finished objects, in the version you did not show anyone. This unit treats that material as the actual subject.</p>
+          <p class="hero__p">You will keep a record of your own working for twelve weeks and learn to read it the way someone else would. Nothing here is graded on how the work turned out. Everything is graded on whether the process can be followed.</p>
+        </div>
+        <div class="now">
+          <h2>Where the course is now</h2>
+          <p class="now__wk"><span class="now__n num">07</span><span class="now__of">of twelve</span></p>
+          <h3 class="now__t">The fold &mdash; when rehearsal becomes record</h3>
+          <dl>
+            <dt>Lecture</dt><dd>Monday 14 Sep, 11:00, Hall&nbsp;C</dd>
+            <dt>Streams</dt><dd>Tuesday 15 Sep, 14:00</dd>
+            <dt>Due</dt><dd><b>A2 Stream portfolio</b>, Friday 17:00</dd>
+          </dl>
+          <a class="now__go" href="inner.html">Open week 07</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SCHEDULE ===================== -->
+  <section class="band" id="schedule" aria-labelledby="scT">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="sec__t" id="scT"><span class="sec__lab mono">Part one of four</span>The schedule</h2>
+        <p class="sec__note">Twelve weeks in three parts. Each part ends with something handed in, which is why the parts are where they are.</p>
+      </div>
+
+      <div class="part">
+        <div class="part__h">
+          <span class="part__n mono">Part 1</span>
+          <h3 class="part__t">Ground &mdash; what counts as evidence</h3>
+          <p class="part__r">Weeks 01&ndash;04 &middot; ends with A1</p>
+        </div>
+        <a class="wkrow" href="inner.html" data-done>
+          <span class="wkrow__n num">01</span><span class="wkrow__d">Mon 3 Aug</span>
+          <span class="wkrow__t">The record and the claim</span>
+          <span class="wkrow__s">Set up the log; choose a stream</span>
+          <span class="wkrow__due wkrow__due--none">&mdash;</span>
+        </a>
+        <a class="wkrow" href="inner.html" data-done>
+          <span class="wkrow__n num">02</span><span class="wkrow__d">Mon 10 Aug</span>
+          <span class="wkrow__t">Evidence before narrative</span>
+          <span class="wkrow__s">Three claims, each sourced</span>
+          <span class="wkrow__due wkrow__due--none">&mdash;</span>
+        </a>
+        <a class="wkrow" href="inner.html" data-done>
+          <span class="wkrow__n num">03</span><span class="wkrow__d">Mon 17 Aug</span>
+          <span class="wkrow__t">The first artefact</span>
+          <span class="wkrow__s">Draft it, then cut a third of it</span>
+          <span class="wkrow__due">A1 &middot; 15%</span>
+        </a>
+        <a class="wkrow" href="inner.html" data-done>
+          <span class="wkrow__n num">04</span><span class="wkrow__d">Mon 24 Aug</span>
+          <span class="wkrow__t">Reading a brief against itself</span>
+          <span class="wkrow__s">Annotate a live brief in session</span>
+          <span class="wkrow__due wkrow__due--none">&mdash;</span>
+        </a>
+      </div>
+
+      <div class="part">
+        <div class="part__h">
+          <span class="part__n mono">Part 2</span>
+          <h3 class="part__t">Pressure &mdash; the record meets a reader</h3>
+          <p class="part__r">Weeks 05&ndash;08 &middot; ends with A2</p>
+        </div>
+        <a class="wkrow" href="inner.html" data-done>
+          <span class="wkrow__n num">05</span><span class="wkrow__d">Mon 31 Aug</span>
+          <span class="wkrow__t">Audiences you have not met</span>
+          <span class="wkrow__s">Rewrite one thing for a stranger</span>
+          <span class="wkrow__due wkrow__due--none">&mdash;</span>
+        </a>
+        <a class="wkrow" href="inner.html" data-done>
+          <span class="wkrow__n num">06</span><span class="wkrow__d">Mon 7 Sep</span>
+          <span class="wkrow__t">The register of expertise</span>
+          <span class="wkrow__s">Vocabulary audit; drop the hedges</span>
+          <span class="wkrow__due wkrow__due--none">&mdash;</span>
+        </a>
+        <a class="wkrow" href="inner.html" data-now>
+          <span class="wkrow__n num">07</span><span class="wkrow__d">Mon 14 Sep</span>
+          <span class="wkrow__t">The fold &mdash; when rehearsal becomes record</span>
+          <span class="wkrow__s">The stranger test, run on yourself</span>
+          <span class="wkrow__due">A2 &middot; 30%</span>
+        </a>
+        <a class="wkrow" href="inner.html">
+          <span class="wkrow__n num">08</span><span class="wkrow__d">Mon 21 Sep</span>
+          <span class="wkrow__t">Revision as evidence</span>
+          <span class="wkrow__s">Show every version, keep the failed one</span>
+          <span class="wkrow__due wkrow__due--none">&mdash;</span>
+        </a>
+      </div>
+
+      <div class="part">
+        <div class="part__h">
+          <span class="part__n mono">Part 3</span>
+          <h3 class="part__t">Assembly &mdash; the case you can hand over</h3>
+          <p class="part__r">Weeks 09&ndash;12 &middot; ends with A3 and A4</p>
+        </div>
+        <a class="wkrow" href="inner.html">
+          <span class="wkrow__n num">09</span><span class="wkrow__d">Mon 28 Sep</span>
+          <span class="wkrow__t">Counter-readings</span>
+          <span class="wkrow__s">Argue the other side of your own case</span>
+          <span class="wkrow__due wkrow__due--none">&mdash;</span>
+        </a>
+        <a class="wkrow" href="inner.html">
+          <span class="wkrow__n num">10</span><span class="wkrow__d">Mon 5 Oct</span>
+          <span class="wkrow__t">The long form</span>
+          <span class="wkrow__s">One sustained piece, not a set of fragments</span>
+          <span class="wkrow__due wkrow__due--none">&mdash;</span>
+        </a>
+        <a class="wkrow" href="inner.html">
+          <span class="wkrow__n num">11</span><span class="wkrow__d">Mon 12 Oct</span>
+          <span class="wkrow__t">Assembling the field log</span>
+          <span class="wkrow__s">Index it so a stranger can navigate it</span>
+          <span class="wkrow__due">A3 &middot; 20%</span>
+        </a>
+        <a class="wkrow" href="inner.html">
+          <span class="wkrow__n num">12</span><span class="wkrow__d">Mon 19 Oct</span>
+          <span class="wkrow__t">The dossier and the handover</span>
+          <span class="wkrow__s">Install, label, and hand it to someone</span>
+          <span class="wkrow__due">A4 &middot; 35%</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ASSESSMENT ===================== -->
+  <section class="band" id="assessment" aria-labelledby="asT">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="sec__t" id="asT"><span class="sec__lab mono">Part two of four</span>Assessment</h2>
+        <p class="sec__note">Four pieces summing to 100%. Every one is marked on the legibility of the process, never on the outcome and never on where the work ended up.</p>
+      </div>
+      <div class="as">
+        <div class="as__i">
+          <p class="as__id mono">A1</p>
+          <p class="as__w num">15%</p>
+          <h3 class="as__t">Position statement</h3>
+          <p class="as__p">Six hundred words on the claim you intend to be able to make by week twelve, and what evidence would settle it either way.</p>
+          <p class="as__d mono">Due Week 03 &middot; 17 Aug</p>
+        </div>
+        <div class="as__i">
+          <p class="as__id mono">A2</p>
+          <p class="as__w num">30%</p>
+          <h3 class="as__t">Stream portfolio</h3>
+          <p class="as__p">Everything your stream produced in weeks four to seven, unedited, with one page reading what it shows about how you work.</p>
+          <p class="as__d mono">Due Week 07 &middot; 14 Sep</p>
+        </div>
+        <div class="as__i">
+          <p class="as__id mono">A3</p>
+          <p class="as__w num">20%</p>
+          <h3 class="as__t">Field log</h3>
+          <p class="as__p">The running record, indexed. Marked on whether someone else could follow it &mdash; never on how much of it there is.</p>
+          <p class="as__d mono">Due Week 11 &middot; 12 Oct</p>
+        </div>
+        <div class="as__i">
+          <p class="as__id mono">A4</p>
+          <p class="as__w num">35%</p>
+          <h3 class="as__t">Final dossier</h3>
+          <p class="as__p">The assembled case, plus a handover that someone outside the unit could pick up on Monday and continue without you.</p>
+          <p class="as__d mono">Due Week 12 &middot; 19 Oct</p>
+        </div>
+      </div>
+      <p class="as__sum mono"><span>Four assessments, no examination</span><span><b>Total 100%</b></span></p>
+    </div>
+  </section>
+
+  <!-- ===================== STREAMS ===================== -->
+  <section class="band board" id="streams" aria-labelledby="stT">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="sec__t" id="stT"><span class="sec__lab mono">Part three of four</span>Three streams</h2>
+        <p class="sec__note">One shared lecture, three parallel sessions. You choose in week one and stay. They cover the same ground through different material and are assessed identically.</p>
+      </div>
+      <div class="str">
+        <div class="str__i">
+          <div class="str__l"><span class="str__g" aria-hidden="true">A</span><h3 class="str__t">The written record</h3></div>
+          <p class="str__m">Tue 14:00 &middot; Room 2.14 &middot; 22 places</p>
+          <p class="str__p">Everything here ends as text you could hand to someone who was not in the room. You will write more than you expect and keep less than you would like.</p>
+          <p class="str__p">The recurring exercise is the stranger test: give a draft to someone with no context, say nothing, and write down their first question word for word.</p>
+        </div>
+        <div class="str__i">
+          <div class="str__l"><span class="str__g" aria-hidden="true">B</span><h3 class="str__t">The spoken record</h3></div>
+          <p class="str__m">Tue 14:00 &middot; Studio 1 &middot; 18 places</p>
+          <p class="str__p">Two takes of ninety seconds every week, recorded. You keep both, annotate the transcript afterwards, and bring the annotation rather than the audio.</p>
+          <p class="str__p">Nobody is marked on delivery. The evidence is the distance between the first take and the second, and what you did in the gap.</p>
+        </div>
+        <div class="str__i">
+          <div class="str__l"><span class="str__g" aria-hidden="true">C</span><h3 class="str__t">The made record</h3></div>
+          <p class="str__m">Tue 14:00 &middot; Workshop B &middot; 16 places</p>
+          <p class="str__p">You bring one finished object and the group works out what it actually demonstrates, which is rarely what it was assigned to demonstrate.</p>
+          <p class="str__p">The gap between those two readings holds most of the unclaimed evidence in this stream. Keep the failures; they carry more of it than the good version.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PRACTICALITIES ===================== -->
+  <section class="band" id="practical" aria-labelledby="prT">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 class="sec__t" id="prT"><span class="sec__lab mono">Part four of four</span>Practicalities</h2>
+        <p class="sec__note">The policies you will actually need, written out rather than linked to.</p>
+      </div>
+      <div class="pr">
+        <div class="pr__i">
+          <h3>Extensions</h3>
+          <p>Ask before the due date and you get five days with no documentation. Ask after it and it becomes a formal application. The difference is administrative, not moral.</p>
+        </div>
+        <div class="pr__i">
+          <h3>Attendance</h3>
+          <p>The lecture is recorded; the stream session is not, because it depends on the people in the room. Stream attendance is counted and you may miss two.</p>
+        </div>
+        <div class="pr__i">
+          <h3>Switching streams</h3>
+          <p>Possible until the end of week three, subject to places. After that the portfolio assumes continuity and switching costs you more than it saves.</p>
+        </div>
+        <div class="pr__i">
+          <h3>Using outside work</h3>
+          <p>Encouraged. If you are already making the thing, bring it. Declare where it came from and be specific about which part of it is new for this unit.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap mono">
+    <span>UNIT 3841 &middot; Semester 2, 2026</span>
+    <span>Handbook updated 17 Sep</span>
+    <a href="#main">Back to top</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var root = document.documentElement;
+
+  /* THE one kinetic moment. Small range on purpose: this reads as the
+     word tightening under attention, not as a font stress test. */
+  var W_REST = 430, W_MAX = 680;
+  var X_REST = 92,  X_MAX = 104;
+
+  var lastY = window.scrollY, smooth = 0, cur = W_REST;
+  function apply(w,x){
+    root.style.setProperty("--kv-wght", w.toFixed(0));
+    root.style.setProperty("--kv-wdth", x.toFixed(1));
+  }
+  function tick(){
+    var y = window.scrollY, vel = Math.abs(y - lastY); lastY = y;
+    var target = Math.min(1, vel / 55);
+    smooth += (target - smooth) * (target > smooth ? 0.28 : 0.05);
+    var w = W_REST + (W_MAX - W_REST) * smooth;
+    var x = X_REST + (X_MAX - X_REST) * smooth;
+    if (Math.abs(w - cur) > 0.6){ cur = w; apply(w,x); }
+    requestAnimationFrame(tick);
+  }
+  if (!REDUCED) requestAnimationFrame(tick);
+
+  window.__kv = { axes: apply, range:{W_REST:W_REST,W_MAX:W_MAX,X_REST:X_REST,X_MAX:X_MAX} };
+})();
+</script>
+</body>
+</html>

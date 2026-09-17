@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UNIT 3841 — The Register</title>
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#EAE8E0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,100..900&family=Newsreader:opsz,wght@6..72,200..700&family=Martian+Mono:wdth,wght@75..112.5,300..700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   UNIT 3841 — "REGISTER"
+   Variant 2 of the Kinetic Manifesto direction.
+   The twelve-week sequence is the spine of the page.
+   ============================================================ */
+:root{
+  --bone:#EAE8E0;
+  --ink:#14120F;
+  --ink2:#57534C;
+  --stamp:#22309B;        /* the accent. indigo stamp ink, not vermilion */
+  --moss:#4C6420;         /* status only: work already complete */
+  --rule:#14120F;
+  --tint:#DEDCD3;
+
+  /* live axes, written once per frame from scroll velocity.
+     RANGE IS DELIBERATELY NARROW — see .k below. */
+  --kv-wght:420;
+  --kv-wdth:96;
+
+  --r:1.5px;
+  --gut:clamp(16px,3.2vw,44px);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bone); color:var(--ink);
+  font-family:"Newsreader",Georgia,serif;
+  font-variation-settings:"opsz" 16;
+  font-size:17px; line-height:1.52;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+@media (max-width:640px){ body{font-size:16px} }
+
+/* ---------- type roles ---------- */
+.d{font-family:"Anybody",system-ui,sans-serif; font-weight:700; letter-spacing:-.015em}
+.m{
+  font-family:"Martian Mono",ui-monospace,monospace;
+  font-variation-settings:"wdth" 87.5,"wght" 500;
+  font-size:11.5px; letter-spacing:.06em; text-transform:uppercase;
+  font-feature-settings:"tnum" 1; line-height:1.3;
+}
+.num{font-variant-numeric:tabular-nums; font-feature-settings:"tnum" 1}
+
+/* ============================================================
+   THE KINETIC ELEMENT — and the reflow fix.
+
+   Two locks, both required:
+   (1) white-space:nowrap  -> the line count is ALWAYS 1, so a
+       width-axis change can never re-wrap the string.
+   (2) min-block-size in em -> height is reserved from the
+       line-height ratio, which is independent of glyph widths,
+       so the box measures the same at every axis value.
+   The axis range is then clamped (wdth 96..78, wght 420..760)
+   narrow enough that the widest render still fits its column.
+   ============================================================ */
+.k{
+  display:block;
+  white-space:nowrap;
+  line-height:1.04;
+  min-block-size:1.04em;          /* reserved height, axis-independent */
+  font-variation-settings:"wght" var(--kv-wght),"wdth" var(--kv-wdth);
+  contain:layout;                  /* box cannot leak size changes upward */
+}
+
+/* ---------- skip link + focus ---------- */
+.skip{
+  position:absolute; left:-9999px; top:0; z-index:99;
+  background:var(--ink); color:var(--bone); padding:12px 18px;
+}
+.skip:focus{left:0}
+:focus-visible{outline:3px solid var(--stamp); outline-offset:3px}
+a{color:inherit}
+
+/* ---------- masthead ---------- */
+.mast{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; gap:var(--gut);
+  padding:10px var(--gut);
+  background:var(--bone); border-bottom:var(--r) solid var(--rule);
+}
+.mast__code{font-family:"Anybody",sans-serif; font-variation-settings:"wght" 800,"wdth" 88; font-size:15px; letter-spacing:.02em; text-decoration:none; white-space:nowrap}
+.mast__nav{margin-left:auto; display:flex; gap:clamp(10px,2vw,26px)}
+.mast__nav a{text-decoration:none; padding:4px 2px; border-bottom:var(--r) solid transparent}
+.mast__nav a:hover{border-bottom-color:var(--stamp)}
+@media (max-width:560px){ .mast__nav a:nth-child(n+4){display:none} }
+
+/* ---------- hero: facts first, poster second ---------- */
+.hero{padding:clamp(28px,5vw,58px) var(--gut) clamp(22px,3.4vw,38px); border-bottom:var(--r) solid var(--rule)}
+.hero__eyebrow{display:flex; flex-wrap:wrap; gap:6px 20px; color:var(--ink2); margin-bottom:clamp(16px,2.6vw,30px)}
+.hero__eyebrow b{color:var(--stamp); font-weight:inherit}
+.hero__h{
+  margin:0 0 4px; font-size:clamp(38px,7.4vw,92px);
+  max-inline-size:18ch;
+}
+.hero__h .k{font-size:1em}
+.hero__h .still{
+  display:block; font-family:"Anybody",sans-serif;
+  font-variation-settings:"wght" 380,"wdth" 92;
+  line-height:1.04; text-wrap:balance;
+}
+.hero__grid{display:grid; grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); gap:clamp(20px,4vw,64px); align-items:end; margin-top:clamp(18px,2.6vw,30px)}
+@media (max-width:860px){ .hero__grid{grid-template-columns:1fr; align-items:start} }
+.hero__lede{margin:0; max-inline-size:52ch; font-size:clamp(17px,1.35vw,20px); font-variation-settings:"opsz" 22}
+.hero__lede+.hero__lede{margin-top:.8em}
+
+/* key facts — tabular, not decorative */
+.facts{border-top:var(--r) solid var(--rule); display:grid; grid-template-columns:repeat(4,minmax(0,1fr))}
+.facts>div{padding:12px 14px 12px 0; border-right:var(--r) solid var(--rule)}
+.facts>div:last-child{border-right:0}
+.facts dt{color:var(--ink2); margin-bottom:6px}
+.facts dd{margin:0; font-family:"Anybody",sans-serif; font-variation-settings:"wght" 700,"wdth" 84; font-size:clamp(20px,2.2vw,30px); line-height:1; font-variant-numeric:tabular-nums}
+@media (max-width:540px){ .facts{grid-template-columns:repeat(2,1fr)} .facts>div:nth-child(2n){border-right:0} .facts>div:nth-child(-n+2){border-bottom:var(--r) solid var(--rule)} }
+
+/* ---------- section scaffolding ---------- */
+section{scroll-margin-top:64px}
+.sec__head{
+  display:flex; align-items:baseline; gap:16px; flex-wrap:wrap;
+  padding:clamp(22px,3vw,34px) var(--gut) 14px;
+}
+.sec__no{color:var(--stamp); flex:none}
+.sec__t{
+  margin:0; font-family:"Anybody",sans-serif;
+  font-variation-settings:"wght" 700,"wdth" 88;
+  font-size:clamp(22px,2.5vw,32px); line-height:1.08; letter-spacing:-.01em;
+}
+.sec__note{margin:0 0 0 auto; color:var(--ink2); max-inline-size:40ch; font-size:15px}
+@media (max-width:860px){ .sec__note{margin-left:0} }
+
+/* ============================================================
+   THE REGISTER — twelve weeks as a real table.
+   This is the organising device of the whole page.
+   ============================================================ */
+.reg{border-top:var(--r) solid var(--rule); border-bottom:var(--r) solid var(--rule)}
+table.reg__t{width:100%; border-collapse:collapse; font-size:15px}
+.reg__t caption{text-align:left; padding:0 var(--gut) 12px; color:var(--ink2)}
+.reg__t th,.reg__t td{text-align:left; vertical-align:top; padding:11px 14px; border-bottom:1px solid rgba(20,18,15,.22)}
+.reg__t thead th{
+  position:sticky; top:43px; z-index:20; background:var(--bone);
+  border-bottom:var(--r) solid var(--rule);
+  font-family:"Martian Mono",monospace; font-variation-settings:"wdth" 87.5,"wght" 600;
+  font-size:11px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink2);
+  padding-top:9px; padding-bottom:9px;
+}
+.reg__t th:first-child,.reg__t td:first-child{padding-left:var(--gut)}
+.reg__t th:last-child,.reg__t td:last-child{padding-right:var(--gut)}
+.reg__t tbody tr:last-child td{border-bottom:0}
+.reg__t tbody tr:hover{background:var(--tint)}
+
+.wk{
+  font-family:"Anybody",sans-serif; font-variation-settings:"wght" var(--kv-wght),"wdth" var(--kv-wdth);
+  font-size:26px; line-height:1; font-variant-numeric:tabular-nums;
+  white-space:nowrap; min-block-size:1em; display:block; contain:layout;
+}
+.reg__date{color:var(--ink2); white-space:nowrap}
+.reg__lec a{text-decoration:none; border-bottom:var(--r) solid rgba(20,18,15,.3)}
+.reg__lec a:hover{border-bottom-color:var(--stamp); color:var(--stamp)}
+.reg__lec{font-variation-settings:"opsz" 18}
+.reg__stream{color:var(--ink2); font-size:14px}
+.reg__due{white-space:nowrap}
+.reg__due b{font-weight:inherit; color:var(--stamp)}
+
+/* status is a word, not a colour alone */
+.st{display:inline-flex; align-items:center; gap:6px; white-space:nowrap}
+.st::before{content:""; inline-size:9px; block-size:9px; flex:none; border:var(--r) solid currentColor}
+.st--done{color:var(--moss)} .st--done::before{background:currentColor}
+.st--now{color:var(--bone); background:var(--stamp); padding:2px 8px}
+.st--now::before{background:currentColor; border-color:currentColor}
+.st--next{color:var(--ink2)}
+tr[data-now="1"] td{background:rgba(34,48,155,.075)}
+tr[data-now="1"] td:first-child{box-shadow:inset 4px 0 0 var(--stamp)}
+
+/* register on a phone: rows become stacked records */
+@media (max-width:900px){
+  .reg__t,.reg__t tbody,.reg__t tr,.reg__t td{display:block; width:100%}
+  .reg__t thead{position:absolute; left:-9999px}
+  .reg__t tr{border-bottom:var(--r) solid var(--rule); padding:14px var(--gut) 16px; position:relative}
+  .reg__t tr:last-child{border-bottom:0}
+  .reg__t td{border-bottom:0; padding:2px 0 2px 92px; position:relative}
+  .reg__t td::before{
+    content:attr(data-l); position:absolute; left:0; top:4px; width:84px;
+    font-family:"Martian Mono",monospace; font-size:11px; letter-spacing:.06em;
+    text-transform:uppercase; color:var(--ink2); font-variation-settings:"wdth" 87.5,"wght" 500;
+  }
+  .reg__t td:first-child{padding:0 0 6px; }
+  .reg__t td:first-child::before{display:none}
+  .reg__t td.reg__lec{padding-left:0; font-size:18px; margin-bottom:8px}
+  .reg__t td.reg__lec::before{display:none}
+  tr[data-now="1"]{background:rgba(34,48,155,.075); box-shadow:inset 4px 0 0 var(--stamp)}
+  tr[data-now="1"] td:first-child{box-shadow:none}
+}
+
+/* ---------- assessment ledger ---------- */
+.led{border-bottom:var(--r) solid var(--rule)}
+.led__row{
+  display:grid; grid-template-columns:auto minmax(0,2.1fr) minmax(0,1fr) auto;
+  gap:clamp(12px,2.4vw,32px); align-items:baseline;
+  padding:16px var(--gut); border-top:var(--r) solid var(--rule);
+}
+.led__row:first-child{border-top:0}
+.led__id{color:var(--stamp)}
+.led__n{margin:0; font-family:"Anybody",sans-serif; font-variation-settings:"wght" 650,"wdth" 88; font-size:clamp(17px,1.7vw,21px); line-height:1.15}
+.led__n small{display:block; font-family:"Newsreader",serif; font-size:15px; font-weight:400; color:var(--ink2); margin-top:5px; text-transform:none; letter-spacing:0; line-height:1.45}
+.led__when{color:var(--ink2)}
+.led__w{font-family:"Anybody",sans-serif; font-variation-settings:"wght" 750,"wdth" 80; font-size:clamp(26px,3vw,40px); line-height:.9; font-variant-numeric:tabular-nums; white-space:nowrap}
+@media (max-width:760px){
+  .led__row{grid-template-columns:auto 1fr auto; row-gap:6px}
+  .led__when{grid-column:2/4}
+}
+/* the weights actually sum: shown, not claimed */
+.led__bar{display:flex; block-size:34px; border-top:var(--r) solid var(--rule); border-bottom:var(--r) solid var(--rule)}
+.led__seg{display:flex; align-items:center; padding-inline:9px; border-right:var(--r) solid var(--rule); color:var(--bone); overflow:hidden}
+.led__seg:last-child{border-right:0}
+.led__seg span{font-family:"Martian Mono",monospace; font-size:11px; letter-spacing:.05em; white-space:nowrap; font-variation-settings:"wdth" 87.5,"wght" 600}
+.led__seg:nth-child(1){background:var(--ink)}
+.led__seg:nth-child(2){background:var(--stamp)}
+.led__seg:nth-child(3){background:var(--moss)}
+.led__seg:nth-child(4){background:var(--ink2)}
+.led__sum{display:flex; justify-content:space-between; padding:9px var(--gut); color:var(--ink2)}
+
+/* ---------- streams: three ruled bands, no cards ---------- */
+.str{border-bottom:var(--r) solid var(--rule)}
+.str__b{display:grid; grid-template-columns:clamp(58px,7vw,110px) minmax(0,1fr) minmax(0,1.15fr); gap:clamp(14px,2.6vw,36px); padding:clamp(18px,2.6vw,30px) var(--gut); border-top:var(--r) solid var(--rule)}
+.str__b:first-child{border-top:0}
+.str__g{
+  font-family:"Anybody",sans-serif; font-variation-settings:"wght" 800,"wdth" 78;
+  font-size:clamp(46px,6vw,86px); line-height:.82; color:var(--stamp);
+}
+.str__t{margin:0 0 8px; font-family:"Anybody",sans-serif; font-variation-settings:"wght" 680,"wdth" 90; font-size:clamp(18px,1.8vw,23px); line-height:1.15}
+.str__k{margin:0; color:var(--ink2); font-size:15px}
+.str__p{margin:0; max-inline-size:46ch; font-size:16px; font-variation-settings:"opsz" 18}
+.str__p+.str__p{margin-top:.7em}
+@media (max-width:820px){ .str__b{grid-template-columns:clamp(46px,12vw,70px) 1fr} .str__p{grid-column:2} }
+
+/* ---------- running notes / policies ---------- */
+.run{display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); border-bottom:var(--r) solid var(--rule)}
+.run__c{padding:clamp(16px,2.4vw,26px) var(--gut); border-right:var(--r) solid var(--rule)}
+.run__c:last-child{border-right:0}
+.run__c h3{margin:0 0 8px; font-family:"Anybody",sans-serif; font-variation-settings:"wght" 660,"wdth" 90; font-size:17px; line-height:1.2}
+.run__c p{margin:0; font-size:15.5px; color:var(--ink2); max-inline-size:42ch}
+@media (max-width:820px){ .run__c{border-right:0; border-bottom:var(--r) solid var(--rule)} .run__c:last-child{border-bottom:0} }
+
+/* ---------- footer ---------- */
+footer{padding:clamp(20px,3vw,34px) var(--gut); display:flex; flex-wrap:wrap; gap:14px 34px; color:var(--ink2)}
+footer a{text-decoration:none; border-bottom:1px solid currentColor}
+
+/* ---------- axis readout: makes the mechanism visible ---------- */
+.hud{
+  position:fixed; right:10px; bottom:10px; z-index:50;
+  display:flex; gap:10px; padding:6px 10px;
+  background:var(--ink); color:var(--bone); font-size:11px;
+  font-family:"Martian Mono",monospace; letter-spacing:.05em;
+  font-variant-numeric:tabular-nums; pointer-events:none;
+}
+@media (max-width:560px){ .hud{display:none} }
+.prog{position:fixed; left:0; top:0; block-size:3px; background:var(--stamp); z-index:60; inline-size:0}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important; transition-duration:.001ms!important}
+  :root{--kv-wght:520; --kv-wdth:90}
+  .hud{display:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="prog" id="prog" aria-hidden="true"></div>
+
+<header class="mast">
+  <a class="mast__code" href="#main">UNIT&nbsp;3841</a>
+  <nav class="mast__nav m" aria-label="Sections">
+    <a href="#register">Register</a>
+    <a href="#assessment">Assessment</a>
+    <a href="#streams">Streams</a>
+    <a href="#running">Running notes</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" aria-labelledby="h1">
+    <p class="hero__eyebrow m">
+      <span>Level 3 &middot; 6 units</span>
+      <span>Semester 2, 2026</span>
+      <span>No field prerequisite</span>
+      <span><b>Week 7 of 12 is current</b></span>
+    </p>
+
+    <h1 class="hero__h" id="h1">
+      <span class="still">Twelve weeks of</span>
+      <span class="d k" id="kHero">evidence</span>
+      <span class="still">you can actually show.</span>
+    </h1>
+
+    <div class="hero__grid">
+      <div>
+        <p class="hero__lede">This unit is a register. Every week has a date, a shared lecture, three parallel stream sessions, and something you leave with. Nothing here is graded on how it turned out — it is graded on whether the working is legible.</p>
+        <p class="hero__lede">Start at the week you are in. The register below is the whole course on one screen, and every row links to its own page.</p>
+      </div>
+      <dl class="facts m">
+        <div><dt>Weeks</dt><dd class="num">12</dd></div>
+        <div><dt>Streams</dt><dd>A B C</dd></div>
+        <div><dt>Assessments</dt><dd class="num">4</dd></div>
+        <div><dt>Weight</dt><dd class="num">100%</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ===================== THE REGISTER ===================== -->
+  <section id="register" aria-labelledby="regT">
+    <div class="sec__head">
+      <span class="sec__no m">&sect;01</span>
+      <h2 class="sec__t" id="regT">The register</h2>
+      <p class="sec__note">Twelve weeks in sequence. Six complete, one current, five ahead. The stream columns show what your session does differently that week.</p>
+    </div>
+    <div class="reg">
+      <table class="reg__t">
+        <caption class="m">Weekly schedule &mdash; Semester 2, 2026. Lectures are shared; stream sessions run in parallel on the same day.</caption>
+        <thead>
+          <tr>
+            <th scope="col">Wk</th>
+            <th scope="col">Monday</th>
+            <th scope="col">Shared lecture</th>
+            <th scope="col">Stream A &mdash; written</th>
+            <th scope="col">Stream B &mdash; spoken</th>
+            <th scope="col">Stream C &mdash; made</th>
+            <th scope="col">Due</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody id="regBody">
+          <tr>
+            <td data-l="Week"><span class="wk">01</span></td>
+            <td data-l="Monday" class="reg__date num">3 Aug</td>
+            <td data-l="Lecture" class="reg__lec"><a href="inner.html">The record and the claim</a></td>
+            <td data-l="Stream A" class="reg__stream">Set up the log</td>
+            <td data-l="Stream B" class="reg__stream">Sixty-second intro</td>
+            <td data-l="Stream C" class="reg__stream">Inventory what exists</td>
+            <td data-l="Due" class="reg__due">&mdash;</td>
+            <td data-l="Status"><span class="st st--done m">Complete</span></td>
+          </tr>
+          <tr>
+            <td data-l="Week"><span class="wk">02</span></td>
+            <td data-l="Monday" class="reg__date num">10 Aug</td>
+            <td data-l="Lecture" class="reg__lec"><a href="inner.html">Evidence before narrative</a></td>
+            <td data-l="Stream A" class="reg__stream">Three claims, sourced</td>
+            <td data-l="Stream B" class="reg__stream">Answer the hard question</td>
+            <td data-l="Stream C" class="reg__stream">Photograph the process</td>
+            <td data-l="Due" class="reg__due">&mdash;</td>
+            <td data-l="Status"><span class="st st--done m">Complete</span></td>
+          </tr>
+          <tr>
+            <td data-l="Week"><span class="wk">03</span></td>
+            <td data-l="Monday" class="reg__date num">17 Aug</td>
+            <td data-l="Lecture" class="reg__lec"><a href="inner.html">The first artefact</a></td>
+            <td data-l="Stream A" class="reg__stream">Draft, then cut a third</td>
+            <td data-l="Stream B" class="reg__stream">Two takes, annotated</td>
+            <td data-l="Stream C" class="reg__stream">One finished thing</td>
+            <td data-l="Due" class="reg__due"><b>A1</b> &middot; 15%</td>
+            <td data-l="Status"><span class="st st--done m">Complete</span></td>
+          </tr>
+          <tr>
+            <td data-l="Week"><span class="wk">04</span></td>
+            <td data-l="Monday" class="reg__date num">24 Aug</td>
+            <td data-l="Lecture" class="reg__lec"><a href="inner.html">Reading a brief against itself</a></td>
+            <td data-l="Stream A" class="reg__stream">Annotate a live brief</td>
+            <td data-l="Stream B" class="reg__stream">Read it aloud, twice</td>
+            <td data-l="Stream C" class="reg__stream">Build to the brief</td>
+            <td data-l="Due" class="reg__due">&mdash;</td>
+            <td data-l="Status"><span class="st st--done m">Complete</span></td>
+          </tr>
+          <tr>
+            <td data-l="Week"><span class="wk">05</span></td>
+            <td data-l="Monday" class="reg__date num">31 Aug</td>
+            <td data-l="Lecture" class="reg__lec"><a href="inner.html">Audiences you have not met</a></td>
+            <td data-l="Stream A" class="reg__stream">Rewrite for a stranger</td>
+            <td data-l="Stream B" class="reg__stream">Same take, new room</td>
+            <td data-l="Stream C" class="reg__stream">Hand it to someone</td>
+            <td data-l="Due" class="reg__due">&mdash;</td>
+            <td data-l="Status"><span class="st st--done m">Complete</span></td>
+          </tr>
+          <tr>
+            <td data-l="Week"><span class="wk">06</span></td>
+            <td data-l="Monday" class="reg__date num">7 Sep</td>
+            <td data-l="Lecture" class="reg__lec"><a href="inner.html">The register of expertise</a></td>
+            <td data-l="Stream A" class="reg__stream">Vocabulary audit</td>
+            <td data-l="Stream B" class="reg__stream">Drop the hedges</td>
+            <td data-l="Stream C" class="reg__stream">Caption the artefact</td>
+            <td data-l="Due" class="reg__due">&mdash;</td>
+            <td data-l="Status"><span class="st st--done m">Complete</span></td>
+          </tr>
+          <tr data-now="1">
+            <td data-l="Week"><span class="wk">07</span></td>
+            <td data-l="Monday" class="reg__date num">14 Sep</td>
+            <td data-l="Lecture" class="reg__lec"><a href="inner.html">The fold &mdash; when rehearsal becomes record</a></td>
+            <td data-l="Stream A" class="reg__stream">The stranger test</td>
+            <td data-l="Stream B" class="reg__stream">Ninety seconds, twice</td>
+            <td data-l="Stream C" class="reg__stream">Excavate one object</td>
+            <td data-l="Due" class="reg__due"><b>A2</b> &middot; 30%</td>
+            <td data-l="Status"><span class="st st--now m">This week</span></td>
+          </tr>
+          <tr>
+            <td data-l="Week"><span class="wk">08</span></td>
+            <td data-l="Monday" class="reg__date num">21 Sep</td>
+            <td data-l="Lecture" class="reg__lec"><a href="inner.html">Revision as evidence</a></td>
+            <td data-l="Stream A" class="reg__stream">Show every version</td>
+            <td data-l="Stream B" class="reg__stream">Re-record the weak half</td>
+            <td data-l="Stream C" class="reg__stream">Keep the failed one</td>
+            <td data-l="Due" class="reg__due">&mdash;</td>
+            <td data-l="Status"><span class="st st--next m">Upcoming</span></td>
+          </tr>
+          <tr>
+            <td data-l="Week"><span class="wk">09</span></td>
+            <td data-l="Monday" class="reg__date num">28 Sep</td>
+            <td data-l="Lecture" class="reg__lec"><a href="inner.html">Counter-readings</a></td>
+            <td data-l="Stream A" class="reg__stream">Argue the other side</td>
+            <td data-l="Stream B" class="reg__stream">Take the hostile question</td>
+            <td data-l="Stream C" class="reg__stream">Break your own object</td>
+            <td data-l="Due" class="reg__due">&mdash;</td>
+            <td data-l="Status"><span class="st st--next m">Upcoming</span></td>
+          </tr>
+          <tr>
+            <td data-l="Week"><span class="wk">10</span></td>
+            <td data-l="Monday" class="reg__date num">5 Oct</td>
+            <td data-l="Lecture" class="reg__lec"><a href="inner.html">The long form</a></td>
+            <td data-l="Stream A" class="reg__stream">Two thousand words</td>
+            <td data-l="Stream B" class="reg__stream">Eight unbroken minutes</td>
+            <td data-l="Stream C" class="reg__stream">A set, not a piece</td>
+            <td data-l="Due" class="reg__due">&mdash;</td>
+            <td data-l="Status"><span class="st st--next m">Upcoming</span></td>
+          </tr>
+          <tr>
+            <td data-l="Week"><span class="wk">11</span></td>
+            <td data-l="Monday" class="reg__date num">12 Oct</td>
+            <td data-l="Lecture" class="reg__lec"><a href="inner.html">Assembling the field log</a></td>
+            <td data-l="Stream A" class="reg__stream">Index the log</td>
+            <td data-l="Stream B" class="reg__stream">Transcribe and mark</td>
+            <td data-l="Stream C" class="reg__stream">Sequence the set</td>
+            <td data-l="Due" class="reg__due"><b>A3</b> &middot; 20%</td>
+            <td data-l="Status"><span class="st st--next m">Upcoming</span></td>
+          </tr>
+          <tr>
+            <td data-l="Week"><span class="wk">12</span></td>
+            <td data-l="Monday" class="reg__date num">19 Oct</td>
+            <td data-l="Lecture" class="reg__lec"><a href="inner.html">The dossier and the handover</a></td>
+            <td data-l="Stream A" class="reg__stream">Final read-through</td>
+            <td data-l="Stream B" class="reg__stream">The handover talk</td>
+            <td data-l="Stream C" class="reg__stream">Install and label</td>
+            <td data-l="Due" class="reg__due"><b>A4</b> &middot; 35%</td>
+            <td data-l="Status"><span class="st st--next m">Upcoming</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================== ASSESSMENT ===================== -->
+  <section id="assessment" aria-labelledby="asT">
+    <div class="sec__head">
+      <span class="sec__no m">&sect;02</span>
+      <h2 class="sec__t" id="asT">Assessment ledger</h2>
+      <p class="sec__note">Four pieces, summing to 100%. Each is marked on process evidence: what you tried, what you kept, and why.</p>
+    </div>
+    <div class="led">
+      <div class="led__row">
+        <span class="led__id m">A1</span>
+        <h3 class="led__n">Position statement<small>Six hundred words on the claim you intend to be able to make by week&nbsp;12, and the evidence that would settle it.</small></h3>
+        <span class="led__when m">Due Week 03 &middot; 17 Aug</span>
+        <span class="led__w num">15%</span>
+      </div>
+      <div class="led__row">
+        <span class="led__id m">A2</span>
+        <h3 class="led__n">Stream portfolio<small>Everything your stream produced in weeks four to seven, unedited, with a one-page reading of what it shows.</small></h3>
+        <span class="led__when m">Due Week 07 &middot; 14 Sep</span>
+        <span class="led__w num">30%</span>
+      </div>
+      <div class="led__row">
+        <span class="led__id m">A3</span>
+        <h3 class="led__n">Field log<small>The running record, indexed. Marked on legibility of process only &mdash; never on how much you got done.</small></h3>
+        <span class="led__when m">Due Week 11 &middot; 12 Oct</span>
+        <span class="led__w num">20%</span>
+      </div>
+      <div class="led__row">
+        <span class="led__id m">A4</span>
+        <h3 class="led__n">Final dossier<small>The assembled case, plus a handover someone outside the unit could pick up and continue.</small></h3>
+        <span class="led__when m">Due Week 12 &middot; 19 Oct</span>
+        <span class="led__w num">35%</span>
+      </div>
+      <div class="led__bar" role="img" aria-label="Weight distribution: A1 15 per cent, A2 30 per cent, A3 20 per cent, A4 35 per cent.">
+        <div class="led__seg" style="flex:15"><span>A1 15</span></div>
+        <div class="led__seg" style="flex:30"><span>A2 30</span></div>
+        <div class="led__seg" style="flex:20"><span>A3 20</span></div>
+        <div class="led__seg" style="flex:35"><span>A4 35</span></div>
+      </div>
+      <p class="led__sum m"><span>Four assessments</span><span class="num">Total 100%</span></p>
+    </div>
+  </section>
+
+  <!-- ===================== STREAMS ===================== -->
+  <section id="streams" aria-labelledby="stT">
+    <div class="sec__head">
+      <span class="sec__no m">&sect;03</span>
+      <h2 class="sec__t" id="stT">Three streams, one lecture</h2>
+      <p class="sec__note">You pick a stream in week one and stay in it. They cover the same ground through different material, and they are assessed identically.</p>
+    </div>
+    <div class="str">
+      <div class="str__b">
+        <span class="str__g" aria-hidden="true">A</span>
+        <div>
+          <h3 class="str__t">The written record</h3>
+          <p class="str__k m">Tuesdays 14:00 &middot; Room 2.14 &middot; 22 places</p>
+        </div>
+        <div>
+          <p class="str__p">Everything in this stream ends up as text you could hand to someone who was not in the room. You will write more than you expect and keep less of it than you would like.</p>
+          <p class="str__p">The recurring exercise is the stranger test: give a draft to someone with no context and record, verbatim, the first question they ask.</p>
+        </div>
+      </div>
+      <div class="str__b">
+        <span class="str__g" aria-hidden="true">B</span>
+        <div>
+          <h3 class="str__t">The spoken record</h3>
+          <p class="str__k m">Tuesdays 14:00 &middot; Studio 1 &middot; 18 places</p>
+        </div>
+        <div>
+          <p class="str__p">Two takes of ninety seconds, every week, recorded. You keep both, annotate the transcript, and bring the annotations rather than the audio.</p>
+          <p class="str__p">Nobody is marked on delivery. The evidence is the gap between the first take and the second, and what you did in between.</p>
+        </div>
+      </div>
+      <div class="str__b">
+        <span class="str__g" aria-hidden="true">C</span>
+        <div>
+          <h3 class="str__t">The made record</h3>
+          <p class="str__k m">Tuesdays 14:00 &middot; Workshop B &middot; 16 places</p>
+        </div>
+        <div>
+          <p class="str__p">You bring one finished object and the group works out what it actually demonstrates, which is rarely what it was assigned to demonstrate.</p>
+          <p class="str__p">The gap between those two readings is where most of the unclaimed evidence in this stream lives. Keep the failures; they carry more of it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== RUNNING NOTES ===================== -->
+  <section id="running" aria-labelledby="ruT">
+    <div class="sec__head">
+      <span class="sec__no m">&sect;04</span>
+      <h2 class="sec__t" id="ruT">Running notes</h2>
+      <p class="sec__note">The policies you will actually need, in the order you will need them.</p>
+    </div>
+    <div class="run">
+      <div class="run__c">
+        <h3>Extensions</h3>
+        <p>Ask before the due date and you get five days, no documentation. Ask after and it becomes a formal application. The difference is entirely administrative.</p>
+      </div>
+      <div class="run__c">
+        <h3>Attendance</h3>
+        <p>The lecture is recorded; the stream session is not. Stream attendance is the only place attendance is counted, and you may miss two.</p>
+      </div>
+      <div class="run__c">
+        <h3>Switching streams</h3>
+        <p>Possible until the end of week three, subject to places. After that the portfolio assumes continuity, and switching costs you more than it saves.</p>
+      </div>
+      <div class="run__c">
+        <h3>Using outside work</h3>
+        <p>Encouraged. If you are already making the thing, bring it. Declare where it came from and what part of it is new for this unit.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="m">
+  <span>UNIT 3841 &middot; Semester 2, 2026</span>
+  <span>Updated 17 Sep</span>
+  <a href="#main">Back to top</a>
+</footer>
+
+<div class="hud" id="hud" aria-hidden="true"><span>wght <b id="hudW">420</b></span><span>wdth <b id="hudX">96</b></span></div>
+
+<script>
+(function(){
+  "use strict";
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var root = document.documentElement;
+
+  /* ---- axis range, deliberately narrow (see .k in the stylesheet) ----
+     Option A ran wght 300-900 / wdth 128-56. That 2.3x width swing is
+     what re-wrapped headlines and jumped the page. Here the swing is
+     small enough to read as weight change rather than as reflow, and
+     every consumer is nowrap with a reserved block-size anyway. */
+  var W_REST = 420, W_MAX = 760;
+  var X_REST = 96,  X_MIN = 78;
+
+  var hudW = document.getElementById("hudW");
+  var hudX = document.getElementById("hudX");
+  var prog = document.getElementById("prog");
+  var lastY = window.scrollY, smooth = 0, curW = W_REST;
+
+  function apply(w,x){
+    root.style.setProperty("--kv-wght", w.toFixed(0));
+    root.style.setProperty("--kv-wdth", x.toFixed(1));
+    if (hudW) hudW.textContent = w.toFixed(0);
+    if (hudX) hudX.textContent = x.toFixed(0);
+  }
+
+  function tick(){
+    var y = window.scrollY;
+    var vel = Math.abs(y - lastY); lastY = y;
+    var target = Math.min(1, vel / 60);
+    smooth += (target - smooth) * (target > smooth ? 0.30 : 0.055);
+    var w = W_REST + (W_MAX - W_REST) * smooth;
+    var x = X_REST + (X_MIN - X_REST) * smooth;
+    if (Math.abs(w - curW) > 0.6){ curW = w; apply(w,x); }
+    if (prog){
+      var max = root.scrollHeight - window.innerHeight;
+      prog.style.width = (max > 0 ? Math.min(1, y/max)*100 : 0).toFixed(2) + "%";
+    }
+    requestAnimationFrame(tick);
+  }
+  if (!REDUCED) requestAnimationFrame(tick);
+
+  /* verification hook: force axes and measure the reflow fix */
+  window.__kv = {
+    axes: apply,
+    range: { W_REST:W_REST, W_MAX:W_MAX, X_REST:X_REST, X_MIN:X_MIN }
+  };
+})();
+</script>
+</body>
+</html>

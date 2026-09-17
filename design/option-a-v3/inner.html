@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 07 — The fold | UNIT 3841</title>
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#E6E7E0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Source+Serif+4:opsz,wght@8..60,200..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --chalk:#E6E7E0; --paper:#EFF0EA; --board:#22352B; --board2:#4E5A53;
+  --ox:#7A2230; --ox-soft:#F0DFE1;
+  --line:rgba(34,53,43,.20); --line2:rgba(34,53,43,.42);
+  --kv-wght:430; --kv-wdth:92;
+  --gut:clamp(18px,4vw,72px); --maxw:1320px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%; scroll-behavior:smooth}
+body{margin:0; background:var(--chalk); color:var(--board);
+  font-family:"Source Serif 4",Georgia,serif; font-variation-settings:"opsz" 18;
+  font-size:18px; line-height:1.62; -webkit-font-smoothing:antialiased; overflow-x:hidden}
+@media (max-width:640px){ body{font-size:17px; line-height:1.58} }
+
+h1,h2,h3,h4{font-family:"Archivo",system-ui,sans-serif; letter-spacing:-.012em; text-wrap:balance}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace; font-weight:500; font-size:12px;
+  letter-spacing:.08em; text-transform:uppercase; font-variant-numeric:tabular-nums; line-height:1.4}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:var(--maxw); margin:0 auto; padding-inline:var(--gut)}
+
+/* the one kinetic moment — same reflow contract as index.html:
+   nowrap (line count fixed at 1) + block-size in em (height fixed) */
+.kin{display:inline-block; white-space:nowrap; line-height:1.02; block-size:1.02em;
+  vertical-align:baseline; font-family:"Archivo",sans-serif;
+  font-variation-settings:"wght" var(--kv-wght),"wdth" var(--kv-wdth);
+  color:var(--ox); contain:layout}
+
+.skip{position:absolute; left:-9999px; top:0; z-index:99; background:var(--board); color:var(--chalk); padding:12px 20px}
+.skip:focus{left:0}
+:focus-visible{outline:3px solid var(--ox); outline-offset:3px; border-radius:2px}
+a{color:inherit}
+section{scroll-margin-top:118px}
+
+/* ---------- masthead + week nav ---------- */
+.mast{position:sticky; top:0; z-index:40; background:var(--chalk); border-bottom:1px solid var(--line2)}
+.mast__in{display:flex; align-items:center; gap:clamp(14px,3vw,var(--gut)); min-inline-size:0; padding-block:13px; max-width:var(--maxw); margin:0 auto; padding-inline:var(--gut)}
+.mast__code{font-family:"Archivo",sans-serif; font-variation-settings:"wght" 700,"wdth" 96; font-size:16px; text-decoration:none; white-space:nowrap}
+.mast__code span{color:var(--ox)}
+.mast__nav{margin-left:auto; display:flex; gap:clamp(12px,2.2vw,30px); min-inline-size:0; overflow-x:auto; scrollbar-width:none}
+.mast__nav::-webkit-scrollbar{display:none}
+.mast__nav a{white-space:nowrap}
+.mast__nav a{text-decoration:none; padding:3px 0; border-bottom:2px solid transparent}
+.mast__nav a:hover{border-bottom-color:var(--ox)}
+@media (max-width:860px){ .mast__code .sub2{display:none} }
+@media (max-width:680px){ .mast__nav a:nth-child(n+3){display:none} }
+
+.wknav{position:sticky; top:46px; z-index:39; background:var(--paper); border-bottom:1px solid var(--line2)}
+.wknav__in{display:flex; gap:2px; overflow-x:auto; max-width:var(--maxw); margin:0 auto; padding:6px var(--gut); scrollbar-width:none}
+.wknav__in::-webkit-scrollbar{display:none}
+.wknav a{flex:0 0 auto; min-inline-size:40px; text-align:center; padding:5px 8px; text-decoration:none;
+  font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:500; font-variant-numeric:tabular-nums; color:var(--board2)}
+.wknav a:hover{background:var(--chalk); color:var(--board)}
+.wknav a[data-done]{color:#3E6B44}
+.wknav a[aria-current="page"]{background:var(--ox); color:#F7EEEF; font-weight:600}
+.wknav a[aria-current="page"]:hover{background:var(--ox); color:#F7EEEF}
+
+/* ---------- week header ---------- */
+.wh{padding-block:clamp(30px,5vw,64px) clamp(22px,3vw,40px); border-bottom:1px solid var(--line2)}
+.wh__crumb{margin:0 0 clamp(18px,2.6vw,30px); color:var(--board2)}
+.wh__crumb a{text-decoration:none; border-bottom:1px solid currentColor}
+.wh__cols{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,.85fr); gap:clamp(24px,5vw,72px); align-items:start}
+@media (max-width:900px){ .wh__cols{grid-template-columns:1fr; gap:26px} }
+.wh__pre{display:flex; align-items:baseline; gap:12px; margin:0 0 10px}
+.wh__n{font-family:"Archivo",sans-serif; font-variation-settings:"wght" 700,"wdth" 88;
+  font-size:clamp(40px,4.4vw,60px); line-height:.88; color:var(--ox); font-variant-numeric:tabular-nums}
+.wh__of{color:var(--board2)}
+.wh__t{margin:0 0 14px; font-size:clamp(30px,4.2vw,56px); line-height:1.05;
+  font-variation-settings:"wght" 440,"wdth" 94; max-inline-size:19ch}
+.wh__t .kin{font-size:1em}
+.wh__l{margin:0; max-inline-size:56ch; font-size:clamp(17.5px,1.3vw,20px); font-variation-settings:"opsz" 24; color:#2E3D35}
+
+.card{background:var(--paper); border:1px solid var(--line2); padding:clamp(16px,2.1vw,24px)}
+.card h2{margin:0 0 12px; font-family:"IBM Plex Mono",monospace; font-weight:500; font-size:12px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--board2)}
+.card dl{margin:0; display:grid; grid-template-columns:auto 1fr; gap:8px 16px; font-size:16px}
+.card dt{color:var(--board2); font-family:"IBM Plex Mono",monospace; font-size:11.5px;
+  letter-spacing:.06em; text-transform:uppercase; padding-top:4px; font-weight:500}
+.card dd{margin:0}
+.card dd b{font-weight:600; color:var(--ox)}
+
+/* ---------- body: rail + column ---------- */
+.body{display:grid; grid-template-columns:minmax(0,1fr); }
+.body__in{max-width:var(--maxw); margin:0 auto; padding-inline:var(--gut);
+  display:grid; grid-template-columns:clamp(160px,15vw,215px) minmax(0,1fr); gap:clamp(24px,4vw,64px)}
+@media (max-width:980px){ .body__in{grid-template-columns:1fr} }
+.rail{position:sticky; top:104px; align-self:start; padding-block:clamp(24px,3vw,40px);
+  max-block-size:calc(100vh - 118px); overflow:auto}
+@media (max-width:980px){ .rail{display:none} }
+.rail h2{margin:0 0 12px; font-family:"IBM Plex Mono",monospace; font-weight:500; font-size:11.5px;
+  letter-spacing:.07em; text-transform:uppercase; color:var(--board2)}
+.rail ol{list-style:none; margin:0; padding:0}
+.rail li{margin-bottom:1px}
+.rail a{display:block; text-decoration:none; padding:6px 10px; font-size:16px; color:var(--board2); line-height:1.3;
+  border-left:2px solid var(--line)}
+.rail a:hover{color:var(--board); background:var(--paper)}
+.rail a[aria-current="true"]{color:var(--ox); border-left-color:var(--ox); background:var(--paper); font-weight:600}
+
+.col{min-inline-size:0; padding-block:clamp(24px,3vw,40px) 0}
+.blk{padding-bottom:clamp(30px,4vw,52px); margin-bottom:clamp(30px,4vw,52px); border-bottom:1px solid var(--line2)}
+.blk:last-of-type{border-bottom:0}
+.blk__t{margin:0 0 6px; font-size:clamp(23px,2.5vw,33px); line-height:1.1; font-variation-settings:"wght" 500,"wdth" 94}
+.blk__lab{color:var(--ox); display:block; margin-bottom:4px}
+.p{margin:0 0 .85em; max-inline-size:66ch; font-variation-settings:"opsz" 20}
+.p:last-child{margin-bottom:0}
+.sub{margin:28px 0 10px; font-size:18px; font-variation-settings:"wght" 600,"wdth" 96; line-height:1.25}
+
+/* ---------- lecture spine ---------- */
+.spine{list-style:none; margin:0; padding:0; border-top:1px solid var(--line2)}
+.spine li{display:grid; grid-template-columns:74px minmax(0,1fr); gap:clamp(12px,2vw,26px);
+  padding:12px 0; border-bottom:1px solid var(--line)}
+.spine li:last-child{border-bottom:0}
+.spine time{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500;
+  font-variant-numeric:tabular-nums; color:var(--board2); padding-top:5px}
+.spine span{font-size:17px; max-inline-size:62ch}
+
+/* ---------- streams on the inner page ---------- */
+.sb{border-top:2px solid var(--board); padding-block:clamp(18px,2.4vw,28px)}
+.sb:last-child{padding-bottom:0}
+.sb__h{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:6px}
+.sb__g{font-family:"Archivo",sans-serif; font-variation-settings:"wght" 700,"wdth" 88;
+  font-size:clamp(26px,3vw,36px); line-height:1; color:var(--ox)}
+.sb__t{margin:0; font-size:clamp(19px,2vw,24px); font-variation-settings:"wght" 600,"wdth" 96; line-height:1.15}
+.sb__m{margin:0 0 12px; color:var(--board2); font-family:"IBM Plex Mono",monospace;
+  font-size:11.5px; letter-spacing:.06em; text-transform:uppercase; font-weight:500}
+.sb__c{columns:2 28ch; column-gap:clamp(22px,3vw,44px)}
+@media (max-width:740px){ .sb__c{columns:1} }
+.sb__c p{margin:0 0 .72em; font-size:16.5px; break-inside:avoid}
+.sb__out{margin:14px 0 0; padding:11px 14px; background:var(--ox-soft); font-size:16px; max-inline-size:62ch}
+.sb__out b{display:block; font-family:"IBM Plex Mono",monospace; font-size:11px; font-weight:600;
+  letter-spacing:.07em; text-transform:uppercase; color:var(--ox); margin-bottom:3px}
+
+/* ---------- readings ---------- */
+table.rd{width:100%; border-collapse:collapse; font-size:16.5px}
+.rd th,.rd td{text-align:left; vertical-align:top; padding:11px 16px 11px 0; border-bottom:1px solid var(--line)}
+.rd thead th{border-bottom:2px solid var(--board); font-family:"IBM Plex Mono",monospace; font-weight:500;
+  font-size:11.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--board2)}
+.rd tbody tr:last-child td{border-bottom:0}
+.rd td:last-child,.rd th:last-child{padding-right:0}
+.rd__len{white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--board2); font-family:"IBM Plex Mono",monospace; font-size:13px}
+.tag{display:inline-block; padding:3px 9px; font-family:"IBM Plex Mono",monospace; font-size:11px;
+  font-weight:600; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap}
+.tag--req{background:var(--ox-soft); color:var(--ox)}
+.tag--opt{color:var(--board2); border:1px solid var(--line2)}
+@media (max-width:640px){
+  .rd,.rd tbody,.rd tr,.rd td{display:block; width:100%}
+  .rd thead{position:absolute; left:-9999px}
+  .rd tr{border-bottom:1px solid var(--line2); padding:12px 0}
+  .rd tr:last-child{border-bottom:0}
+  .rd td{border-bottom:0; padding:2px 0}
+  .rd td:first-child{font-size:18px; margin-bottom:4px}
+}
+
+/* ---------- activity ---------- */
+.act{background:var(--board); color:#DDE2DC; padding:clamp(22px,3vw,40px); margin-bottom:clamp(30px,4vw,52px)}
+.act .blk__lab{color:#E0A6AE}
+.act__t{margin:0 0 12px; color:var(--chalk); font-size:clamp(23px,2.6vw,34px); line-height:1.08; font-variation-settings:"wght" 500,"wdth" 94; max-inline-size:19ch}
+.act__p{margin:0 0 20px; max-inline-size:62ch; color:#C4CCC5; font-size:17px}
+.act ol{margin:0; padding:0; list-style:none; counter-reset:s; border-top:1px solid rgba(221,226,220,.32)}
+.act ol li{counter-increment:s; display:grid; grid-template-columns:auto minmax(0,1fr); gap:16px;
+  padding:12px 0; border-bottom:1px solid rgba(221,226,220,.18); font-size:16.5px; color:#D3DAD3}
+.act ol li:last-child{border-bottom:0}
+.act ol li::before{content:counter(s,decimal-leading-zero); font-family:"IBM Plex Mono",monospace;
+  font-size:12px; font-weight:600; color:#E0A6AE; padding-top:5px}
+
+/* ---------- checklist ---------- */
+.ck__bar{display:flex; align-items:baseline; gap:11px; margin:0 0 14px; color:var(--board2)}
+.ck__bar b{font-family:"Archivo",sans-serif; font-variation-settings:"wght" 700,"wdth" 88;
+  font-size:26px; color:var(--ox); font-variant-numeric:tabular-nums; line-height:1}
+.ck{list-style:none; margin:0; padding:0; border-top:2px solid var(--board)}
+.ck li{border-bottom:1px solid var(--line)}
+.ck li:last-child{border-bottom:0}
+.ck label{display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:14px; align-items:start;
+  padding:13px 0; cursor:pointer; touch-action:manipulation}
+.ck input{inline-size:19px; block-size:19px; margin:4px 0 0; accent-color:var(--ox); cursor:pointer}
+.ck__t{font-size:17px; max-inline-size:58ch}
+.ck__w{color:var(--board2); white-space:nowrap; padding-top:4px}
+.ck input:checked ~ .ck__t{color:var(--board2); text-decoration:line-through; text-decoration-thickness:1px}
+.ck label:has(input:focus-visible){outline:3px solid var(--ox); outline-offset:2px}
+
+/* ---------- pager ---------- */
+.pager{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line2);
+  border-top:1px solid var(--line2); margin-top:clamp(26px,3.4vw,46px)}
+.pager a{background:var(--chalk); padding:clamp(16px,2.2vw,26px) clamp(14px,2vw,24px); text-decoration:none}
+.pager a:last-child{text-align:right}
+.pager a:hover{background:var(--paper)}
+.pager span{display:block; color:var(--board2); margin-bottom:6px}
+.pager b{font-family:"Archivo",sans-serif; font-variation-settings:"wght" 600,"wdth" 96;
+  font-size:clamp(17px,1.7vw,20px); line-height:1.2}
+.pager a:hover b{color:var(--ox)}
+
+footer{border-top:1px solid var(--line2); padding-block:26px; margin-top:clamp(30px,4vw,56px); color:var(--board2)}
+footer .wrap{display:flex; flex-wrap:wrap; gap:12px 34px}
+footer a{text-decoration:none; border-bottom:1px solid currentColor}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.001ms!important; transition-duration:.001ms!important}
+  :root{--kv-wght:560; --kv-wdth:98}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="mast">
+  <div class="mast__in">
+    <a class="mast__code" href="index.html">UNIT 3841<span class="sub2"> <span>&middot;</span> Course handbook</span></a>
+    <nav class="mast__nav mono" aria-label="Sections">
+      <a href="index.html#schedule">Schedule</a>
+      <a href="index.html#assessment">Assessment</a>
+      <a href="index.html#streams">Streams</a>
+      <a href="index.html#practical">Practicalities</a>
+    </nav>
+  </div>
+</header>
+
+<nav class="wknav" aria-label="Weeks">
+  <div class="wknav__in">
+    <a href="inner.html" data-done>01</a><a href="inner.html" data-done>02</a>
+    <a href="inner.html" data-done>03</a><a href="inner.html" data-done>04</a>
+    <a href="inner.html" data-done>05</a><a href="inner.html" data-done>06</a>
+    <a href="inner.html" aria-current="page">07</a>
+    <a href="inner.html">08</a><a href="inner.html">09</a><a href="inner.html">10</a>
+    <a href="inner.html">11</a><a href="inner.html">12</a>
+  </div>
+</nav>
+
+<main id="main">
+  <header class="wh">
+    <div class="wrap">
+      <p class="wh__crumb mono"><a href="index.html">Course handbook</a> &nbsp;/&nbsp; Part 2, Pressure &nbsp;/&nbsp; Week 07</p>
+      <div class="wh__cols">
+        <div>
+          <p class="wh__pre"><span class="wh__n num">07</span><span class="wh__of mono">of twelve &middot; Monday 14 September</span></p>
+          <h1 class="wh__t">The fold &mdash; when rehearsal becomes <span class="kin" id="kin">record</span></h1>
+          <p class="wh__l">Everything you have made so far was practice, until someone kept a copy. This week is about the moment the two stop being distinguishable, and what you owe the record once it exists.</p>
+        </div>
+        <div class="card">
+          <h2>This week at a glance</h2>
+          <dl>
+            <dt>Lecture</dt><dd>Mon 14 Sep, 11:00, Hall&nbsp;C &middot; 50&nbsp;min</dd>
+            <dt>Streams</dt><dd>Tue 15 Sep, 14:00 &middot; 90&nbsp;min</dd>
+            <dt>Readings</dt><dd>Two required, three optional</dd>
+            <dt>Due</dt><dd><b>A2 Stream portfolio &middot; 30%</b><br>Friday 18 Sep, 17:00</dd>
+            <dt>Prep</dt><dd>About two and a half hours</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="body">
+    <div class="body__in">
+      <nav class="rail" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol>
+          <li><a href="#lecture">Shared lecture</a></li>
+          <li><a href="#streams">Stream sessions</a></li>
+          <li><a href="#readings">Readings</a></li>
+          <li><a href="#activity">The activity</a></li>
+          <li><a href="#before">Before next week</a></li>
+        </ol>
+      </nav>
+
+      <div class="col">
+        <section class="blk" id="lecture" aria-labelledby="lecT">
+          <h2 class="blk__t" id="lecT"><span class="blk__lab mono">Section 01</span>Shared lecture</h2>
+          <p class="p" style="margin-top:14px">A recording is not a neutral copy of a rehearsal. It selects, and the thing it selects becomes the thing that happened. Once you accept that, the interesting question stops being whether to record and becomes what you are prepared to have selected for you.</p>
+          <p class="p">The lecture works through three cases where the fold ran the wrong way &mdash; a working document read as a finished claim &mdash; and then, more usefully, two where someone anticipated it and set the record up deliberately, before there was anything worth recording.</p>
+          <h3 class="sub">Lecture spine</h3>
+          <ol class="spine">
+            <li><time datetime="PT0M">00:00</time><span>What the fold is, with the shortest possible version of the argument.</span></li>
+            <li><time datetime="PT9M">00:09</time><span>Three cases where a draft was read as a position, and what each one cost.</span></li>
+            <li><time datetime="PT23M">00:23</time><span>Two cases where the record was set up on purpose, in advance.</span></li>
+            <li><time datetime="PT36M">00:36</time><span>The stranger test, demonstrated live on a volunteer&rsquo;s draft.</span></li>
+            <li><time datetime="PT46M">00:46</time><span>Handover to streams, and what each is doing differently this week.</span></li>
+          </ol>
+        </section>
+
+        <section class="blk" id="streams" aria-labelledby="strT">
+          <h2 class="blk__t" id="strT"><span class="blk__lab mono">Section 02</span>Stream sessions</h2>
+          <p class="p" style="margin:14px 0 26px">The same fold from three angles. Go to your own stream only; the material does not carry across and the sessions run at the same time.</p>
+
+          <div class="sb">
+            <div class="sb__h"><span class="sb__g" aria-hidden="true">A</span><h3 class="sb__t">The written record</h3></div>
+            <p class="sb__m">Tue 14:00 &middot; Room 2.14 &middot; Bring a draft you have not shown anyone</p>
+            <div class="sb__c">
+              <p>You run the stranger test on your own draft, which is harder than running it on someone else&rsquo;s because you cannot un-know the context.</p>
+              <p>The procedure is fixed: hand over the page, say nothing at all, and write down the first question verbatim. Do not answer it in the room.</p>
+              <p>Most drafts fail in the same place. The reader asks what the thing is, which means the opening paragraph is doing something other than its job.</p>
+            </div>
+            <p class="sb__out"><b>Leave with</b>Three verbatim first questions, and a line on which of them you were expecting.</p>
+          </div>
+
+          <div class="sb">
+            <div class="sb__h"><span class="sb__g" aria-hidden="true">B</span><h3 class="sb__t">The spoken record</h3></div>
+            <p class="sb__m">Tue 14:00 &middot; Studio 1 &middot; Bring headphones and last week&rsquo;s transcript</p>
+            <div class="sb__c">
+              <p>Two takes of ninety seconds on the same prompt, with a fifteen-minute gap in which you are not allowed to write anything down.</p>
+              <p>You keep both recordings. Annotation happens afterwards on the transcript, not in the studio, and it is the annotation that comes to the next session.</p>
+              <p>The second take is usually shorter and sounds worse. That is the expected result and it is not a problem to be fixed.</p>
+            </div>
+            <p class="sb__out"><b>Leave with</b>Two recordings, one transcript, and the gap between them marked in the margin.</p>
+          </div>
+
+          <div class="sb">
+            <div class="sb__h"><span class="sb__g" aria-hidden="true">C</span><h3 class="sb__t">The made record</h3></div>
+            <p class="sb__m">Tue 14:00 &middot; Workshop B &middot; Bring one finished object</p>
+            <div class="sb__c">
+              <p>The session is an excavation. You put one finished thing on the bench and the group works out what it actually demonstrates.</p>
+              <p>That is rarely what it was assigned to demonstrate, and the gap between the two readings is where the unclaimed evidence sits.</p>
+              <p>Bring the failed attempt as well if you still have it. It carries more of the working than the version you were happy with.</p>
+            </div>
+            <p class="sb__out"><b>Leave with</b>A group reading of your object, written by someone else, that you have not corrected.</p>
+          </div>
+        </section>
+
+        <section class="blk" id="readings" aria-labelledby="rdT">
+          <h2 class="blk__t" id="rdT"><span class="blk__lab mono">Section 03</span>Readings</h2>
+          <p class="p" style="margin:14px 0 22px">Two required before Monday. The optional three are there if the fold turns out to be your thing; none of them are examined.</p>
+          <table class="rd">
+            <thead><tr><th scope="col">Reading</th><th scope="col">Source</th><th scope="col">Length</th><th scope="col">Status</th></tr></thead>
+            <tbody>
+              <tr><td>On keeping the draft</td><td>Unit reader, section 7.1</td><td class="rd__len">14 pp.</td><td><span class="tag tag--req">Required</span></td></tr>
+              <tr><td>The selective copy</td><td>Unit reader, section 7.2</td><td class="rd__len">9 pp.</td><td><span class="tag tag--req">Required</span></td></tr>
+              <tr><td>Rehearsal in five disciplines</td><td>Library shortlist</td><td class="rd__len">31 pp.</td><td><span class="tag tag--opt">Optional</span></td></tr>
+              <tr><td>What the archive throws away</td><td>Library shortlist</td><td class="rd__len">22 pp.</td><td><span class="tag tag--opt">Optional</span></td></tr>
+              <tr><td>Two interviews on the first question</td><td>Audio, unit site</td><td class="rd__len">38 min</td><td><span class="tag tag--opt">Optional</span></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="act" id="activity" aria-labelledby="acT">
+          <h2 class="act__t" id="acT"><span class="blk__lab mono">Section 04</span>Run the stranger test on yourself</h2>
+          <p class="act__p">Forty minutes, alone, before your stream session. It is not submitted and it is not marked, but every stream assumes on Tuesday that you have done it.</p>
+          <ol>
+            <li>Choose a piece of your own work that you believe is finished.</li>
+            <li>Write, in one sentence, what you think a reader will ask first.</li>
+            <li>Hand it to someone with no context, and say nothing at all.</li>
+            <li>Write their actual first question down, word for word.</li>
+            <li>Compare the two sentences. The distance between them is the week&rsquo;s result.</li>
+          </ol>
+        </section>
+
+        <section class="blk" id="before" aria-labelledby="ckT">
+          <h2 class="blk__t" id="ckT"><span class="blk__lab mono">Section 05</span>Before next week</h2>
+          <p class="ck__bar mono" style="margin-top:16px"><b id="ckN" class="num">0</b><span id="ckS">of 6 done &mdash; only the portfolio is submitted</span></p>
+          <ul class="ck" id="ckList">
+            <li><label><input type="checkbox"><span class="ck__t">Read sections 7.1 and 7.2 of the unit reader before Monday&rsquo;s lecture.</span><span class="ck__w mono">40 min</span></label></li>
+            <li><label><input type="checkbox"><span class="ck__t">Complete the stranger test through step four. Step five can wait for your stream session.</span><span class="ck__w mono">40 min</span></label></li>
+            <li><label><input type="checkbox"><span class="ck__t">Prepare what your stream asked for: a draft, two recorded takes, or one finished object.</span><span class="ck__w mono">1&ndash;2 hr</span></label></li>
+            <li><label><input type="checkbox"><span class="ck__t">Submit A2, the stream portfolio, by Friday 18 September at 17:00.</span><span class="ck__w mono">30%</span></label></li>
+            <li><label><input type="checkbox"><span class="ck__t">Add this week&rsquo;s entries to the field log, including the ones you would rather leave out.</span><span class="ck__w mono">15 min</span></label></li>
+            <li><label><input type="checkbox"><span class="ck__t">Skim week 08 so you know what revision-as-evidence will ask of you.</span><span class="ck__w mono">5 min</span></label></li>
+          </ul>
+        </section>
+
+        <nav class="pager" aria-label="Adjacent weeks">
+          <a href="inner.html"><span class="mono">&larr; Week 06</span><b>The register of expertise</b></a>
+          <a href="inner.html"><span class="mono">Week 08 &rarr;</span><b>Revision as evidence</b></a>
+        </nav>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap mono">
+    <span>UNIT 3841 &middot; Week 07 of 12</span>
+    <a href="index.html">Full schedule</a>
+    <a href="#main">Back to top</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var root = document.documentElement;
+  var W_REST = 430, W_MAX = 680, X_REST = 92, X_MAX = 104;
+  var lastY = window.scrollY, smooth = 0, cur = W_REST;
+
+  function apply(w,x){
+    root.style.setProperty("--kv-wght", w.toFixed(0));
+    root.style.setProperty("--kv-wdth", x.toFixed(1));
+  }
+  function tick(){
+    var y = window.scrollY, vel = Math.abs(y - lastY); lastY = y;
+    var target = Math.min(1, vel / 55);
+    smooth += (target - smooth) * (target > smooth ? 0.28 : 0.05);
+    var w = W_REST + (W_MAX - W_REST) * smooth, x = X_REST + (X_MAX - X_REST) * smooth;
+    if (Math.abs(w - cur) > 0.6){ cur = w; apply(w,x); }
+    requestAnimationFrame(tick);
+  }
+  if (!REDUCED) requestAnimationFrame(tick);
+
+  var rail = document.querySelectorAll(".rail a");
+  var secs = [].map.call(rail, function(a){ return document.querySelector(a.getAttribute("href")); });
+  function railTick(){
+    var line = window.innerHeight * 0.3, best = 0;
+    secs.forEach(function(s,i){ if (s && s.getBoundingClientRect().top <= line) best = i; });
+    rail.forEach(function(a,i){
+      if (i === best) a.setAttribute("aria-current","true"); else a.removeAttribute("aria-current");
+    });
+  }
+  window.addEventListener("scroll", railTick, {passive:true});
+  railTick();
+
+  var boxes = document.querySelectorAll("#ckList input");
+  var ckN = document.getElementById("ckN"), ckS = document.getElementById("ckS");
+  function count(){
+    var n = 0; boxes.forEach(function(b){ if (b.checked) n++; });
+    ckN.textContent = n;
+    ckS.textContent = n === boxes.length ? "of 6 done — that is the week" : "of 6 done — only the portfolio is submitted";
+  }
+  boxes.forEach(function(b){ b.addEventListener("change", count); });
+  count();
+
+  window.__kv = { axes: apply, range:{W_REST:W_REST,W_MAX:W_MAX,X_REST:X_REST,X_MAX:X_MAX} };
+})();
+</script>
+</body>
+</html>
