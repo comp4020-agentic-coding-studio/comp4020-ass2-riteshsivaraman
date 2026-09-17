@@ -491,23 +491,19 @@ fix itself.
 No role in this table runs `git` or `pnpm check`/`pnpm check:evidence` — those
 stay with main, per the standing agent-team rule.
 
-### Skills worth creating for this port (see also `LEARNINGS.md`)
+### Skills for the execution team (built, repo-local)
 
-Two candidates, both because this project already runs the same verification
-shape by hand every session and keeps re-deriving it:
+Both live under `.claude/skills/` in this repo, so any agent working here can
+invoke them by name — not a memory file, an actual repeatable procedure:
 
-1. **A verification skill** that runs `pnpm check`, then
-   `pnpm check:evidence`, then opens Chrome at 1920×1080 and 390×844 against
-   the fixed five-page marker set (home, two non-adjacent weeks, an
-   assessment, the deck, policies) and hands back the *exact checklist*
-   `CLAUDE.md` now requires for frontend review — what to scroll, what to
-   hover, what behaviour is expected — rather than a bare "looks fine."
-2. **An axe-risk sweep skill**, generalised past this one port: grep/scan for
-   the recurring failure shapes (translucent text over a solid ground,
-   opacity-only dimming with no `aria-hidden`, unlabelled custom keyboard
-   handling, unlabelled horizontal-scroll regions). This is a pattern this
-   design direction reproduces every time a kinetic-type treatment is tried,
-   so it is worth a repeatable check rather than a one-off memory.
+1. **`verify-frontend`** (`.claude/skills/verify-frontend/SKILL.md`) — runs
+   `pnpm check` then `pnpm check:evidence`, opens the five marker pages at
+   both marking viewports, and hands back the exact scroll/hover checklist
+   `CLAUDE.md` requires for frontend review, rather than a bare "looks fine."
+2. **`axe-risk-sweep`** (`.claude/skills/axe-risk-sweep/SKILL.md`) —
+   read-only, report-only scan for the five recurring axe-risk shapes named
+   in step 7 above. This is the skill the axe-risk re-check role in the table
+   above should invoke; it never edits files or runs the build itself.
 
 ### Open risk carried forward
 
