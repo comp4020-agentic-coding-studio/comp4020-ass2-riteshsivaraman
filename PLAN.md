@@ -386,3 +386,133 @@ reported-nothing shape being defended against.
   assessment, the deck and policies — looked at, and described before explained
 - Every spec check mutation-tested before it is trusted
 - The live Pages URL under its base path, before freeze
+
+## Port to option A — plan
+
+Settled in the consultation logged at `HANDOFF-port.md` and `prompt-log.md`
+(2026-09-17), not to be re-litigated: option A ("Kinetic Manifesto") plus the
+full geometry lock (`white-space: nowrap`, height reserved in `em`, `--kv-wdth`
+clamped 78–96); defect 3 and v3's body-type discipline both declined; motion
+is signature-only — velocity axes + Lenis + CSS-only effects, **GSAP fully
+dropped** (no pinned horizontal act, no pinned rotator); the deck is a
+re-skin of `src/decks/theme.css` only, not a rebuild — the 8.5px mobile body
+text stays accepted-and-logged.
+
+### Why this port has almost no natural parallelism
+
+The original W0–W4 build fanned out across 55 content files with disjoint
+owners. This port is the opposite shape: every real change lands in a small
+number of *shared, globally-wired* files —
+
+- `src/styles/notepad.css`, injected once via `brandCss` in `astro.config.ts`
+- `src/layouts/PageLayout.astro`, the sole layout every page renders through
+- `src/decks/theme.css`, injected once via `theme` in `astro.config.ts`
+
+— and the changes inside them are sequentially dependent (the axis engine's
+custom properties have to exist on `:root` before anything can consume them
+in `font-variation-settings`; the deck re-skin reads the same token names the
+brand stylesheet defines). Splitting these three files across agents buys
+nothing and risks two agents racing edits to the same file inside a wave,
+which `CLAUDE.md`'s agent-team rule exists to prevent. **The main thread
+authors all three files itself.**
+
+### Sequencing
+
+1. **Verify the `:root` risk first, not last.** Land the velocity-axis engine
+   (scroll-velocity smoothing → `--kv-wght`/`--kv-wdth` on `:root`) as a small
+   inline `<script>` in `PageLayout.astro` before touching a single visual
+   token, and confirm in a real page that a `.d`-classed element's computed
+   `font-variation-settings` actually moves on scroll. This is the item
+   `design/option-a/README.md` calls hardest to get wrong in Astro — global
+   scope, not component-scoped CSS — so it is proven in isolation first.
+2. **Fix the known axe risk before the first full build**, not after: replace
+   the `rgba(237,235,228,.78)` translucent body-copy colour with a solid
+   token. Doing this before wiring the rest of the palette means the first
+   `pnpm build` this session already passes axe, rather than needing a second
+   pass to find the same regression the README already named.
+3. **Rewrite `src/styles/notepad.css`** to option A's four tokens (`--bone`,
+   `--ink`, `--ink2`, `--volt`) and three-font stack (Anybody / Newsreader /
+   Martian Mono), inside the existing `@layer at.tokens` / `at.base` /
+   `at.components` structure — same unlayered-beats-layered mechanism the
+   current file already relies on, just new values.
+4. **Re-skin `src/decks/theme.css`** with the same token names once step 3 has
+   proven them out. No change to the deck's `astromotion` mechanics.
+5. **Fonts**: preconnect + `<link>` the three Google variable fonts in
+   `PageLayout.astro`'s head (this course has no image-generation path and no
+   existing web-font pipeline to reuse, so CDN delivery is the pragmatic
+   choice over self-hosting for a project this size).
+6. **`prefers-reduced-motion` and pointer-bulge gating** land with the engine
+   in step 1, not bolted on afterward — `(hover:hover) and (pointer:fine)` for
+   the per-character bulge, a static fallback for reduced motion, matching the
+   README's spec.
+7. **Sweep the other axe risks** named in `design/option-a/README.md`: the
+   deck overview's `opacity:.34` dimmed stations need `aria-hidden` or a solid
+   colour swap; the live-updating HUD needs `aria-hidden="true"`; any custom
+   arrow-key handling needs scoping/role/name; a horizontal-scroll region
+   needs `tabindex="0"` and a label.
+8. **`pnpm check` then `pnpm check:evidence`**, main thread only.
+9. **Both marking viewports, looked at, not assumed** — home, two
+   non-adjacent weeks, an assessment, the deck, policies.
+10. **Foreground motion-feel pass** — still unverified after two sessions'
+    worth of attempts (background-tab `requestAnimationFrame` throttling, then
+    an unreliable review agent this session). This is the last gate before the
+    port is considered locked, and it has to happen in a tab that is not
+    backgrounded and not driven by a headless/automated agent.
+
+### Where a multi-agent team still earns its keep
+
+Not for the three shared files above, but for **read-only, fan-out audits**
+across the 55 content files and 8 components that report back to the main
+thread rather than edit — consistent with `CLAUDE.md`'s rule that agents
+write in their own scope and never touch git or the build:
+
+- grep all 55 content files for hard-coded references to the old
+  `--np-*` token names, so nothing silently falls back to an unstyled default
+  once `notepad.css` is rewritten
+- check every `.astro`/`.mdx` page for anything assuming the old deck theme
+  or old font stack inline
+- an independent pass re-checking the axe-risk list in step 7 against the
+  actual rendered components, since a list written before the port is a
+  prediction, not a verification
+
+Each of these is a single findings report back to main; main applies any
+fix itself.
+
+**Roles and models:**
+
+| Role | Scope | Model | Why this tier |
+|---|---|---|---|
+| Main thread (author + committer + build-runner) | `notepad.css`, `PageLayout.astro`, `theme.css`, all git/build ops | Sonnet 5 (this session) | Sequential, design-sensitive edits to shared files; nothing here is delegable per `CLAUDE.md`'s sole-committer rule regardless of model |
+| Token-reference sweep agent | grep 55 content files + 8 components for stale `--np-*` names | `general-purpose`, Haiku-tier | Mechanical pattern match, no judgment calls — a weaker/cheaper model is sufficient and the report is easy to spot-check |
+| Old-styling assumption sweep agent | grep pages/components for inline assumptions about the old deck theme or font stack | `general-purpose`, Haiku-tier | Same shape as above — pattern search, not synthesis |
+| Axe-risk re-check agent | independently re-verify the step-7 axe list against rendered output | `general-purpose`, Sonnet-tier | This is judgment (does this actually read as accessible, not just "matches a pattern"), and a Haiku-tier agent's unsupervised technical claims are exactly what went wrong with the fresh review agent this session (see `LEARNINGS.md`) — keep this one at main's own model tier and still verify its claims directly before acting on them |
+| Foreground motion-feel observer | scroll/hover option A live, describe what it feels like | Sonnet-tier agent *or*, preferably, the user directly | Feel cannot be inferred from a screenshot or a token count; this is the one role a stronger model doesn't rescue — it needs a foreground, non-throttled tab, which is a runtime constraint, not a capability gap |
+
+No role in this table runs `git` or `pnpm check`/`pnpm check:evidence` — those
+stay with main, per the standing agent-team rule.
+
+### Skills worth creating for this port (see also `LEARNINGS.md`)
+
+Two candidates, both because this project already runs the same verification
+shape by hand every session and keeps re-deriving it:
+
+1. **A verification skill** that runs `pnpm check`, then
+   `pnpm check:evidence`, then opens Chrome at 1920×1080 and 390×844 against
+   the fixed five-page marker set (home, two non-adjacent weeks, an
+   assessment, the deck, policies) and hands back the *exact checklist*
+   `CLAUDE.md` now requires for frontend review — what to scroll, what to
+   hover, what behaviour is expected — rather than a bare "looks fine."
+2. **An axe-risk sweep skill**, generalised past this one port: grep/scan for
+   the recurring failure shapes (translucent text over a solid ground,
+   opacity-only dimming with no `aria-hidden`, unlabelled custom keyboard
+   handling, unlabelled horizontal-scroll regions). This is a pattern this
+   design direction reproduces every time a kinetic-type treatment is tried,
+   so it is worth a repeatable check rather than a one-off memory.
+
+### Open risk carried forward
+
+Motion **feel** — easing, snap/release asymmetry, hover-bulge smoothness —
+has never been observed in a foreground tab across two sessions of attempts.
+It is not gated behind any automated check; it is gated behind a human or a
+genuinely foreground agent watching it scroll. Do not sign off the port
+without that pass.

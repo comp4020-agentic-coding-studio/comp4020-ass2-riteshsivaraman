@@ -182,6 +182,29 @@ Status: open. Serialising costs wall-clock time, and the tab contention is
 not detectable from inside an agent without checking
 `document.visibilityState`.
 
+### A fresh review agent's specific technical claim can be false, not just incomplete
+
+A fresh agent reviewing option A for university-course appropriateness also
+reported two apparent bugs: `scrollY` "stuck at 0", and a blank page after
+pressing `End`. Both were checked directly in the same live tab and both were
+false — `window.scrollY` and Lenis's own smoothed scroll value were both
+non-zero and moving, and `End` landed on a fully rendered footer with a
+giant "REHEARSE" bleeding off the right edge (which is the design's
+documented intentional edge-bleed, confirmed with the user, not a defect).
+
+This is a harder case than "read the reference yourself before accepting an
+agent's account of it" above — that pattern catches an account that is
+*accurate and incomplete*. Here the account was specific, confident, and
+simply wrong, most likely because the agent read `window.scrollY`
+immediately after a synthetic wheel event, before Lenis's rAF-driven
+smoothing caught up, and screenshotted mid-transition. A specific claim reads
+as more credible than a vague one, but specificity is not the same as having
+checked the live state at the right moment.
+
+**Mitigated by** re-verifying any reported bug directly in the same session
+— JS eval of the actual state, not a re-read of the agent's report — before
+acting on it or reporting it to the user as real.
+
 ## Patterns that worked
 
 ### To see a real mobile viewport when the window will not resize, use an iframe
@@ -388,3 +411,31 @@ because the three briefs looked so different from each other.
 
 Distinctness between options is not evidence of distinctness from the
 default. Check the set against an outside reference, not against itself.
+
+### Turn a repeated verification ritual into a skill, not a remembered checklist
+
+By the third session of this project, the same verification shape got
+re-run by hand each time: `pnpm check`, then `pnpm check:evidence`, then
+Chrome at 1920×1080 and 390×844 against the same five marker pages (home,
+two non-adjacent weeks, an assessment, the deck, policies), then a
+hand-written checklist of exactly what to scroll/hover/expect per
+`CLAUDE.md`'s frontend-review rule. A memory file can record that this is
+the ritual; it cannot *run* it, and re-deriving the exact five pages and the
+exact checklist wording from scratch each session is exactly the kind of
+process cost `LEARNINGS.md` exists to cut.
+
+The same is true for the axe-risk shapes this design direction keeps
+reproducing — translucent text over a solid ground, opacity-only dimming
+with no `aria-hidden`, unlabelled custom keyboard handling, an unlabelled
+horizontal-scroll region. These recur across option A's variants (v2, v3)
+and would recur again in any future kinetic-type direction, not because
+anyone forgot the platform facts but because "check for this" does not
+scale as a remembered rule the way a runnable grep/scan does.
+
+Where a verification or execution step is going to be run more than once in
+materially the same shape, the second run is a signal to write it as a
+Claude Code skill rather than repeat it from memory — the skill becomes the
+artefact that stays repeatable across sessions, and the memory file stays
+the record of *why* the skill exists. See the port plan in `PLAN.md` for the
+two candidates this surfaced: a verification skill (build + evidence +
+five-page two-viewport checklist) and an axe-risk sweep skill.
