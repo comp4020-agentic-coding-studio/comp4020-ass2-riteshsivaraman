@@ -237,6 +237,7 @@ const statusText =
   }
 
   .tracker-meter-label {
+    font-family: var(--at-font-mono);
     font-size: var(--at-font-size-sm);
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -297,6 +298,7 @@ const statusText =
   }
 
   .tracker-week {
+    font-family: var(--at-font-mono);
     font-variant-numeric: tabular-nums;
     font-weight: 600;
     white-space: nowrap;
@@ -315,7 +317,10 @@ const statusText =
   /* The state is never carried by colour alone: every item also says it. */
   .tracker-flag {
     flex: 0 0 auto;
+    font-family: var(--at-font-mono);
     font-size: var(--at-font-size-xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
     color: var(--at-text-muted);
     white-space: nowrap;
   }

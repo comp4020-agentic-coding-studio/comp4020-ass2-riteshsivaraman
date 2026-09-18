@@ -77,8 +77,10 @@ const entries = sessions.flatMap((session) => {
   }
 
   .glossary dt {
+    font-family: var(--at-font-display);
+    font-variation-settings: "wght" 700, "wdth" 100;
     font-size: var(--at-font-size-h3);
-    font-weight: 600;
+    letter-spacing: -0.01em;
     color: var(--at-heading);
   }
 
@@ -92,6 +94,8 @@ const entries = sessions.flatMap((session) => {
 
   .glossary-source {
     margin: 0;
-    font-size: var(--at-font-size-sm);
+    font-family: var(--at-font-mono);
+    font-size: var(--at-font-size-xs);
+    letter-spacing: 0.02em;
   }
 </style>

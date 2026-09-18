@@ -59,11 +59,17 @@ const streams = [
 ];
 ---
 
+<div class="reading-progress" aria-hidden="true" role="presentation">
+  <div class="reading-progress__fill" id="reading-progress-fill"></div>
+</div>
+
 <ContentLayout
   title={`${courseMeta.code}: ${courseMeta.title}`}
   description={courseMeta.description}
   {...siteConfig}
 >
+  <p class="kv kv-bulge tagline-stamp" aria-hidden="true">Twelve weeks of held nerve.</p>
+
   <ul class="course-tags" aria-label="Course tags">
     {courseMeta.tags.map((tag) => <li>{tag}</li>)}
   </ul>
@@ -71,13 +77,20 @@ const streams = [
   <p class="premise">
     Everybody you will ever interview with is performing a role they grew into.
     This course has you do it deliberately, name each move while you are making
-    it, and hold one line for twelve weeks: <strong>framing what is true is
-    professional practice; claiming what is not is fraud.</strong> Every technique
+    it, and hold one line for twelve weeks: <strong data-field><span class="field-bg" aria-hidden="true"></span><span class="field-text">framing what is true is
+    professional practice; claiming what is not is fraud.</span></strong> Every technique
     taught here lives on one side of that line.
   </p>
 
   <section class="orientation" aria-labelledby="orientation-heading">
     <h2 id="orientation-heading">The course, stated plainly</h2>
+    <p
+      class="live-counter"
+      id="live-counter"
+      aria-hidden="true"
+      data-start-date={courseMeta.startDate}
+      data-end-date={courseMeta.endDate}
+    ></p>
     <dl class="facts">
       <div>
         <dt>Course code</dt>
@@ -196,7 +209,7 @@ const streams = [
           const convenor = person(stream.convenor);
           return (
             <li>
-              <h3>{stream.name}</h3>
+              <h3 class={`stream-heading stream-heading--${stream.convenor}`}>{stream.name}</h3>
               <p class="stream-tagline">{stream.tagline}</p>
               <p class="stream-convenor">
                 Convened by{" "}
@@ -225,7 +238,245 @@ const streams = [
   </Callout>
 </ContentLayout>
 
+<script is:inline data-astro-rerun>
+  (function () {
+    /* ---------- reading progress bar --------------------------------
+     * rAF-throttled scroll listener; fixed hairline filled in --at-accent.
+     * Decorative only (aria-hidden on the wrapper in markup), so no
+     * announcement policy is needed here. */
+    var fill = document.getElementById("reading-progress-fill");
+    if (fill) {
+      var ticking = false;
+      var update = function () {
+        ticking = false;
+        var doc = document.documentElement;
+        var max = doc.scrollHeight - doc.clientHeight;
+        var pct = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+        fill.style.transform = "scaleX(" + pct + ")";
+      };
+      var onScroll = function () {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll, { passive: true });
+      update();
+    }
+
+    /* ---------- live week/date counter ------------------------------
+     * Computed from the course's own start/end dates, not hardcoded.
+     * Visual-only chrome: aria-hidden in markup, no live region, because
+     * the fact itself is already stated in the .facts dl below it. */
+    var counter = document.getElementById("live-counter");
+    if (counter) {
+      var DAY = 86400000;
+      var WEEK = 7 * DAY;
+      var toUTC = function (iso) {
+        var p = iso.split("-").map(Number);
+        return Date.UTC(p[0], p[1] - 1, p[2]);
+      };
+      var start = toUTC(counter.getAttribute("data-start-date") || "");
+      var end = toUTC(counter.getAttribute("data-end-date") || "");
+      var render = function () {
+        var now = new Date();
+        var today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+        var text;
+        if (today < start) {
+          var days = Math.round((start - today) / DAY);
+          text = days === 0
+            ? "Teaching starts today."
+            : "Teaching starts in " + days + (days === 1 ? " day." : " days.");
+        } else if (today > end + WEEK) {
+          text = "Teaching finished this semester.";
+        } else {
+          var week = Math.min(12, Math.floor((today - start) / WEEK) + 1);
+          text = "Currently week " + week + " of 12.";
+        }
+        counter.textContent = text;
+      };
+      render();
+      window.setInterval(render, 60000);
+    }
+
+    /* ---------- accent-field wipe reveal ----------------------------
+     * scaleX transform mask, triggered once by IntersectionObserver.
+     * Renders already-revealed under reduced motion via the CSS branch
+     * below; no JS branch needed since .lit only adds the class either
+     * way and the transition duration collapses to ~0 there. */
+    var fields = document.querySelectorAll("[data-field]");
+    if (fields.length) {
+      if ("IntersectionObserver" in window) {
+        var fo = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("lit");
+                fo.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.6 },
+        );
+        fields.forEach(function (f) {
+          fo.observe(f);
+        });
+      } else {
+        fields.forEach(function (f) {
+          f.classList.add("lit");
+        });
+      }
+    }
+
+    /* ---------- text scramble / resolve on the h1 -------------------
+     * Selects the library-rendered <h1> after render. Run-token guard so
+     * a re-trigger (e.g. astro:page-load on back/forward nav) can never
+     * race two loops writing competing glyphs to the same node. */
+    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var heading = document.querySelector(".at-main h1");
+    if (heading && !reduced) {
+      var GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ/#%&*+=—";
+      var final = heading.dataset.scrambleFinal || (heading.dataset.scrambleFinal = heading.textContent || "");
+      var run = (heading.dataset.scrambleRun = String(Number(heading.dataset.scrambleRun || "0") + 1));
+      var n = final.length;
+      var total = 26;
+      var order = final.split("").map(function (_, i) {
+        return i / n;
+      });
+      var frames = 0;
+      var step = function () {
+        if (heading.dataset.scrambleRun !== run) return;
+        var p = frames / total;
+        var out = "";
+        for (var i = 0; i < n; i++) {
+          var ch = final[i];
+          if (ch === " " || ch === ":") {
+            out += ch;
+            continue;
+          }
+          out += p > order[i] + 0.22 ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
+        }
+        heading.textContent = out;
+        frames++;
+        if (frames <= total) requestAnimationFrame(step);
+        else heading.textContent = final;
+      };
+      step();
+    }
+  })();
+</script>
+
 <style>
+  /* ---- reading progress bar (decorative, aria-hidden in markup) -------- */
+  .reading-progress {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 3px;
+    z-index: 80;
+    background: transparent;
+    pointer-events: none;
+  }
+
+  .reading-progress__fill {
+    height: 100%;
+    width: 100%;
+    background: var(--at-accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reading-progress__fill {
+      transition: none;
+    }
+  }
+
+  /* ---- tagline stamp: short, hand-authored, safe for .kv's nowrap lock -- */
+  .tagline-stamp {
+    margin-block: 0 var(--at-spacing-lg);
+    color: var(--at-text-secondary);
+    font-size: clamp(1.1rem, 4vw, 1.6rem);
+  }
+
+  /* ---- accent-field wipe reveal ----------------------------------------
+   * .field-bg is an absolutely positioned plate behind the phrase, scaled
+   * to 0 on the inline axis and revealed via scaleX on `.lit` (added by the
+   * IntersectionObserver in the page script). Reduced motion renders the
+   * end state immediately rather than animating into it. */
+  [data-field] {
+    position: relative;
+    display: inline-block;
+    padding-inline: 0.1em;
+    margin-inline: -0.1em;
+  }
+
+  .field-bg {
+    position: absolute;
+    inset: -0.05em -0.02em;
+    z-index: 0;
+    background: var(--at-accent);
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .field-text {
+    position: relative;
+    z-index: 1;
+  }
+
+  [data-field].lit .field-bg {
+    transform: scaleX(1);
+  }
+
+  [data-field].lit .field-text {
+    color: var(--at-bg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .field-bg {
+      transition: none;
+    }
+  }
+
+  /* ---- live week/date counter: visual chrome only, aria-hidden --------- */
+  .live-counter {
+    margin-block: 0 var(--at-spacing-md);
+    padding-block: 0.3rem 0;
+    color: var(--at-accent);
+    font-family: var(--at-font-mono);
+    font-size: var(--at-font-size-sm);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* ---- per-stream fixed axis bias: distinct at rest, no animation ------
+   * Same wght/wdth axes the live signature drives, fixed rather than
+   * scroll-linked, so the three streams read as typographically distinct
+   * even when nothing is moving. Direction is a settled design decision:
+   * technical = narrow + heavy, creative = wide + light, commercial = mid. */
+  .stream-heading {
+    font-family: var(--at-font-display);
+  }
+
+  .stream-heading--anselm-pike {
+    font-variation-settings:
+      "wght" 750,
+      "wdth" 85;
+  }
+
+  .stream-heading--nadia-ferrante {
+    font-variation-settings:
+      "wght" 450,
+      "wdth" 96;
+  }
+
+  .stream-heading--sunil-raman {
+    font-variation-settings:
+      "wght" 600,
+      "wdth" 90;
+  }
+
   .course-tags {
     display: flex;
     flex-wrap: wrap;

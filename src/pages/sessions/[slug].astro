@@ -4,6 +4,7 @@ import { getPublishedCollection } from "astro-course-university/content";
 import RelatedContent from "astro-course-university/components/RelatedContent.astro";
 import SpecList from "astro-course-university/components/SpecList.astro";
 import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
+import StreamBands from "../../components/StreamBands.astro";
 import TeachingTeam from "../../components/TeachingTeam.astro";
 import { formatCourseDate } from "../../lib/dates";
 import { graphCollections, sessionLabels, siteConfig } from "../../site-config";
@@ -15,6 +16,7 @@ export async function getStaticPaths() {
 
 const { session } = Astro.props;
 const { Content } = await render(session);
+const specTotal = session.data.spec?.length ?? 0;
 ---
 
 <ContentLayout
@@ -24,6 +26,16 @@ const { Content } = await render(session);
 >
   <p><strong>{formatCourseDate(session.data.date)}</strong></p>
   <Content />
+  <StreamBands streams={session.data.streams} />
+  {
+    specTotal > 0 && (
+      <div class="spec-counter" data-all="true">
+        <p class="spec-counter__label">
+          {specTotal} of {specTotal} spec lines
+        </p>
+      </div>
+    )
+  }
   <SpecList spec={session.data.spec}>
     What you bring to the session. Written so a reader can tell whether it has
     been met without asking you.
@@ -31,3 +43,29 @@ const { Content } = await render(session);
   <TeachingTeam teachers={session.data.teachers} />
   <RelatedContent entry={session} collections={graphCollections} />
 </ContentLayout>
+
+<style>
+  /* SpecList (astro-course-university/components/SpecList.astro, read from
+     node_modules) renders a plain <ul><li> with no interactive/checkable
+     state — there is nothing on the page to check off, so this is a static
+     "N of N" total computed at build time from the same spec array SpecList
+     itself renders, rather than a live checked-count requiring JS.
+     data-all="true" is a permanent completion state, not one that flips:
+     every spec line rendered is, by definition, "present". */
+  .spec-counter {
+    font-family: var(--at-font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--at-text-secondary);
+    margin-block-end: var(--at-spacing-sm);
+  }
+
+  .spec-counter[data-all="true"] {
+    color: var(--np-volt);
+  }
+
+  .spec-counter__label {
+    margin: 0;
+  }
+</style>

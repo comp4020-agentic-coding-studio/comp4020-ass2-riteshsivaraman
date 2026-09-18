@@ -81,10 +81,67 @@ html:has(.reveal) .reveal pre {
 /* Slide headings are typed, matching the site. deck.css sets the h1 as an
  * inline brand-filled block — kept, because a stamped title on cream is the
  * strongest thing on the page and the fill/ink pair is contrast-checked by
- * the theme's own --at-on-primary switch. */
+ * the theme's own --at-on-primary switch.
+ *
+ * Font face for the elastic landing: switched to --at-font-display (Anybody)
+ * rather than staying on --at-font-mono (Martian Mono). The overshoot has to
+ * read as a real landing, not a rounding wobble — Martian Mono's axis range
+ * here (wdth 75-112.5, wght 300-700) is too narrow to sell three keyframe
+ * stops as motion, which is exactly the reasoning the design doc gives for
+ * choosing Anybody over a timid-width grotesque in the first place. Anybody
+ * is already loaded site-wide by notepad.css's @import (wdth 50-150, wght
+ * 100-900, ital), so no new font request is added here. */
 html:has(.reveal) .reveal :is(h1, h2, h3, h4, h5, h6) {
-  font-family: var(--at-font-mono);
+  font-family: var(--at-font-display);
   letter-spacing: 0.01em;
+}
+
+/* Elastic axis landing. Pure CSS, no JS timing: fires once per slide when
+ * Reveal gives that slide's <section> the "present" class (confirmed against
+ * node_modules/reveal.js/dist/reveal.mjs — "present" is the literal class
+ * Reveal toggles onto the current slide). Scoped to the heading itself, not
+ * to the whole document, so only the active slide's title ever animates.
+ *
+ * Three keyframe stops, kept in the design reference's spirit (heavy/narrow
+ * start -> overshoot past a lighter/wider rest -> settle) but pulled in from
+ * its 900/56 -> 250/145 -> 340/120 toward this project's own full-geometry-
+ * lock range, since the deck's values are static per-keyframe rather than
+ * live-clamped and don't need to reuse the exact live-signature numbers:
+ *   0%   wght 850 / wdth 62   (heavy, narrow — the "slammed in" extreme)
+ *   55%  wght 260 / wdth 138  (overshoot — well past rest, both directions)
+ *   100% wght 360 / wdth 108  (settled rest, close to the static heading
+ *                              weight elsewhere on the site)
+ * One-shot: animation-iteration-count is implicitly 1 and forwards fills the
+ * end state, so it never loops and cannot become a 2.2.2 distraction. It is
+ * purely a font-variation-settings tween on already-rendered, already-
+ * visible text — the accessible name is untouched. */
+@keyframes deck-heading-land {
+  0% {
+    font-variation-settings: "wght" 850, "wdth" 62;
+  }
+  55% {
+    font-variation-settings: "wght" 260, "wdth" 138;
+  }
+  100% {
+    font-variation-settings: "wght" 360, "wdth" 108;
+  }
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  html:has(.reveal) .reveal section.present :is(h1, h2, h3, h4, h5, h6) {
+    animation: deck-heading-land 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+}
+
+/* prefers-reduced-motion: reduce drops the keyframe entirely (it is simply
+ * never declared above) and falls back to the settled static value — the
+ * same rest point the animation lands on, so the reduced-motion heading
+ * looks like the "no motion happened" version of the same design rather
+ * than a different one. */
+@media screen and (prefers-reduced-motion: reduce) {
+  html:has(.reveal) .reveal section.present :is(h1, h2, h3, h4, h5, h6) {
+    font-variation-settings: "wght" 360, "wdth" 108;
+  }
 }
 
 /* The progress bar and controls read as the one accent, the same field the
