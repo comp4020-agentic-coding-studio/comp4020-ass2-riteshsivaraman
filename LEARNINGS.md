@@ -134,6 +134,32 @@ Check each axis — colour, type, spacing — separately.
 Status: **mitigated** in `d7fe9a8`; `src/decks/theme.css` now sets
 `--r-main-font`, `--r-heading-font` and `--r-code-font` from the brand tokens.
 
+### A read-only audit agent can flag a project's own established convention as a defect
+
+A three-agent Workflow audit of the kinetic-manifesto port flagged
+`src/decks/theme.css`'s hardcoded `rgb(20 17 15 / 16%)`-style alpha literals
+as "decoupled from `--np-ink`, should use `color-mix()`". The pattern is
+correct: it is exactly how `src/styles/notepad.css` itself derives every
+alpha tint (`--at-border`, `--at-divider`, `--at-code-bg`,
+`--at-table-stripe`, `--at-shadow-lg` all do the same thing). The audit
+agent's scope was one file; the convention only becomes visible by reading
+the file it inherits tokens from.
+
+Same audit also surfaced two real-but-non-blocking accessibility notes worth
+keeping rather than acting on: the homepage's scramble-resolve effect
+mutates the real (non-decorative) `h1`'s text for ~400-500ms before
+settling, which a screen reader racing page load could theoretically
+announce mid-scramble; and `--np-volt` on `--at-bg` (used on real prose in
+the accent-wipe reveal, not just decoration) contrast-computes to ≈4.77:1
+against a 4.5:1 AA floor — passes, with a 0.27 margin that a future palette
+tweak could erase silently.
+
+**Mitigated by** cross-checking a flagged "inconsistency" against the wider
+codebase before treating it as a defect — a single-file read-only agent
+cannot see a convention that lives one file away. The margin-risk items are
+recorded here rather than fixed, since they currently pass and the colour
+pairing is a settled design decision, not an open defect.
+
 ### An agent told to invoke a skill will proceed without it and report as if it did
 
 Three agents were each briefed, in their first instruction, to invoke
