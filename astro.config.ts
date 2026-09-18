@@ -3,6 +3,7 @@ import courseGraph from "astro-course-university";
 import universityTheme from "astro-theme-university";
 import { astromotion, deckRemarkPlugins } from "astromotion";
 import { courseMeta } from "./src/course-config.ts";
+import axisEngine from "./src/integrations/axis-engine.ts";
 import { courseApiCollections } from "./src/site-config.ts";
 import { gitOrigin, resolveDeployment } from "./scripts/pages-base.ts";
 
@@ -23,28 +24,22 @@ export default defineConfig({
   // webfonts the site loads. Both are variable-or-two-weight and self-hosted by
   // Astro's font pipeline at build time, so nothing is fetched from Google at
   // run time.
+  // Only Newsreader stays on Astro's self-hosted pipeline. Anybody (display)
+  // and Martian Mono (utility) load from the Google Fonts CDN instead, via
+  // @import in notepad.css/decks/theme.css — Astro's font pipeline's support
+  // for arbitrary variable axes (wdth in particular) is unconfirmed, while
+  // the CSS2 axis-tuple endpoint is verified working for both faces.
   fonts: [
     {
       // Prose. A text serif that holds up over the long read a session page
-      // asks for — and, being a serif, nothing like the grotesque every
-      // university template on this platform ships with.
+      // asks for, and carries an optical-size axis so the same family sets
+      // both small captions and body measure without looking like two fonts.
       provider: fontProviders.google(),
       name: "Newsreader",
       cssVariable: "--font-newsreader",
       weights: ["200 800"],
       styles: ["normal", "italic"],
       fallbacks: ["Georgia", "Times New Roman", "serif"],
-    },
-    {
-      // Everything structural: headings, nav, buttons, labels, code. A real
-      // typewriter face rather than a coder's mono, because the register is
-      // "typed up afterwards", not "terminal".
-      provider: fontProviders.google(),
-      name: "Courier Prime",
-      cssVariable: "--font-courier-prime",
-      weights: ["400", "700"],
-      styles: ["normal", "italic"],
-      fallbacks: ["Courier New", "Courier", "monospace"],
     },
   ],
   integrations: [
@@ -64,7 +59,7 @@ export default defineConfig({
       // on every page: the body face in the first paragraph, the typewriter in
       // the nav wordmark and the h1.
       fonts: false,
-      preloadFonts: ["--font-newsreader", "--font-courier-prime"],
+      preloadFonts: ["--font-newsreader"],
       imageFormat: "avif",
       llmsTxt: true,
       // The theme owns the markdown plugin chain, so astromotion's slide
@@ -81,14 +76,18 @@ export default defineConfig({
     }),
     // Slide decks: every `.deck.mdx` under src/decks/ becomes a Reveal.js page
     // at /decks/<name>/. The theme's deck stylesheet reads the same brand
-    // tokens the site does, so a deck arrives already wearing the notepad
-    // palette --- see src/decks/theme.css, which flips the stage to paper.
-    // `fontVariables` makes the deck page emit the @font-face rules for both
-    // faces; a deck page does not load the site's stylesheets, so without both
-    // named here the slides fall back to Georgia and Courier New.
+    // tokens the site does, so a deck arrives already wearing the site's
+    // palette --- see src/decks/theme.css. `fontVariables` makes the deck page
+    // emit the @font-face rule for Newsreader; a deck page does not load the
+    // site's stylesheets, so without it the slides fall back to Georgia.
+    // Martian Mono reaches the deck via its own @import in decks/theme.css.
     astromotion({
       theme: "./src/decks/theme.css",
-      fontVariables: ["--font-newsreader", "--font-courier-prime"],
+      fontVariables: ["--font-newsreader"],
     }),
+    // The velocity-driven type signature: one script, injected on every
+    // route via Astro's integration hook rather than a layout edit. See
+    // src/integrations/axis-engine.ts for why.
+    axisEngine(),
   ],
 });

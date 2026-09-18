@@ -27,6 +27,7 @@
  * Everything below is scoped to `html:has(.reveal)` — higher specificity
  * than the `:root` these tokens are declared on, so the result does not
  * depend on import order. */
+@import url("https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,300..700&display=swap");
 @import url("astro-theme-university/styles/deck.css");
 
 html:has(.reveal) {
@@ -39,33 +40,33 @@ html:has(.reveal) {
      hardcodes `var(--font-public-sans, "Public Sans")` for both body and
      headings, and a system mono stack for code. The theme's `fonts` option is
      off, so --font-public-sans is never defined and Public Sans is never
-     loaded — which means an unpatched deck renders its prose in whatever
-     generic sans-serif the browser picks, on a site whose entire identity is
-     a serif and a typewriter. Restated here because the upstream default
-     cannot see our tokens, not because we are second-guessing it. */
+     loaded. Martian Mono reaches this isolated render path via the @import
+     above, since it does not load the site's stylesheets. */
   --r-main-font: var(--at-font-body);
   --r-heading-font: var(--at-font-mono);
   --r-code-font: var(--at-font-mono);
 
-  /* The stage. Reveal's own variables, set from the notepad palette rather
-     than from deck.css's greys. */
-  --r-background-color: var(--np-paper);
+  /* The stage. Reveal's own variables, set from the site palette rather than
+     from deck.css's greys. No pens left to choose from: one accent, used for
+     the live/hover state the same way the ribbon's progress indicator uses
+     it, not for every link. */
+  --r-background-color: var(--np-bone);
   --r-main-color: var(--np-ink);
   --r-heading-color: var(--np-ink);
-  --r-link-color: var(--np-pen-blue);
-  --r-link-color-hover: var(--np-pen-red);
+  --r-link-color: var(--np-ink);
+  --r-link-color-hover: var(--np-volt);
 
   /* deck.css consumes these two directly for blockquotes and table rules,
      with dark-surface values baked in for standalone use. */
-  --at-text-secondary: var(--np-ink-soft);
-  --at-divider: rgb(28 27 23 / 16%);
+  --at-text-secondary: var(--np-ink2);
+  --at-divider: rgb(20 17 15 / 16%);
 
   /* The whiteboard overlay and the greys deck.css paints with. Inverted so
      any rule reaching for them lands on paper rather than punching a black
      hole in a cream slide. */
   --at-dark-grey: var(--np-ink);
   --at-light-grey: var(--np-ink);
-  --astromotion-wb-bg: var(--np-paper-card);
+  --astromotion-wb-bg: var(--np-bone-card);
 }
 
 /* Code blocks: deck.css washes them with white at 5% alpha, which is a
@@ -73,20 +74,21 @@ html:has(.reveal) {
  * hairline the site's own cards use, so a code slide reads as a pasted-in
  * printout. */
 html:has(.reveal) .reveal pre {
-  background: rgb(30 75 109 / 6%);
-  border: 1px solid rgb(28 27 23 / 20%);
+  background: rgb(20 17 15 / 5%);
+  border: 1px solid rgb(20 17 15 / 20%);
 }
 
 /* Slide headings are typed, matching the site. deck.css sets the h1 as an
- * inline brand-filled block — kept, because a blue-stamped title on cream is
- * the strongest thing on the page and the fill/ink pair is contrast-checked
- * by the theme's own --at-on-primary switch. */
+ * inline brand-filled block — kept, because a stamped title on cream is the
+ * strongest thing on the page and the fill/ink pair is contrast-checked by
+ * the theme's own --at-on-primary switch. */
 html:has(.reveal) .reveal :is(h1, h2, h3, h4, h5, h6) {
   font-family: var(--at-font-mono);
   letter-spacing: 0.01em;
 }
 
-/* The progress bar and controls read as pen marks on the page edge. */
+/* The progress bar and controls read as the one accent, the same field the
+ * ribbon deck's live-station state uses everywhere else. */
 html:has(.reveal) .reveal .progress {
-  color: var(--np-pen-red);
+  color: var(--np-volt);
 }
