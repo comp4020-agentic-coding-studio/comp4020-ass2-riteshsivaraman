@@ -20,7 +20,7 @@
 
   /* live variable-font axes, written by JS from scroll velocity */
   --kv-wght:300;
-  --kv-wdth:128;
+  --kv-wdth:96;
 
   --gut:clamp(1.1rem,4vw,3.25rem);
   --measure:34ch;
@@ -361,7 +361,7 @@ a{color:inherit}
     <a href="deck.html">Deck</a>
   </nav>
   <div class="mast__hud" aria-hidden="true">
-    axes <b id="hudW">300</b><span>/</span><b id="hudX">128</b>
+    axes <b id="hudW">300</b><span>/</span><b id="hudX">96</b>
   </div>
 </header>
 
@@ -374,10 +374,10 @@ a{color:inherit}
       <span>Scroll harder. The performance intensifies.</span>
     </div>
     <div class="hero__lines" id="heroLines">
-      <h1 class="d hl" data-kin>Perform</h1>
-      <p class="d hl hl--in" data-kin>The role</p>
-      <p class="d hl hl--bleed" data-kin><span class="field" data-field><b class="field__bg" aria-hidden="true"></b><span class="field__t">before</span></span></p>
-      <p class="d hl hl--nudge" data-kin>It's real</p>
+      <h1 class="d hl" data-kin>SLOP3841</h1>
+      <p class="d hl hl--in" data-kin>Professional</p>
+      <p class="d hl hl--bleed" data-kin><span class="field" data-field><b class="field__bg" aria-hidden="true"></b><span class="field__t">Identity</span></span></p>
+      <p class="d hl hl--nudge" data-kin>Performance</p>
     </div>
     <div class="hero__foot">
       <p>A studio course in professional identity performance: how a person assembles fluency in a career they do not yet hold, and where framing what is true stops and claiming what isn't begins. Twelve weeks of shared lectures, three field streams, and one Dossier built from applications you were pursuing anyway.</p>
@@ -604,7 +604,10 @@ a{color:inherit}
 
   // rest state vs. screaming state
   var W_REST = 300, W_MAX = 900;
-  var X_REST = 128, X_MIN = 56;
+  // width axis clamped to a narrow band (was 128->56): a 72-unit swing
+  // re-wrapped multi-line headings mid-scroll. 18 units still reads as
+  // motion without changing anyone's line count.
+  var X_REST = 96, X_MIN = 78;
 
   var lastY = window.scrollY, vel = 0, smooth = 0;
   var curW = W_REST, curX = X_REST;
@@ -789,14 +792,21 @@ a{color:inherit}
   var rotN  = document.getElementById("rotN");
   var shown = 0;
 
+  var scrambleTimer = null;
   function showRot(i){
     if (i === shown) return;
     shown = i;
     items.forEach(function(it, k){ it.classList.toggle("on", k === i); });
     ticks.forEach(function(t, k){ t.classList.toggle("done", k <= i); });
     if (rotN) rotN.textContent = String(i + 1);
-    var s = items[i].querySelector("[data-scramble]");
-    if (s) scramble(s);
+    // debounce the scramble replay, not the switch itself: scrub is
+    // continuous, so a wobble near a boundary can flip i back and forth
+    // several times a second — only replay once the scroll settles.
+    if (scrambleTimer) clearTimeout(scrambleTimer);
+    scrambleTimer = setTimeout(function(){
+      var s = items[i].querySelector("[data-scramble]");
+      if (s) scramble(s);
+    }, 140);
   }
 
   if (hasGSAP && !REDUCED) {

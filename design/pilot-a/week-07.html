@@ -18,7 +18,7 @@
   --volt:#C92000;
   --rule:#14110F;
   --kv-wght:300;
-  --kv-wdth:128;
+  --kv-wdth:96;
   --gut:clamp(1.1rem,4vw,3.25rem);
   --measure:34ch;
 }
@@ -109,7 +109,7 @@ a{color:inherit}
    ============================================================ */
 /* --- section rail: sticky, tracks position ---------------- */
 .rail{
-  position:sticky;top:0;z-index:55;background:var(--bone);
+  position:sticky;top:var(--navh,0px);z-index:55;background:var(--bone);
   border-bottom:1.5px solid var(--rule);display:flex;overflow-x:auto;
   scrollbar-width:none;
 }
@@ -122,7 +122,6 @@ a{color:inherit}
 }
 .rail a[data-on="1"]{background:var(--volt);color:var(--bone)}
 @media (max-width:760px){
-  .rail{top:auto}
   /* the rail overflows on a phone and its scrollbar is hidden, so fade the
      right edge to show there is more of it */
   .rail{-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent 100%);
@@ -169,6 +168,18 @@ a{color:inherit}
   .sh__t{padding-top:.3rem}
 }
 
+/* --- resources strip --------------------------------------- */
+.reslist{
+  padding:clamp(1.2rem,4vh,2.4rem) var(--gut) clamp(1.4rem,4vh,2.6rem);
+  display:flex;flex-wrap:wrap;gap:.6rem 1.6rem;border-bottom:1.5px solid var(--rule);
+}
+.reslist a{
+  font-family:"Martian Mono",monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;text-decoration:underline;text-underline-offset:.25em;
+  color:var(--ink);
+}
+.reslist a:hover,.reslist a:focus-visible{color:var(--volt)}
+
 /* --- lecture: prose + spine ------------------------------- */
 .lec{display:grid;grid-template-columns:1fr 26ch;gap:0;border-bottom:1.5px solid var(--rule)}
 .lec__prose{
@@ -187,13 +198,13 @@ a{color:inherit}
 .spine h3{margin:0 0 .9rem;color:var(--ink2)}
 .spine ol{list-style:none;margin:0;padding:0}
 .spine li{
-  display:grid;grid-template-columns:4.2ch 1fr;gap:.7rem;
   padding:.5rem 0;border-top:1px solid rgba(20,17,15,.25);
   font-size:.95rem;line-height:1.35;
 }
 .spine li:last-child{border-bottom:1px solid rgba(20,17,15,.25)}
-.spine time{font-family:"Martian Mono",monospace;font-size:.62rem;color:var(--volt);
-  font-variant-numeric:tabular-nums;padding-top:.28em}
+.spine li::before{
+  content:"\2014\a0";color:var(--volt);font-family:"Martian Mono",monospace;
+}
 @media (max-width:900px){
   .lec{grid-template-columns:1fr}
   .lec__prose{border-right:0;border-bottom:1.5px solid var(--rule);columns:1}
@@ -367,7 +378,7 @@ a{color:inherit}
     <a href="deck.html">Deck</a>
   </nav>
   <div class="mast__hud" aria-hidden="true">
-    axes <b id="hudW">300</b><span>/</span><b id="hudX">128</b>
+    axes <b id="hudW">300</b><span>/</span><b id="hudX">96</b>
   </div>
 </header>
 
@@ -377,6 +388,7 @@ a{color:inherit}
   <a href="#readings">&sect;03 Readings</a>
   <a href="#activity">&sect;04 Activity</a>
   <a href="#checklist">&sect;05 Before next week</a>
+  <a href="#resources">&sect;06 Resources</a>
 </nav>
 
 <main>
@@ -415,15 +427,14 @@ a{color:inherit}
         <p>Bring a name: one specific person in your field whose actual work you could write three sentences about without checking notes. You will draft to them today, whether or not you decide to send it.</p>
       </div>
       <aside class="spine">
-        <h3 class="m">Lecture spine</h3>
+        <h3 class="m">What this lecture covers</h3>
         <ol>
-          <li><time>00:00</time><span>Cold open: three real messages, one that got a reply and two that did not. You guess which.</span></li>
-          <li><time>00:12</time><span>The honesty constraint, stated and held to for the rest of the semester.</span></li>
-          <li><time>00:34</time><span>Answerability in one line: what makes a message cheap to reply to.</span></li>
-          <li><time>00:52</time><span>Break.</span></li>
-          <li><time>01:04</time><span>Sending as a choice, and why the Outreach Log grades both routes identically.</span></li>
-          <li><time>01:28</time><span>Silence as the standard reply, not a verdict.</span></li>
-          <li><time>01:46</time><span>Handover to the outreach sprint in stream sessions.</span></li>
+          <li>Cold open: three real messages, one that got a reply and two that did not. You guess which.</li>
+          <li>The honesty constraint, stated and held to for the rest of the semester.</li>
+          <li>Answerability in one line: what makes a message cheap to reply to.</li>
+          <li>Sending as a choice, and why the Outreach Log grades both routes identically.</li>
+          <li>Silence as the standard reply, not a verdict.</li>
+          <li>Handover to the outreach sprint in stream sessions.</li>
         </ol>
       </aside>
     </div>
@@ -599,6 +610,19 @@ a{color:inherit}
     <p class="ck__note m">Ticks are kept in this browser only. Nothing here is collected or marked.</p>
   </section>
 
+  <!-- ===== 06 RESOURCES ===== -->
+  <section id="resources" aria-labelledby="resT">
+    <div class="sh">
+      <div class="sh__no m">&sect;06</div>
+      <h2 class="sh__t" id="resT">Resources</h2>
+    </div>
+    <div class="reslist m">
+      <a href="deck.html#s7">This week&rsquo;s slides</a>
+      <a href="#lecture">This week&rsquo;s readings</a>
+      <a href="resources.html">All course resources</a>
+    </div>
+  </section>
+
   <footer>
     <div class="foot">
       <div>
@@ -606,7 +630,7 @@ a{color:inherit}
       </div>
       <div>
         <p>Week 08 is the plausibility budget: peers red-team your materials for the weakest claim and time how long it takes to find it. Assessment 2 is due that Friday.</p>
-        <p class="m"><a href="index.html">Home</a> &middot; <a href="deck.html">Week 6 deck</a> &middot; <a href="#lecture">Back to the lecture</a></p>
+        <p class="m"><a href="index.html">Home</a> &middot; <a href="deck.html">Week 7 pitch</a> &middot; <a href="#lecture">Back to the lecture</a></p>
       </div>
     </div>
     <div class="foot__strip">
@@ -636,8 +660,18 @@ a{color:inherit}
   var hudW = document.getElementById("hudW");
   var hudX = document.getElementById("hudX");
   var prog = document.getElementById("prog");
-  var W_REST = 300, W_MAX = 900, X_REST = 128, X_MIN = 56;
+  // width axis clamped to a narrow band (was 128->56): a 72-unit swing
+  // re-wrapped headings mid-scroll. 18 units still reads as motion.
+  var W_REST = 300, W_MAX = 900, X_REST = 96, X_MIN = 78;
   var lastY = window.scrollY, smooth = 0;
+
+  /* ---------- masthead height -> --navh -------------------- */
+  var mast = document.querySelector(".mast");
+  function measureNav(){
+    if (mast) root.style.setProperty("--navh", mast.offsetHeight + "px");
+  }
+  measureNav();
+  window.addEventListener("resize", measureNav);
 
   function tick(){
     var y = scrollY();
@@ -684,8 +718,17 @@ a{color:inherit}
       }
     }
   }
-  window.addEventListener("scroll", markRail, {passive:true});
-  if (lenis) lenis.on("scroll", markRail);
+  // native scroll and Lenis both fire far more often than once a frame;
+  // coalesce to a single read/write pass per animation frame so the rail's
+  // rect sweep + scrollLeft write stop competing with the kinetic tick.
+  var railTicking = false;
+  function requestMarkRail(){
+    if (railTicking) return;
+    railTicking = true;
+    requestAnimationFrame(function(){ markRail(); railTicking = false; });
+  }
+  window.addEventListener("scroll", requestMarkRail, {passive:true});
+  if (lenis) lenis.on("scroll", requestMarkRail);
   markRail();
 
   /* ---------- checklist ----------------------------------- */

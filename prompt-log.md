@@ -299,3 +299,38 @@ entries, `design/option-a/README.md`.
 **Still undecided at the time of writing:** the `/cost` calibration number,
 and who does the one foreground pass on motion *feel*, which has never been
 observed on any demo this project has built.
+
+---
+
+## 2026-09-20 — pilot-a design review + request for a full site plan
+
+**Context:** after `design/pilot-a` (index, week-01, week-07, deck) was built
+and reported. **Prompt (paraphrased, feedback list plus a follow-on):** hero
+needs the course code/title in the big kinetic letters; scroll is laggy and
+"locks into place" on the weekly page; the pinned rotator "bounce" fires on
+every scroll movement and is annoying; the velocity-driven font axes change
+how many lines text wraps to, which looks awkward; the deck should become a
+one-slide-per-week pitch deck, each slide uniquely designed; the week page's
+section rail should be sticky; drop the timed lecture runsheet in favour of
+an untimed list of discussion points; design (not yet build) how course files
+and resources — slides, briefs, rubrics, policies, support pages — get
+distributed and linked; comp4020 may inform content only, never layout, this
+time. Followed immediately by: plan and hand over a full page hierarchy and
+navigation structure for the whole site, including policy/people pages,
+before porting the rest.
+
+Well specified on the fixes — each names a concrete symptom. The rotator/lag
+complaint turned out to already have a standing decision behind it: the
+2026-09-17 entry above recorded dropping GSAP/ScrollTrigger entirely (no
+pinned horizontal act, no pinned rotator) and fully clamping the velocity axes
+for exactly this reflow defect, for the real site port. The pilot had drifted
+from that decision by keeping Option A's GSAP pinning for visual fidelity —
+worth surfacing back to the user rather than silently re-deciding it. Entered
+plan mode given the number of architectural calls bundled in (nav
+generalisation, resource-distribution model, deck repurpose) plus the
+explicit ask for a hierarchy document as a separate deliverable.
+
+**Follow-on prompt, same turn-set:** "Also, hope learnings are being
+updated." A check-in on process discipline, not a new task — answered by
+continuing to keep `LEARNINGS.md` current through this round of fixes (see
+the two bug entries and the rAF-coalescing pattern added 2026-09-20).

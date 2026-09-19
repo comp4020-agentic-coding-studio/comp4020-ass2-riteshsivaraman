@@ -432,3 +432,71 @@ later.
   policies at 1920×1080 and 390×844 — no horizontal overflow anywhere, and the
   margin rule clears the text column at 390px via a widened content inset.
 - **Commit:** `d7fe9a8`
+
+## 2026-09-20 — Pilot-a feedback fixes, deck repurposed, and the full site hierarchy
+
+Live review of `design/pilot-a/` surfaced eight concrete problems: the hero
+didn't show the course identity, the kinetic engine's `--kv-wdth` swing
+reflowed running text (a bug already diagnosed and fixed once in
+`design/option-a-v2/`, on 2026-09-17 — the pilot reintroduced it by prioritising
+literal Design-A fidelity over that fix), the pinned rotator replayed its
+glitch-scramble on every scroll wobble near a boundary, the section rail
+wasn't sticky at the 390×844 marking viewport, week pages scrolled with a
+layout-thrash lag, the lecture spine listed specific clock times the brief
+never asked for, and there was no resource-distribution model at all.
+
+- **Kept GSAP.** Re-confirmed via direct question: fix the rotator's retrigger,
+  don't remove the pin. Fixed by gating the glyph-scramble replay behind a
+  ~140ms settle timer — item/tick/label updates stay instant on scroll.
+- **Reused the already-verified `--kv-wdth` clamp** (78–96, not a new number)
+  across `index.html`, `week-01.html`, `week-07.html`. See `LEARNINGS.md`.
+- **Sticky rail fixed with a measured `--navh`**, not a literal `0` — same
+  pattern `index.html` already used for its own masthead offset. Mobile's
+  explicit `top:auto` override, which disabled stickiness at the marking
+  viewport, is removed.
+- **`markRail()` rAF-coalesced** — one read/write per frame instead of one per
+  scroll event, on both native and Lenis scroll. See `LEARNINGS.md`.
+- **Lecture spine reworded** from a timed runsheet to untimed discussion
+  points; the heading changed from "Lecture spine" to "What this lecture
+  covers." Overall-duration statements (the "118 minutes" stat) were left
+  alone — they're not the runsheet that was the complaint.
+- **Resources built as real in-site pages**, not mocked external links: a
+  compact Resources strip on each week page, plus `resources.html` (sitewide
+  index, grouped by type) and three stub pages — `policies.html`,
+  `support.html`, `assessments.html` — each with real masthead/footer chrome
+  and one honest placeholder paragraph, never a dead link or fabricated
+  content standing in as real.
+- **`deck.html` repurposed** from one week's 13-slide lecture detail into a
+  12-slide, one-per-week pitch deck — hook + what happens + (where relevant)
+  what's due and its weight, one slide per week, reusing only the deck's
+  existing station variants (`st--open`, `st--split`, `st__list`, `st--dark`,
+  `st__rules`, `st--volt`, `st--close`). Content for weeks other than 1 and 7
+  drawn from `CURRICULUM.md`'s week-by-week detail and assessment ladder, not
+  invented. Mechanics (dynamic station count, digit-key 1–9, progress bar,
+  swipe) carried over unchanged.
+
+### Site hierarchy and navigation (planning decision, not built this round)
+
+Seventeen pages total: `index.html` (home), `weeks.html` (a 12-tile index
+reusing the home page's existing `.wk` card component — no new component),
+`week-01.html`…`week-12.html`, `deck.html` (now the repurposed pitch deck),
+`assessments.html` plus one page per assessment (brief + rubric together, not
+split), `people.html`, `policies.html`, `resources.html`, `support.html`.
+
+Navigation reuses Design A's existing chrome rather than inventing new UI:
+**masthead** (every page) — `Home · Weeks · Deck · Assessments`, four items to
+fit the masthead's current bordered-grid budget; `Weeks` always points at the
+index so no page's masthead has to hardcode a specific neighbouring week.
+**Colophon** (every page's footer, not just home) — `People · Policies ·
+Resources`, the same link cluster Design A's home page footer already has,
+put on every page rather than invented anew. `Support` has no top-level slot;
+it's reached from Resources and Policies. Each week page's Resources strip
+is the tertiary, in-context fast path to that week's own material; the
+sitewide `resources.html` is the fallback for "find anything."
+
+Deliberately not built this round beyond the stub pages already listed
+above — the plan is signed off, the rest of the port comes next.
+
+- **Files:** `design/pilot-a/index.html`, `week-01.html`, `week-07.html`,
+  `deck.html` edited; `resources.html`, `policies.html`, `support.html`,
+  `assessments.html` created.

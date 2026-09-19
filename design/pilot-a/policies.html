@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Policies &mdash; SLOP3841</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wdth,wght@0,50..150,100..900;1,50..150,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..700;1,6..72,200..700&family=Martian+Mono:wdth,wght@75..112.5,300..700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bone:#EDEBE4;--ink:#14110F;--ink2:#5A544E;--volt:#C92000;--rule:#14110F;
+  --kv-wght:300;--kv-wdth:96;--gut:clamp(1.1rem,4vw,3.25rem);--measure:34ch;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bone);color:var(--ink);touch-action:manipulation;
+  -webkit-tap-highlight-color:rgba(201,32,0,.22);
+  font-family:"Newsreader",Georgia,serif;font-variation-settings:"opsz" 16;
+  font-size:clamp(1rem,.55vw + .92rem,1.1rem);line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+::selection{background:var(--volt);color:var(--bone)}
+.d{
+  font-family:"Anybody","Arial Narrow",sans-serif;
+  font-variation-settings:"wght" var(--kv-wght),"wdth" var(--kv-wdth);
+  line-height:.8;letter-spacing:-.02em;text-transform:uppercase;margin:0;
+}
+.m{
+  font-family:"Martian Mono",ui-monospace,monospace;
+  font-variation-settings:"wdth" 87.5,"wght" 400;
+  font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;line-height:1.3;
+}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--volt);outline-offset:3px}
+[id]{scroll-margin-top:8.5rem}
+.skip{
+  position:absolute;left:var(--gut);top:-4rem;z-index:99;
+  background:var(--ink);color:var(--bone);padding:.6rem 1rem;text-decoration:none;
+  font-family:"Martian Mono",monospace;font-size:.64rem;letter-spacing:.14em;
+  text-transform:uppercase;transition:top .16s;
+}
+.skip:focus{top:.5rem}
+.mast{
+  position:sticky;top:0;z-index:60;background:var(--bone);
+  border-bottom:1.5px solid var(--rule);
+  display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;
+}
+.mast>*{padding:.62rem var(--gut)}
+.mast__code{
+  font-family:"Anybody",sans-serif;font-variation-settings:"wght" 800,"wdth" 78;
+  text-transform:uppercase;letter-spacing:.02em;font-size:.95rem;
+  text-decoration:none;display:flex;align-items:center;gap:.5ch;
+  border-right:1.5px solid var(--rule);white-space:nowrap;
+}
+.mast__code i{font-style:normal;color:var(--volt)}
+.mast__nav{display:flex;gap:0;align-items:stretch;padding:0}
+.mast__nav a{
+  font-family:"Martian Mono",monospace;font-size:.64rem;letter-spacing:.14em;
+  text-transform:uppercase;text-decoration:none;display:flex;align-items:center;
+  padding:0 clamp(.7rem,1.6vw,1.4rem);border-right:1.5px solid var(--rule);position:relative;
+}
+.mast__nav a::after{
+  content:"";position:absolute;inset:auto 0 0 0;height:.42em;background:var(--volt);
+  transform:scaleY(0);transform-origin:bottom;transition:transform .18s cubic-bezier(.2,.8,.2,1);
+}
+.mast__nav a:hover::after,.mast__nav a:focus-visible::after{transform:scaleY(1)}
+.mast__nav a[aria-current="page"]{background:var(--ink);color:var(--bone)}
+@media (max-width:760px){
+  .mast{grid-template-columns:1fr}
+  .mast__code{border-right:0}
+  .mast__nav{grid-column:1/-1;border-top:1.5px solid var(--rule)}
+  .mast__nav a{flex:1;justify-content:center;padding:.55rem 0}
+  .mast__nav a:last-child{border-right:0}
+}
+.wh{padding:clamp(1.2rem,4vh,3rem) 0 0}
+.wh__kick{padding:0 var(--gut) .8rem;color:var(--ink2)}
+.wh__t{font-size:clamp(2.6rem,9.4vw,7rem);padding-left:var(--gut);max-width:22ch;text-wrap:balance}
+.wh__lead{
+  padding:clamp(1.2rem,4vh,2.6rem) var(--gut) clamp(1.4rem,4vh,2.4rem);
+  border-bottom:1.5px solid var(--rule);max-width:var(--measure);
+}
+.wh__lead p{margin:0 0 1em}
+.wh__lead p:last-child{margin-bottom:0}
+.foot{padding:clamp(1.4rem,4vh,3rem) var(--gut)}
+.foot p{margin:0}
+.foot__strip{border-top:1.5px solid var(--rule);display:flex;justify-content:space-between;
+  gap:1rem;flex-wrap:wrap;padding:.62rem var(--gut)}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.001ms!important;animation-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main-content">Skip to content</a>
+
+<header class="mast">
+  <a class="mast__code" href="index.html">SLOP <i>/ 3841</i></a>
+  <nav class="mast__nav" aria-label="Main">
+    <a href="index.html">Home</a>
+    <a href="deck.html">Deck</a>
+    <a href="policies.html" aria-current="page">Policies</a>
+  </nav>
+</header>
+
+<main>
+  <section class="wh" id="main-content">
+    <div class="wh__kick m">
+      <span>What the course actually enforces &middot; placeholder pass</span>
+    </div>
+    <h1 class="wh__t d">Policies</h1>
+    <div class="wh__lead">
+      <p>This page is a placeholder for the full port. The finished version will carry the course&rsquo;s real policy content in full: late submission, extension requests, and the invented-record / academic-integrity boundary the claims tribunal in week four already enforces in practice. None of that is fabricated here to look finished &mdash; it is simply not built out yet.</p>
+      <p>Until then, anything policy-specific referenced elsewhere on this site (the truthfloor rule in week one, the tribunal in week four) is the real content; this page will eventually be where it is written down in one place.</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot">
+      <p class="m"><a href="index.html">Home</a> &middot; <a href="resources.html">Resources</a> &middot; <a href="support.html">Support</a></p>
+    </div>
+    <div class="foot__strip">
+      <span class="m">Policies</span>
+      <span class="m">SLOP3841 &middot; Professional Identity Performance</span>
+    </div>
+  </footer>
+</main>
+
+</body>
+</html>

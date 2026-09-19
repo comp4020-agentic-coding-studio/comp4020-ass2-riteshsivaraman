@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resources &mdash; SLOP3841</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wdth,wght@0,50..150,100..900;1,50..150,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..700;1,6..72,200..700&family=Martian+Mono:wdth,wght@75..112.5,300..700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   KINETIC MANIFESTO &mdash; shared base (identical to week pages)
+   ============================================================ */
+:root{
+  --bone:#EDEBE4;
+  --ink:#14110F;
+  --ink2:#5A544E;
+  --volt:#C92000;
+  --rule:#14110F;
+  --kv-wght:300;
+  --kv-wdth:96;
+  --gut:clamp(1.1rem,4vw,3.25rem);
+  --measure:34ch;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bone);color:var(--ink);
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:rgba(201,32,0,.22);
+  font-family:"Newsreader",Georgia,serif;
+  font-variation-settings:"opsz" 16;
+  font-size:clamp(1rem,.55vw + .92rem,1.1rem);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:var(--volt);color:var(--bone)}
+.d{
+  font-family:"Anybody","Arial Narrow",sans-serif;
+  font-variation-settings:"wght" var(--kv-wght),"wdth" var(--kv-wdth);
+  line-height:.8;letter-spacing:-.02em;text-transform:uppercase;margin:0;
+}
+.m{
+  font-family:"Martian Mono",ui-monospace,monospace;
+  font-variation-settings:"wdth" 87.5,"wght" 400;
+  font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;line-height:1.3;
+}
+.volt{color:var(--volt)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--volt);outline-offset:3px}
+[id]{scroll-margin-top:8.5rem}
+.skip{
+  position:absolute;left:var(--gut);top:-4rem;z-index:99;
+  background:var(--ink);color:var(--bone);padding:.6rem 1rem;text-decoration:none;
+  font-family:"Martian Mono",monospace;font-size:.64rem;letter-spacing:.14em;
+  text-transform:uppercase;transition:top .16s;
+}
+.skip:focus{top:.5rem}
+
+.mast{
+  position:sticky;top:0;z-index:60;background:var(--bone);
+  border-bottom:1.5px solid var(--rule);
+  display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;
+}
+.mast>*{padding:.62rem var(--gut)}
+.mast__code{
+  font-family:"Anybody",sans-serif;font-variation-settings:"wght" 800,"wdth" 78;
+  text-transform:uppercase;letter-spacing:.02em;font-size:.95rem;
+  text-decoration:none;display:flex;align-items:center;gap:.5ch;
+  border-right:1.5px solid var(--rule);white-space:nowrap;
+}
+.mast__code i{font-style:normal;color:var(--volt)}
+.mast__nav{display:flex;gap:0;align-items:stretch;padding:0}
+.mast__nav a{
+  font-family:"Martian Mono",monospace;font-size:.64rem;letter-spacing:.14em;
+  text-transform:uppercase;text-decoration:none;display:flex;align-items:center;
+  padding:0 clamp(.7rem,1.6vw,1.4rem);border-right:1.5px solid var(--rule);position:relative;
+}
+.mast__nav a::after{
+  content:"";position:absolute;inset:auto 0 0 0;height:.42em;background:var(--volt);
+  transform:scaleY(0);transform-origin:bottom;transition:transform .18s cubic-bezier(.2,.8,.2,1);
+}
+.mast__nav a:hover::after,.mast__nav a:focus-visible::after{transform:scaleY(1)}
+.mast__nav a[aria-current="page"]{background:var(--ink);color:var(--bone)}
+@media (max-width:760px){
+  .mast{grid-template-columns:1fr}
+  .mast__code{border-right:0}
+  .mast__nav{grid-column:1/-1;border-top:1.5px solid var(--rule)}
+  .mast__nav a{flex:1;justify-content:center;padding:.55rem 0}
+  .mast__nav a:last-child{border-right:0}
+}
+
+/* --- page hero (reuses the week masthead's proportions) ---- */
+.wh{padding:clamp(1.2rem,4vh,3rem) 0 0}
+.wh__kick{padding:0 var(--gut) .8rem;color:var(--ink2)}
+.wh__t{font-size:clamp(2.6rem,9.4vw,7rem);padding-left:var(--gut);max-width:22ch;text-wrap:balance}
+.wh__lead{
+  padding:clamp(1.2rem,4vh,2.6rem) var(--gut) clamp(1.4rem,4vh,2.4rem);
+  border-bottom:1.5px solid var(--rule);max-width:var(--measure);
+}
+.wh__lead p{margin:0 0 1em}
+.wh__lead p:last-child{margin-bottom:0}
+
+/* --- generic section head ----------------------------------- */
+.sh{
+  display:grid;grid-template-columns:14ch 1fr;align-items:baseline;gap:0;
+  border-bottom:1.5px solid var(--rule);
+}
+.sh__no{padding:.85rem var(--gut);color:var(--ink2);border-right:1.5px solid var(--rule)}
+.sh__t{padding:.85rem var(--gut);font-family:"Anybody",sans-serif;
+  font-variation-settings:"wght" 700,"wdth" 88;text-transform:uppercase;
+  font-size:clamp(1rem,2vw,1.5rem);letter-spacing:-.005em;line-height:1}
+@media (max-width:760px){
+  .sh{grid-template-columns:1fr}
+  .sh__no{border-right:0;padding-bottom:0}
+  .sh__t{padding-top:.3rem}
+}
+
+/* --- resource groups ----------------------------------------- */
+.grp{
+  padding:clamp(1.2rem,4vh,2.2rem) var(--gut) clamp(1.4rem,4vh,2.4rem);
+  border-bottom:1.5px solid var(--rule);
+  display:grid;grid-template-columns:minmax(0,var(--measure)) 1fr;gap:var(--gut);
+}
+.grp__note{margin:0;color:var(--ink2);align-self:start}
+.grp__list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem}
+.grp__list a{
+  font-family:"Martian Mono",monospace;font-size:.72rem;letter-spacing:.1em;
+  text-transform:uppercase;text-decoration:underline;text-underline-offset:.25em;
+  display:inline-block;
+}
+.grp__list a:hover,.grp__list a:focus-visible{color:var(--volt)}
+@media (max-width:760px){
+  .grp{grid-template-columns:1fr}
+}
+
+/* --- footer --------------------------------------------------- */
+.foot{padding:clamp(1.4rem,4vh,3rem) var(--gut)}
+.foot p{margin:0}
+.foot__strip{border-top:1.5px solid var(--rule);display:flex;justify-content:space-between;
+  gap:1rem;flex-wrap:wrap;padding:.62rem var(--gut)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.001ms!important;animation-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#lecture-slides">Skip to content</a>
+
+<header class="mast">
+  <a class="mast__code" href="index.html">SLOP <i>/ 3841</i></a>
+  <nav class="mast__nav" aria-label="Main">
+    <a href="index.html">Home</a>
+    <a href="deck.html">Deck</a>
+    <a href="resources.html" aria-current="page">Resources</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ===== PAGE HERO ===== -->
+  <section class="wh">
+    <div class="wh__kick m">
+      <span>Everything the course hands you &middot; one page</span>
+    </div>
+    <h1 class="wh__t d">Resources</h1>
+    <div class="wh__lead">
+      <p>This is the sitewide index for course material &mdash; slides, briefs, rubrics, policies and support contacts. It is a placeholder pass: the groupings and links below are the real structure the finished site will use, but not every destination is built out yet. Where a page still says so, it is standing in honestly for the fuller version to come, not pretending to be finished.</p>
+    </div>
+  </section>
+
+  <!-- ===== LECTURE SLIDES ===== -->
+  <section id="lecture-slides" aria-labelledby="slidesT">
+    <div class="sh">
+      <div class="sh__no m">&sect;01</div>
+      <h2 class="sh__t" id="slidesT">Lecture slides</h2>
+    </div>
+    <div class="grp">
+      <p class="grp__note m">One deck, one slide per week &mdash; the pitch for what that week covers, not a transcript of it.</p>
+      <ul class="grp__list">
+        <li><a href="deck.html#s1">Week 01 &middot; Truthfloor</a></li>
+        <li><a href="deck.html#s2">Week 02 &middot; Reqspeak</a></li>
+        <li><a href="deck.html#s3">Week 03 &middot; Gapshape</a></li>
+        <li><a href="deck.html#s4">Week 04 &middot; Receipt debt</a></li>
+        <li><a href="deck.html#s5">Week 05 &middot; The load-bearing anecdote</a></li>
+        <li><a href="deck.html#s6">Week 06 &middot; Artefact varnish</a></li>
+        <li><a href="deck.html#s7">Week 07 &middot; The pre-warmed stranger</a></li>
+        <li><a href="deck.html#s8">Week 08 &middot; Plausibility budget</a></li>
+        <li><a href="deck.html#s9">Week 09 &middot; Interview weather</a></li>
+        <li><a href="deck.html#s10">Week 10 &middot; The negotiation flinch</a></li>
+        <li><a href="deck.html#s11">Week 11 &middot; Competence lag</a></li>
+        <li><a href="deck.html#s12">Week 12 &middot; Seamwork</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== ASSESSMENT BRIEFS & RUBRICS ===== -->
+  <section id="assessments" aria-labelledby="assessT">
+    <div class="sh">
+      <div class="sh__no m">&sect;02</div>
+      <h2 class="sh__t" id="assessT">Assessment briefs &amp; rubrics</h2>
+    </div>
+    <div class="grp">
+      <p class="grp__note m">Brief and rubric live together on one page per assessment &mdash; not split across two half-pages.</p>
+      <ul class="grp__list">
+        <li><a href="assessments.html">All assessments &mdash; briefs and rubrics</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== POLICIES ===== -->
+  <section id="policies" aria-labelledby="policyT">
+    <div class="sh">
+      <div class="sh__no m">&sect;03</div>
+      <h2 class="sh__t" id="policyT">Policies</h2>
+    </div>
+    <div class="grp">
+      <p class="grp__note m">Late submission, extensions, and the invented-record line the course actually enforces.</p>
+      <ul class="grp__list">
+        <li><a href="policies.html">Course policies</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== SUPPORT ===== -->
+  <section id="support" aria-labelledby="supportT">
+    <div class="sh">
+      <div class="sh__no m">&sect;04</div>
+      <h2 class="sh__t" id="supportT">Support</h2>
+    </div>
+    <div class="grp">
+      <p class="grp__note m">Wellbeing, accessibility, and where to ask for an extension before it is due, not after.</p>
+      <ul class="grp__list">
+        <li><a href="support.html">Support and contacts</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <div class="foot">
+      <p class="m"><a href="index.html">Home</a> &middot; <a href="policies.html">Policies</a> &middot; <a href="support.html">Support</a></p>
+    </div>
+    <div class="foot__strip">
+      <span class="m">Resources</span>
+      <span class="m">SLOP3841 &middot; Professional Identity Performance</span>
+    </div>
+  </footer>
+
+</main>
+
+</body>
+</html>

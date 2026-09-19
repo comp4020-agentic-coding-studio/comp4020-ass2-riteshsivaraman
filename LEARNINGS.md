@@ -231,6 +231,46 @@ checked the live state at the right moment.
 — JS eval of the actual state, not a re-read of the agent's report — before
 acting on it or reporting it to the user as real.
 
+### A sticky sub-nav that isn't sticky at the marking viewport
+
+`design/pilot-a/week-*.html`'s `.rail` (section sub-nav) had two independent
+bugs stacked on top of each other. Desktop: `.rail{position:sticky;top:0}`
+shared `top:0` with `.mast` (masthead), which sits at a higher `z-index`, so
+on scroll the rail visually slid *under* the masthead instead of docking
+beneath it. Mobile: `@media(max-width:760px){.rail{top:auto}}` explicitly
+turned stickiness off — at exactly 390×844, the marking viewport. Both bugs
+were invisible unless someone actually scrolled a week page at both widths;
+neither shows up in a build or lint pass.
+
+**Mitigated by** measuring the masthead's real height into a `--navh`
+custom property (`measureNav()`, reused from `index.html`'s existing
+pattern) and setting `.rail{top:var(--navh,0px)}` unconditionally, with the
+mobile override removed. Reusable pattern: any sticky element that has to
+dock beneath another sticky element needs the offset driven by the other
+element's *measured* height, not a literal `0`, and the fix must be checked
+at the mobile breakpoint explicitly — it is a separate, independently
+disable-able rule, not the same bug re-appearing.
+
+### An unclamped velocity-driven CSS variable reflows text as a side effect
+
+`design/pilot-a/index.html`/`week-01.html`/`week-07.html`'s kinetic engine
+wrote scroll velocity into `--kv-wdth` (font-variation `wdth` axis) across a
+72-unit swing (56–128). Because `wdth` changes glyph width, a big swing on
+running text changes how many lines it wraps to *while scrolling* — reported
+as "the number of lines taken up by text changes" and "the scroll... locks
+into place." This is the same bug already diagnosed and fixed once before,
+in `design/option-a-v2/` (recorded 2026-09-17 in `WORKLOG.md`/
+`HANDOFF-port.md`) — the pilot reintroduced it because it prioritised literal
+Design-A fidelity over that earlier fix.
+
+**Mitigated by** reusing the already-verified clamp (78–96, an 18-unit
+swing) rather than re-deriving a number, and leaving `--kv-wght` (the weight
+axis) alone — width, not weight, is the documented reflow driver. Reusable
+lesson: when a build explicitly aims for "fidelity to design X," check
+whether design X carries a *known, already-fixed* bug before porting it
+verbatim — fidelity to the bug is not the goal, fidelity to the design
+intent is, and the fix is usually already sitting in this file.
+
 ## Patterns that worked
 
 ### To see a real mobile viewport when the window will not resize, use an iframe
@@ -465,3 +505,29 @@ artefact that stays repeatable across sessions, and the memory file stays
 the record of *why* the skill exists. See the port plan in `PLAN.md` for the
 two candidates this surfaced: a verification skill (build + evidence +
 five-page two-viewport checklist) and an axe-risk sweep skill.
+
+### rAF-coalesce any scroll-driven layout read/write, not just scroll-driven animation
+
+`design/pilot-a/week-*.html`'s `markRail()` ran a `getBoundingClientRect()`
+sweep plus a conditional `scrollLeft` write on *every* native `scroll` event
+and every Lenis `scroll` event, unthrottled. Lenis fires many `scroll`
+events per animation frame during a smooth-scroll tween, so this compounded
+into a read/write layout-thrash pattern reported as general scroll lag —
+distinct from, and in addition to, the reflow bug above.
+
+The fix is the standard rAF-coalescing wrapper: a boolean flag plus
+`requestAnimationFrame`, capping the expensive work to once per frame
+regardless of how many scroll events fire inside it:
+```js
+var ticking = false;
+function requestWork(){
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(function(){ doWork(); ticking = false; });
+}
+```
+This pattern is not specific to animation loops — it belongs on *any*
+scroll or resize handler that reads layout (`getBoundingClientRect`,
+`offsetWidth`, `scrollLeft`) and conditionally writes back, on the general
+principle that a handler bound to a high-frequency event should never do
+more than one unit of expensive work per rendered frame.
