@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SLOP3841 — Professional Identity Performance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wdth,wght@0,50..150,100..900;1,50..150,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..700;1,6..72,200..700&family=Martian+Mono:wdth,wght@75..112.5,300..700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   KINETIC MANIFESTO — shared base
+   ============================================================ */
+:root{
+  --bone:#EDEBE4;
+  --ink:#14110F;
+  --ink2:#5A544E;
+  --volt:#C92000;
+  --rule:#14110F;
+
+  /* live variable-font axes, written by JS from scroll velocity */
+  --kv-wght:300;
+  --kv-wdth:128;
+
+  --gut:clamp(1.1rem,4vw,3.25rem);
+  --measure:34ch;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bone);color:var(--ink);
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:rgba(201,32,0,.22);
+  font-family:"Newsreader",Georgia,serif;
+  font-variation-settings:"opsz" 16;
+  font-size:clamp(1rem,.55vw + .92rem,1.1rem);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+body.is-locked{overflow:hidden}
+::selection{background:var(--volt);color:var(--bone)}
+
+/* --- type roles ------------------------------------------- */
+.d{
+  font-family:"Anybody","Arial Narrow",sans-serif;
+  font-variation-settings:"wght" var(--kv-wght),"wdth" var(--kv-wdth);
+  line-height:.8;letter-spacing:-.02em;
+  text-transform:uppercase;margin:0;
+}
+.m{
+  font-family:"Martian Mono",ui-monospace,monospace;
+  font-variation-settings:"wdth" 87.5,"wght" 400;
+  font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;
+  line-height:1.3;
+}
+.volt{color:var(--volt)}
+.hr{height:0;border:0;border-top:1.5px solid var(--rule);margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--volt);outline-offset:3px}
+[id]{scroll-margin-top:6rem}
+.skip{
+  position:absolute;left:var(--gut);top:-4rem;z-index:99;
+  background:var(--ink);color:var(--bone);padding:.6rem 1rem;text-decoration:none;
+  font-family:"Martian Mono",monospace;font-size:.64rem;letter-spacing:.14em;
+  text-transform:uppercase;transition:top .16s;
+}
+.skip:focus{top:.5rem}
+
+/* --- masthead --------------------------------------------- */
+.mast{
+  position:sticky;top:0;z-index:60;background:var(--bone);
+  border-bottom:1.5px solid var(--rule);
+  display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;
+}
+.mast>*{padding:.62rem var(--gut)}
+.mast__code{
+  font-family:"Anybody",sans-serif;font-variation-settings:"wght" 800,"wdth" 78;
+  text-transform:uppercase;letter-spacing:.02em;font-size:.95rem;
+  text-decoration:none;display:flex;align-items:center;gap:.5ch;
+  border-right:1.5px solid var(--rule);white-space:nowrap;
+}
+.mast__code i{font-style:normal;color:var(--volt)}
+.mast__nav{display:flex;gap:0;align-items:stretch;padding:0}
+.mast__nav a{
+  font-family:"Martian Mono",monospace;font-size:.64rem;letter-spacing:.14em;
+  text-transform:uppercase;text-decoration:none;display:flex;align-items:center;
+  padding:0 clamp(.7rem,1.6vw,1.4rem);border-right:1.5px solid var(--rule);
+  position:relative;
+}
+.mast__nav a::after{
+  content:"";position:absolute;inset:auto 0 0 0;height:.42em;background:var(--volt);
+  transform:scaleY(0);transform-origin:bottom;transition:transform .18s cubic-bezier(.2,.8,.2,1);
+}
+.mast__nav a:hover::after,.mast__nav a:focus-visible::after{transform:scaleY(1)}
+.mast__nav a[aria-current="page"]{background:var(--ink);color:var(--bone)}
+.mast__hud{
+  display:flex;align-items:center;justify-content:flex-end;gap:.6ch;
+  font-family:"Martian Mono",monospace;font-size:.6rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink2);white-space:nowrap;
+  border-left:1.5px solid var(--rule);
+}
+.mast__hud b{color:var(--volt);font-variation-settings:"wght" 700;font-weight:400;
+  display:inline-block;min-width:3ch;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:760px){
+  .mast{grid-template-columns:1fr auto}
+  .mast__code{grid-column:1;border-right:0}
+  .mast__hud{grid-column:2;border-left:0;font-size:.55rem}
+  .mast__nav{grid-column:1/-1;border-top:1.5px solid var(--rule)}
+  .mast__nav a{flex:1;justify-content:center;padding:.55rem 0}
+  .mast__nav a:last-child{border-right:0}
+}
+
+/* ============================================================
+   HOME
+   ============================================================ */
+/* --- 01 HERO ---------------------------------------------- */
+.hero{padding:clamp(1.5rem,5vh,4rem) 0 0;position:relative}
+.hero__kick{
+  display:flex;justify-content:space-between;gap:1rem;
+  padding:0 var(--gut) .7rem;color:var(--ink2);flex-wrap:wrap;
+}
+.hero__lines{padding:clamp(.8rem,2.4vh,2rem) 0 0}
+.hl{
+  font-size:clamp(3.4rem,13.6vw,15.5rem);
+  padding-left:var(--gut);white-space:nowrap;
+}
+.hl--bleed{padding-left:calc(var(--gut) * .35)}
+.hl--in{padding-left:clamp(2rem,14vw,16rem)}
+.hl--nudge{padding-left:clamp(1rem,5vw,6.5rem)}
+.hl__char{display:inline-block;will-change:font-variation-settings}
+/* accent field wipe sliding UNDER the text */
+.field{position:relative;display:inline-block;padding:0 .1em;margin:0 -.1em}
+.field__bg{
+  position:absolute;inset:-.055em 0 -.025em;background:var(--volt);z-index:0;
+  transform:scaleX(0);transform-origin:left center;
+  transition:transform .82s cubic-bezier(.16,1,.3,1) .25s;
+}
+.field__t{position:relative;z-index:1;display:inline-block}
+.field.lit .field__bg{transform:scaleX(1)}
+.field.lit .field__t{color:var(--bone)}
+.hero__foot{
+  display:grid;grid-template-columns:1fr minmax(0,var(--measure));gap:var(--gut);
+  align-items:end;padding:clamp(1.6rem,6vh,4.5rem) var(--gut) clamp(1.5rem,5vh,3.5rem);
+}
+.hero__foot p{margin:0;max-width:var(--measure);font-variation-settings:"opsz" 18}
+.hero__foot .m{color:var(--ink2)}
+@media (max-width:760px){
+  .hero__foot{grid-template-columns:1fr}
+  /* nowrap is kept, not relaxed: splitChars makes every character an
+     inline-block, so white-space:normal lets the line break between any two
+     glyphs and "REHEARSE" renders as REHEARS / E. On a phone the headline
+     instead shrinks to fit its longest line and keeps the staggered indents,
+     scaled down, so the composition survives rather than reflowing. */
+  .hl{white-space:nowrap;font-size:12.6vw}
+  .hl--bleed{padding-left:clamp(2.5rem,13vw,5rem)}
+  .hl--in{padding-left:clamp(1rem,6vw,2.5rem)}
+  .hl--nudge{padding-left:.35rem}
+}
+
+/* --- 02 THESIS: tight measure as texture ------------------ */
+.thesis{border-top:1.5px solid var(--rule);padding:0}
+.thesis__grid{
+  display:grid;grid-template-columns:14ch 1fr;gap:0;
+}
+.thesis__label{
+  border-right:1.5px solid var(--rule);padding:1.3rem var(--gut);
+  color:var(--ink2);position:sticky;top:0;align-self:start;
+}
+.thesis__body{
+  padding:1.3rem var(--gut) clamp(2.5rem,7vh,5rem);
+  columns:var(--measure) 3;column-gap:var(--gut);column-rule:1px solid rgba(20,17,15,.22);
+}
+.thesis__body p{margin:0 0 1.15em;text-indent:0}
+.thesis__body p:first-child::first-letter{
+  font-family:"Anybody",sans-serif;font-variation-settings:"wght" 900,"wdth" 62;
+  float:left;font-size:3.05em;line-height:.78;padding:.06em .12em 0 0;color:var(--volt);
+}
+.thesis__body p+p{text-indent:1.4em}
+@media (max-width:760px){
+  .thesis__grid{grid-template-columns:1fr}
+  .thesis__label{border-right:0;border-bottom:1.5px solid var(--rule);position:static}
+  .thesis__body{columns:1}
+}
+
+/* --- 03 HORIZONTAL ACT ------------------------------------ */
+.act{
+  border-top:1.5px solid var(--rule);background:var(--ink);color:var(--bone);
+  /* Exactly one viewport tall while pinned, with the sticky masthead's height
+     reserved at the top — otherwise the nav sits over the week counter for the
+     entire scrub and the strip floats above 400px of dead ink. */
+  padding-top:var(--navh,0px);
+  min-height:100vh;display:flex;flex-direction:column;
+}
+.act__head{
+  display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;flex:none;
+  padding:.62rem var(--gut);border-bottom:1.5px solid var(--bone);
+}
+.act__head .m{color:var(--bone)}
+.act__head .m b{color:var(--volt);font-weight:400;font-variation-settings:"wght" 700}
+.act__view{overflow:hidden;flex:1 1 auto;min-height:0}
+.act__track{display:flex;align-items:stretch;width:max-content;height:100%}
+.wk{
+  width:clamp(17rem,25vw,25rem);flex:none;
+  border-right:1.5px solid rgba(237,235,228,.5);
+  padding:clamp(1.1rem,2.4vw,2rem) clamp(1rem,1.8vw,1.6rem) clamp(1.4rem,3vh,2.4rem);
+  display:flex;flex-direction:column;gap:.8rem;
+  min-height:min(72vh,38rem);
+}
+/* on the phone strip the cards shrink to their content; the 100vh pin is gone */
+@media (max-width:900px){
+  .act{min-height:auto;padding-top:0;display:block}
+  .act__view{min-height:auto}
+  .act__track{height:auto}
+}
+.wk__n{
+  font-family:"Anybody",sans-serif;font-variation-settings:"wght" 900,"wdth" 58;
+  font-size:clamp(5rem,11vw,10.5rem);line-height:.72;letter-spacing:-.04em;
+  color:transparent;-webkit-text-stroke:1.5px var(--bone);
+}
+.wk--now .wk__n{color:var(--volt);-webkit-text-stroke:0}
+.wk__t{
+  font-family:"Anybody",sans-serif;font-variation-settings:"wght" 700,"wdth" 90;
+  text-transform:uppercase;font-size:clamp(1.05rem,1.5vw,1.45rem);line-height:.98;
+  letter-spacing:-.01em;margin:auto 0 0;
+}
+.wk__d{margin:0;font-size:.94rem;line-height:1.45;color:rgba(237,235,228,.78);max-width:28ch}
+.wk__tag{color:var(--volt)}
+.wk--now{background:rgba(201,32,0,.14)}
+.act-narrow{display:none}
+@media (max-width:900px){
+  /* the pinned scrub is replaced by a native snap strip below 900px, so the
+     instruction has to change with it — "keep scrolling down" is a lie here */
+  .act__view{overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .act__track{width:max-content}
+  .wk{width:84vw;scroll-snap-align:start;min-height:auto}
+  .act-wide{display:none}
+  .act-narrow{display:inline}
+}
+
+/* --- 04 PINNED ROTATOR ------------------------------------ */
+.rot{border-top:1.5px solid var(--rule)}
+.rot__stage{
+  display:grid;grid-template-rows:auto 1fr auto;
+  padding:0;position:relative;overflow:hidden;
+}
+.rot__bar{display:flex;justify-content:space-between;gap:1rem;padding:.62rem var(--gut);
+  border-bottom:1.5px solid var(--rule);color:var(--ink2);flex-wrap:wrap}
+.rot__deck{position:relative;display:grid;align-content:center;padding:clamp(1.5rem,5vh,3rem) var(--gut)}
+/* DEFAULT: every statement sits in normal flow, fully readable.
+   The overlay/rotate mode is opt-in and only switched on once the
+   pin is actually built, so a failed CDN never eats three of four. */
+.rot__item{
+  display:grid;gap:clamp(.8rem,2.4vh,1.6rem);
+  padding:clamp(1.4rem,4vh,2.6rem) 0;border-top:1px solid rgba(20,17,15,.25);
+}
+.rot__item:first-child{border-top:0;padding-top:0}
+/* same reservation as the act: pinned to "top top" means the sticky masthead
+   covers the position indicator unless its height is held back */
+.rot.is-pinned .rot__stage{min-height:100vh;padding-top:var(--navh,0px)}
+.rot.is-pinned .rot__item{
+  grid-area:1/1;opacity:0;pointer-events:none;padding:0;border-top:0;
+}
+.rot.is-pinned .rot__item.on{opacity:1;pointer-events:auto}
+.rot__no{color:var(--volt)}
+.rot__say{
+  font-size:clamp(2.1rem,6.6vw,6.1rem);max-width:19ch;
+}
+.rot__gloss{margin:0;max-width:var(--measure);color:var(--ink2);font-variation-settings:"opsz" 18}
+.rot__ticks{display:flex;border-top:1.5px solid var(--rule)}
+.rot__tick{
+  flex:1;height:2.1rem;border-right:1.5px solid var(--rule);position:relative;
+}
+.rot__tick:last-child{border-right:0}
+.rot__tick::after{
+  content:"";position:absolute;inset:0;background:var(--volt);
+  transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.16,1,.3,1);
+}
+.rot__tick.done::after{transform:scaleX(1)}
+
+/* --- 05 LEDGER / ASSESSMENT ------------------------------- */
+.ledger{border-top:1.5px solid var(--rule)}
+.ledger__head{padding:clamp(1.6rem,5vh,3.4rem) var(--gut) 1rem;display:grid;gap:.9rem}
+.ledger__head h2{font-size:clamp(2.4rem,7.5vw,6.5rem);max-width:17ch;text-wrap:balance}
+.row{
+  display:grid;grid-template-columns:5.5ch minmax(0,24ch) minmax(0,var(--measure)) 1fr auto;
+  gap:var(--gut);align-items:baseline;
+  padding:clamp(.9rem,2.2vh,1.5rem) var(--gut);
+  border-top:1.5px solid var(--rule);position:relative;
+}
+.row:last-of-type{border-bottom:1.5px solid var(--rule)}
+.row__n{color:var(--volt)}
+.row__t{
+  font-family:"Anybody",sans-serif;font-variation-settings:"wght" 700,"wdth" 92;
+  text-transform:uppercase;font-size:clamp(1.15rem,2.4vw,2.05rem);line-height:.98;
+  letter-spacing:-.012em;
+}
+.row__d{margin:0;color:var(--ink2);font-size:.98rem}
+.row__w{
+  grid-column:5;
+  font-family:"Anybody",sans-serif;font-variation-settings:"wght" 800,"wdth" 70;
+  font-size:clamp(1.6rem,3.4vw,3rem);text-align:right;font-variant-numeric:tabular-nums;
+  line-height:1;min-width:3.4ch;
+}
+.row__w::after{content:"%";font-size:.42em;vertical-align:.9em;margin-left:.1em;opacity:.55}
+.row::before{
+  content:"";position:absolute;inset:0;background:var(--volt);opacity:0;
+  transition:opacity .2s;z-index:-1;
+}
+.row:hover{background:var(--volt);color:var(--bone)}
+.row:hover .row__n,.row:hover .row__d{color:var(--bone)}
+@media (max-width:760px){
+  .row{grid-template-columns:5.5ch 1fr;gap:.25rem var(--gut)}
+  .row__d{grid-column:2}
+  .row__w{grid-column:2;text-align:left}
+}
+
+/* --- 06 COLOPHON ------------------------------------------ */
+.colo{background:var(--volt);color:var(--bone);border-top:1.5px solid var(--rule);overflow:hidden}
+.colo__grid{
+  display:grid;grid-template-columns:1fr minmax(0,var(--measure));gap:var(--gut);
+  padding:clamp(1.6rem,5vh,3.4rem) var(--gut) 0;
+}
+.colo__grid p{margin:0 0 1em}
+.colo__grid a{text-decoration-thickness:1px;text-underline-offset:.22em}
+.colo__big{
+  font-size:clamp(4.2rem,20vw,19rem);white-space:nowrap;
+  padding:clamp(1rem,3vh,2rem) 0 0 var(--gut);margin-left:-.04em;
+}
+.colo__strip{border-top:1.5px solid var(--bone);display:flex;justify-content:space-between;
+  gap:1rem;padding:.62rem var(--gut);flex-wrap:wrap}
+@media (max-width:760px){.colo__grid{grid-template-columns:1fr}}
+
+/* --- scroll progress hairline ----------------------------- */
+.prog{position:fixed;inset:0 0 auto 0;height:3px;background:transparent;z-index:80;pointer-events:none}
+.prog__i{height:100%;background:var(--volt);width:0%}
+
+/* --- reduced motion --------------------------------------- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.001ms!important;animation-duration:.001ms!important}
+  :root{--kv-wght:380;--kv-wdth:112}
+  .field__bg{transform:scaleX(1)!important}
+  .field__t{color:var(--bone)}
+  .act__view{overflow-x:auto}
+  .wk{width:84vw}
+  .rot__stage{min-height:auto}
+  .rot__tick.done::after,.rot__tick::after{transform:scaleX(1)}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#top">Skip to content</a>
+<div class="prog" aria-hidden="true"><div class="prog__i" id="prog"></div></div>
+
+<header class="mast">
+  <a class="mast__code" href="index.html">SLOP <i>/ 3841</i></a>
+  <nav class="mast__nav" aria-label="Main">
+    <a href="index.html" aria-current="page">Home</a>
+    <a href="week-07.html">Week 07</a>
+    <a href="deck.html">Deck</a>
+  </nav>
+  <div class="mast__hud" aria-hidden="true">
+    axes <b id="hudW">300</b><span>/</span><b id="hudX">128</b>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ===== 01 HERO ===== -->
+  <section class="hero">
+    <div class="hero__kick m">
+      <span>SLOP3841 &middot; Level 3 &middot; Semester 1 2027 &middot; No field prerequisite</span>
+      <span>Scroll harder. The performance intensifies.</span>
+    </div>
+    <div class="hero__lines" id="heroLines">
+      <h1 class="d hl" data-kin>Perform</h1>
+      <p class="d hl hl--in" data-kin>The role</p>
+      <p class="d hl hl--bleed" data-kin><span class="field" data-field><b class="field__bg" aria-hidden="true"></b><span class="field__t">before</span></span></p>
+      <p class="d hl hl--nudge" data-kin>It's real</p>
+    </div>
+    <div class="hero__foot">
+      <p>A studio course in professional identity performance: how a person assembles fluency in a career they do not yet hold, and where framing what is true stops and claiming what isn't begins. Twelve weeks of shared lectures, three field streams, and one Dossier built from applications you were pursuing anyway.</p>
+      <div class="m">
+        <span>Assessed on process, not outcome</span><br>
+        <a href="week-07.html">Read a week &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 02 THESIS ===== -->
+  <section class="thesis" aria-labelledby="th">
+    <div class="thesis__grid">
+      <div class="thesis__label m" id="th">§01<br>Premise</div>
+      <div class="thesis__body">
+        <p>Everyone in this room is already performing a professional identity, including the staff. The only rule is the difference between framing what is true and claiming what is not — and the course's one piece of jargon worth learning in week one is the <strong>truthfloor</strong>: the lowest claim you could make about yourself and still defend it in a room containing someone able to check. Most CVs are written a full storey above their author's truthfloor. That is survivable right up until the follow-up question.</p>
+        <p>Twelve weeks run one arc. The first four establish an honest baseline and teach you to read what a role is actually asking, underneath the advertisement's boilerplate. The next four build materials fitted to a real target and then attack them — your peers red-team your claims and time how long it takes to find the weakest one. The last four perform live: interview, negotiate, and audit afterwards what became genuine and what was only ever costume.</p>
+        <p>One artefact runs the whole semester. The <strong>Dossier</strong> gains one numbered section a week, is submitted in part twice, swapped with a peer once, and closed at week twelve as the capstone — graded on the process record it contains, never on whether an offer arrived, and never on the prestige of who made it.</p>
+        <p>Three field streams run the tutorials, split by how a field actually screens candidates rather than by faculty: <strong>Technical Practice</strong>, where the performance is competence and someone will ask you to open a terminal; <strong>Creative and Communications Practice</strong>, where the performance is taste and the portfolio is the evidence; <strong>Commercial and Public Practice</strong>, where the performance is judgement and nobody asks to see the spreadsheet. Pick by how your target roles screen you, not by what your degree is called.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 03 HORIZONTAL ACT ===== -->
+  <section class="act" aria-labelledby="actH" id="act">
+    <div class="act__head">
+      <span class="m" id="actH">§02 &nbsp;Twelve weeks, read sideways</span>
+      <span class="m">week <b id="actN">01</b> / 12 &nbsp;&middot;&nbsp;
+        <span class="act-wide">keep scrolling down</span><span class="act-narrow">swipe sideways</span></span>
+    </div>
+    <div class="act__view" id="actView" tabindex="0" role="region" aria-label="Week schedule, scrolls horizontally">
+      <div class="act__track" id="actTrack">
+
+        <article class="wk"><div class="wk__n" aria-hidden="true">01</div>
+          <p class="wk__d">Self-audit clinic. Bring three real job ads and whatever you currently have, and mark which claims survive today's evidence. Nothing is graded — the point is finding the floor.</p>
+          <h3 class="wk__t">Truthfloor</h3></article>
+
+        <article class="wk"><div class="wk__n" aria-hidden="true">02</div>
+          <p class="wk__d">Live teardown of one ad into four columns. The fourth column — the accidental confession about what went wrong in the last hire — is the useful one.</p>
+          <h3 class="wk__t">Reqspeak</h3></article>
+
+        <article class="wk"><div class="wk__n" aria-hidden="true">03</div>
+          <p class="wk__d">Blind review, swapped within stream. Gaps are not sizes, they are shapes: closeable by week 12, closeable in a year, or must be said out loud.</p>
+          <h3 class="wk__t">Gapshape</h3></article>
+
+        <article class="wk"><div class="wk__n" aria-hidden="true">04</div>
+          <p class="wk__d">Claims tribunal: read your claims aloud, peers demand a receipt for each. Unevidenced claims are struck from the record on the spot. A1 due Fri 19 Mar.</p>
+          <h3 class="wk__t">Receipt debt</h3></article>
+
+        <article class="wk"><div class="wk__n" aria-hidden="true">05</div>
+          <p class="wk__d">Paired roleplay, rotating. Three stories prepared properly beat twelve improvised — and preparing one is not the same as inventing it.</p>
+          <h3 class="wk__t">The load-bearing anecdote</h3></article>
+
+        <article class="wk"><div class="wk__n" aria-hidden="true">06</div>
+          <p class="wk__d">Gallery walk: work on the walls, written critique on sheets beside it. The flagship lecture and deck — thin varnish makes real work legible, thick varnish hides that there is little underneath.</p>
+          <h3 class="wk__t">Artefact varnish</h3></article>
+
+        <article class="wk wk--now"><div class="wk__n" aria-hidden="true">07</div>
+          <p class="wk__d">Outreach sprint. Sending is the student's choice — the log records what was drafted, sent or deliberately not sent, and why, graded identically either way.</p>
+          <h3 class="wk__t"><span class="wk__tag">Now &rarr;</span> The pre-warmed stranger</h3></article>
+
+        <article class="wk"><div class="wk__n" aria-hidden="true">08</div>
+          <p class="wk__d">Red-team session within stream: peers attack submitted materials for the weakest claim and time how long it takes to find it. A2 due Fri 23 Apr.</p>
+          <h3 class="wk__t">Plausibility budget</h3></article>
+
+        <article class="wk"><div class="wk__n" aria-hidden="true">09</div>
+          <p class="wk__d">Mock panel run to each field's convention. The safety-net week: every student declares an interview route, real or the Practice Interview Partner Pool.</p>
+          <h3 class="wk__t">Interview weather</h3></article>
+
+        <article class="wk"><div class="wk__n" aria-hidden="true">10</div>
+          <p class="wk__d">Negotiation simulation with a staff member playing the other side. The hard rule: every student says the number out loud at least once.</p>
+          <h3 class="wk__t">The negotiation flinch</h3></article>
+
+        <article class="wk"><div class="wk__n" aria-hidden="true">11</div>
+          <p class="wk__d">Artefact swap: complete Dossiers exchanged within stream, presented by someone other than their author to that stream's guest. A3 due Fri 14 May.</p>
+          <h3 class="wk__t">Competence lag</h3></article>
+
+        <article class="wk"><div class="wk__n" aria-hidden="true">12</div>
+          <p class="wk__d">Closing viva: eight minutes per student, examined on which part of the performance became true, and how they know. Capstone due Wed 26 May.</p>
+          <h3 class="wk__t">Seamwork</h3></article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 04 PINNED ROTATOR ===== -->
+  <section class="rot" id="rot" aria-labelledby="rotH">
+    <div class="rot__stage" id="rotStage">
+      <div class="rot__bar">
+        <span class="m" id="rotH">§03 &nbsp;Four things this course refuses</span>
+        <span class="m">position <span id="rotN">1</span>/4</span>
+      </div>
+      <div class="rot__deck" id="rotDeck">
+
+        <div class="rot__item on" data-rot>
+          <div class="m rot__no">Refusal 01</div>
+          <h2 class="d rot__say" data-scramble>We do not grade the outcome</h2>
+          <p class="rot__gloss">The capstone is graded on process artefacts only: the reflection log, the interview debrief, the ninety-day ramp plan, the performance-versus-genuine audit. Never on outcome, never on offer, never on the prestige of the organisation. It says so twice — once in the brief and once beside the criteria.</p>
+        </div>
+
+        <div class="rot__item" data-rot>
+          <div class="m rot__no">Refusal 02</div>
+          <h2 class="d rot__say" data-scramble>No non-consenting stranger</h2>
+          <p class="rot__gloss">Week 7's outreach log records what was sent or deliberately not sent, graded identically either way. Week 9's Practice Interview Partner Pool runs on signed written consent from every interviewer. An earlier design that deceived non-consenting recruiters was rejected on exactly these grounds.</p>
+        </div>
+
+        <div class="rot__item" data-rot>
+          <div class="m rot__no">Refusal 03</div>
+          <h2 class="d rot__say" data-scramble>No participation marks for talking</h2>
+          <p class="rot__gloss">Assessment 3 is graded on the three most substantial written critiques a student gave, countersigned by the recipient — never on attendance, never on airtime in a tutorial. The most reversible call in the ladder, held to that standard on purpose.</p>
+        </div>
+
+        <div class="rot__item" data-rot>
+          <div class="m rot__no">Refusal 04</div>
+          <h2 class="d rot__say" data-scramble>No invented record</h2>
+          <p class="rot__gloss">Rehearsing a role you do not hold is the coursework. Misrepresenting facts about yourself to any employer, real or pool, is an academic integrity matter. The course teaches framing, not fabrication — every claim made here must survive a stranger checking it.</p>
+        </div>
+
+      </div>
+      <div class="rot__ticks" aria-hidden="true" id="rotTicks">
+        <div class="rot__tick done"></div><div class="rot__tick"></div>
+        <div class="rot__tick"></div><div class="rot__tick"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 05 LEDGER ===== -->
+  <section class="ledger" aria-labelledby="ldH">
+    <div class="ledger__head">
+      <div class="m">§04 &nbsp;Assessment</div>
+      <h2 class="d" id="ldH">Marked on the record you keep</h2>
+    </div>
+
+    <div class="row">
+      <div class="m row__n">A1</div>
+      <h3 class="row__t">Role Teardown and Gap Map</h3>
+      <p class="row__d">Dossier §§1–4: evidenced Baseline Inventory, three target ads, one four-column annotated teardown, and the tiered Gap Map. Due Fri 19 Mar, week 4.</p>
+      <div class="row__w">20</div>
+    </div>
+    <div class="row">
+      <div class="m row__n">A2</div>
+      <h3 class="row__t">Performance Materials</h3>
+      <p class="row__d">Materials fitted to one named target — CV or résumé, cover letter or pitch, one field artefact — plus the Varnish Note recording what each decision reveals or conceals. Due Fri 23 Apr, week 8.</p>
+      <div class="row__w">25</div>
+    </div>
+    <div class="row">
+      <div class="m row__n">A3</div>
+      <h3 class="row__t">Peer Critique Contribution</h3>
+      <p class="row__d">The three most substantial written critiques you gave across the semester, each with a note on what it changed, countersigned by the recipient. Due Fri 14 May, week 11.</p>
+      <div class="row__w">10</div>
+    </div>
+    <div class="row">
+      <div class="m row__n">A4</div>
+      <h3 class="row__t">Capstone: Applications in the Wild</h3>
+      <p class="row__d">Real applications sent, the twelve-entry reflection log, one interview debrief, the ninety-day ramp plan, and the performance-versus-genuine audit. Graded on process only. Due Wed 26 May, week 12.</p>
+      <div class="row__w">45</div>
+    </div>
+  </section>
+
+  <!-- ===== 06 COLOPHON ===== -->
+  <footer class="colo">
+    <div class="colo__grid">
+      <div class="m">§05 &nbsp;Colophon</div>
+      <div>
+        <p>Convened by Dr Wren Halloway. Semester 1 2027, 2027-02-22 &rarr; 2027-05-28. Shared lecture weekly; Technical Practice, Creative and Communications Practice, and Commercial and Public Practice meet separately and do not run to a fixed tutorial template — each week is shaped by what that week is for.</p>
+        <p class="m"><a href="week-01.html">Week 01</a> &nbsp;&middot;&nbsp; <a href="week-07.html">Week 07</a> &nbsp;&middot;&nbsp; <a href="deck.html">Lecture deck</a> &nbsp;&middot;&nbsp; <a href="#top">Back to top</a></p>
+      </div>
+    </div>
+    <div class="colo__big d" aria-hidden="true">Seamwork</div>
+    <div class="colo__strip">
+      <span class="m">SLOP3841 &middot; Professional Identity Performance</span>
+      <span class="m">Set in Anybody, Newsreader &amp; Martian Mono</span>
+    </div>
+  </footer>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+/* ============================================================
+   KINETIC ENGINE
+   The reader's physics drive the typeface. Everything else is
+   rules and void.
+   ============================================================ */
+(function(){
+  "use strict";
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var FINE    = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  var hasGSAP = !!(window.gsap && window.ScrollTrigger);
+  var root    = document.documentElement;
+
+  if (hasGSAP) gsap.registerPlugin(ScrollTrigger);
+
+  /* ---------- 0. masthead height as a token ---------------- */
+  // The masthead is sticky, so anything ScrollTrigger pins to "top top" gets
+  // its first 45px covered. Publishing the real height lets the pinned act
+  // reserve it instead of hiding its own week counter under the nav.
+  var mast = document.querySelector(".mast");
+  function measureNav(){
+    if (mast) root.style.setProperty("--navh", mast.offsetHeight + "px");
+  }
+  measureNav();
+  window.addEventListener("resize", measureNav);
+
+  /* ---------- 1. smooth scroll (source of velocity) -------- */
+  var lenis = null;
+  if (!REDUCED && window.Lenis) {
+    lenis = new Lenis({ duration:1.05, smoothWheel:true, touchMultiplier:1.6 });
+    if (hasGSAP) {
+      lenis.on("scroll", ScrollTrigger.update);
+      gsap.ticker.add(function(t){ lenis.raf(t * 1000); });
+      gsap.ticker.lagSmoothing(0);
+    } else {
+      (function raf(t){ lenis.raf(t); requestAnimationFrame(raf); })(0);
+    }
+  }
+
+  /* ---------- 2. SIGNATURE: velocity -> font axes ---------- */
+  var hudW = document.getElementById("hudW");
+  var hudX = document.getElementById("hudX");
+  var prog = document.getElementById("prog");
+
+  // rest state vs. screaming state
+  var W_REST = 300, W_MAX = 900;
+  var X_REST = 128, X_MIN = 56;
+
+  var lastY = window.scrollY, vel = 0, smooth = 0;
+  var curW = W_REST, curX = X_REST;
+
+  function scrollY(){ return lenis ? lenis.scroll : window.scrollY; }
+
+  function tick(){
+    var y = scrollY();
+    var dy = y - lastY; lastY = y;
+    vel = Math.abs(dy);
+
+    // normalise: ~70px/frame is full tilt
+    var target = Math.min(1, vel / 70);
+    // fast attack, slow release — type snaps tight, relaxes lazily
+    var k = target > smooth ? 0.34 : 0.055;
+    smooth += (target - smooth) * k;
+
+    var w = W_REST + (W_MAX - W_REST) * smooth;
+    var x = X_REST + (X_MIN - X_REST) * smooth;
+
+    if (Math.abs(w - curW) > 0.6) {
+      curW = w; curX = x;
+      root.style.setProperty("--kv-wght", w.toFixed(0));
+      root.style.setProperty("--kv-wdth", x.toFixed(1));
+      if (hudW) hudW.textContent = w.toFixed(0);
+      if (hudX) hudX.textContent = x.toFixed(0);
+    }
+
+    if (prog) {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      prog.style.width = (max > 0 ? Math.min(1, y / max) * 100 : 0).toFixed(2) + "%";
+    }
+    requestAnimationFrame(tick);
+  }
+  if (!REDUCED) requestAnimationFrame(tick);
+
+  /* ---------- 3. per-character pointer proximity ----------- */
+  // Desktop only. On touch, velocity alone carries the signature —
+  // that is the declared degradation, and the HUD makes it visible.
+  var chars = [];
+  function splitChars(el){
+    var text = el.textContent, frag = document.createDocumentFragment();
+    for (var i=0;i<text.length;i++){
+      var c = text[i];
+      if (c === " ") { frag.appendChild(document.createTextNode(" ")); continue; }
+      var s = document.createElement("span");
+      s.className = "hl__char"; s.textContent = c;
+      frag.appendChild(s); chars.push(s);
+    }
+    el.textContent = ""; el.appendChild(frag);
+  }
+
+  if (FINE && !REDUCED) {
+    var lines = document.querySelectorAll("#heroLines [data-kin]");
+    lines.forEach(function(line){
+      // keep the accent field's wipe layer intact: split only its text span
+      var inner = line.querySelector(".field__t");
+      splitChars(inner || line);
+    });
+
+    var mx = -9999, my = -9999, boxes = [], boxesStale = true;
+    function measure(){
+      boxes = chars.map(function(c){
+        var r = c.getBoundingClientRect();
+        return { x:r.left + r.width/2, y:r.top + r.height/2, el:c };
+      });
+      boxesStale = false;
+    }
+    window.addEventListener("resize", function(){ boxesStale = true; });
+    window.addEventListener("scroll", function(){ boxesStale = true; }, {passive:true});
+    if (lenis) lenis.on("scroll", function(){ boxesStale = true; });
+
+    window.addEventListener("pointermove", function(e){ mx = e.clientX; my = e.clientY; }, {passive:true});
+    window.addEventListener("pointerleave", function(){ mx = my = -9999; });
+
+    var R = 300; // influence radius, px
+    (function pull(){
+      if (boxesStale) measure();
+      for (var i=0;i<boxes.length;i++){
+        var b = boxes[i];
+        var dx = b.x - mx, dy = b.y - my;
+        var d  = Math.sqrt(dx*dx + dy*dy);
+        var f  = d > R ? 0 : Math.pow(1 - d/R, 2.2);
+        if (f < 0.004) {
+          if (b.el.style.fontVariationSettings) b.el.style.fontVariationSettings = "";
+        } else {
+          var w = curW + (900 - curW) * f;
+          var x = curX + (150 - curX) * f * 0.85;
+          b.el.style.fontVariationSettings = '"wght" ' + w.toFixed(0) + ',"wdth" ' + x.toFixed(1);
+        }
+      }
+      requestAnimationFrame(pull);
+    })();
+  }
+
+  /* ---------- 4. accent field wipe ------------------------- */
+  var fields = document.querySelectorAll("[data-field]");
+  if ("IntersectionObserver" in window) {
+    var fo = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add("lit"); fo.unobserve(e.target); } });
+    }, {threshold:0.6});
+    fields.forEach(function(f){ fo.observe(f); });
+  } else {
+    fields.forEach(function(f){ f.classList.add("lit"); });
+  }
+
+  /* ---------- 5. horizontal act ---------------------------- */
+  // Vertical scroll drives lateral travel while the section is pinned.
+  // Below 900px (and under reduced motion) the same markup is a native
+  // snap-scrolling strip — the act stays, the pin does not.
+  var actN = document.getElementById("actN");
+  if (hasGSAP && !REDUCED) {
+    ScrollTrigger.matchMedia({
+      "(min-width: 901px)": function(){
+        var track = document.getElementById("actTrack");
+        var view  = document.getElementById("actView");
+        var sect  = document.getElementById("act");
+        var dist  = function(){ return Math.max(0, track.scrollWidth - view.clientWidth); };
+
+        gsap.to(track, {
+          x: function(){ return -dist(); },
+          ease: "none",
+          scrollTrigger: {
+            trigger: sect,
+            start: "top top",
+            end: function(){ return "+=" + dist(); },
+            pin: true,
+            scrub: 0.6,
+            invalidateOnRefresh: true,
+            onUpdate: function(self){
+              var n = Math.round(1 + self.progress * 11);
+              if (actN) actN.textContent = String(n).padStart(2, "0");
+            }
+          }
+        });
+      }
+    });
+  }
+  // Bound unconditionally, not as the else-branch: below 900px the strip is a
+  // native snap scroller even when GSAP is driving the pin above 900px, and
+  // wiring this only in the fallback left the counter frozen at 01 on a phone.
+  // Harmless on desktop — the view is overflow:hidden there and never scrolls.
+  if (actN) {
+    var view2 = document.getElementById("actView");
+    if (view2) view2.addEventListener("scroll", function(){
+      var max = view2.scrollWidth - view2.clientWidth;
+      var n = Math.round(1 + (max > 0 ? view2.scrollLeft/max : 0) * 11);
+      actN.textContent = String(n).padStart(2,"0");
+    }, {passive:true});
+  }
+
+  /* ---------- 6. scramble / resolve ------------------------ */
+  var GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ/#%&*+=—";
+  function scramble(el){
+    if (REDUCED) return;
+    var final = el.dataset.final || (el.dataset.final = el.textContent);
+    // Scrubbing back and forth re-enters this on the same element; without a
+    // run token two loops write competing glyphs to one node.
+    var run = (el.__run = (el.__run || 0) + 1);
+    var n = final.length, frames = 0, total = 26;
+    var order = final.split("").map(function(_, i){ return i / n; });
+    function step(){
+      if (el.__run !== run) return;          // a newer run owns this node
+      var p = frames / total, out = "";
+      for (var i=0;i<n;i++){
+        var ch = final[i];
+        if (ch === " ") { out += " "; continue; }
+        if (p > order[i] + 0.22) out += ch;
+        else out += GLYPHS[(Math.random() * GLYPHS.length) | 0];
+      }
+      el.textContent = out;
+      frames++;
+      if (frames <= total) requestAnimationFrame(step);
+      else el.textContent = final;
+    }
+    step();
+  }
+
+  /* ---------- 7. pinned rotator ---------------------------- */
+  var items = Array.prototype.slice.call(document.querySelectorAll("[data-rot]"));
+  var ticks = Array.prototype.slice.call(document.querySelectorAll(".rot__tick"));
+  var rotN  = document.getElementById("rotN");
+  var shown = 0;
+
+  function showRot(i){
+    if (i === shown) return;
+    shown = i;
+    items.forEach(function(it, k){ it.classList.toggle("on", k === i); });
+    ticks.forEach(function(t, k){ t.classList.toggle("done", k <= i); });
+    if (rotN) rotN.textContent = String(i + 1);
+    var s = items[i].querySelector("[data-scramble]");
+    if (s) scramble(s);
+  }
+
+  if (hasGSAP && !REDUCED) {
+    document.getElementById("rot").classList.add("is-pinned");
+    items.forEach(function(it, k){ it.classList.toggle("on", k === 0); });
+    ScrollTrigger.create({
+      trigger: "#rot",
+      start: "top top",
+      end: "+=" + (items.length * 85) + "%",
+      pin: "#rotStage",
+      scrub: true,
+      onUpdate: function(self){
+        var i = Math.min(items.length - 1, Math.floor(self.progress * items.length));
+        showRot(i);
+      }
+    });
+  }
+
+  /* ---------- 8. debug hook -------------------------------- */
+  // Lets a headless/hidden tab be photographed in a chosen state,
+  // since Chrome freezes rAF and CSS transitions when a tab is hidden.
+  window.__kin = {
+    lenis: lenis,
+    rot: showRot,
+    scramble: scramble,
+    axes: function(w, x){
+      root.style.setProperty("--kv-wght", w);
+      root.style.setProperty("--kv-wdth", x);
+      if (hudW) hudW.textContent = w;
+      if (hudX) hudX.textContent = x;
+    }
+  };
+
+  if (hasGSAP) ScrollTrigger.refresh();
+  document.fonts && document.fonts.ready.then(function(){ if (hasGSAP) ScrollTrigger.refresh(); });
+})();
+</script>
+</body>
+</html>

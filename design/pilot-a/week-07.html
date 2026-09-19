@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Week 07 &mdash; The Pre-Warmed Stranger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wdth,wght@0,50..150,100..900;1,50..150,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..700;1,6..72,200..700&family=Martian+Mono:wdth,wght@75..112.5,300..700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   KINETIC MANIFESTO &mdash; shared base (identical to index.html)
+   ============================================================ */
+:root{
+  --bone:#EDEBE4;
+  --ink:#14110F;
+  --ink2:#5A544E;
+  --volt:#C92000;
+  --rule:#14110F;
+  --kv-wght:300;
+  --kv-wdth:128;
+  --gut:clamp(1.1rem,4vw,3.25rem);
+  --measure:34ch;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bone);color:var(--ink);
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:rgba(201,32,0,.22);
+  font-family:"Newsreader",Georgia,serif;
+  font-variation-settings:"opsz" 16;
+  font-size:clamp(1rem,.55vw + .92rem,1.1rem);
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:var(--volt);color:var(--bone)}
+.d{
+  font-family:"Anybody","Arial Narrow",sans-serif;
+  font-variation-settings:"wght" var(--kv-wght),"wdth" var(--kv-wdth);
+  line-height:.8;letter-spacing:-.02em;text-transform:uppercase;margin:0;
+}
+.m{
+  font-family:"Martian Mono",ui-monospace,monospace;
+  font-variation-settings:"wdth" 87.5,"wght" 400;
+  font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;line-height:1.3;
+}
+.volt{color:var(--volt)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--volt);outline-offset:3px}
+[id]{scroll-margin-top:8.5rem}
+.skip{
+  position:absolute;left:var(--gut);top:-4rem;z-index:99;
+  background:var(--ink);color:var(--bone);padding:.6rem 1rem;text-decoration:none;
+  font-family:"Martian Mono",monospace;font-size:.64rem;letter-spacing:.14em;
+  text-transform:uppercase;transition:top .16s;
+}
+.skip:focus{top:.5rem}
+
+.mast{
+  position:sticky;top:0;z-index:60;background:var(--bone);
+  border-bottom:1.5px solid var(--rule);
+  display:grid;grid-template-columns:auto 1fr auto;align-items:stretch;
+}
+.mast>*{padding:.62rem var(--gut)}
+.mast__code{
+  font-family:"Anybody",sans-serif;font-variation-settings:"wght" 800,"wdth" 78;
+  text-transform:uppercase;letter-spacing:.02em;font-size:.95rem;
+  text-decoration:none;display:flex;align-items:center;gap:.5ch;
+  border-right:1.5px solid var(--rule);white-space:nowrap;
+}
+.mast__code i{font-style:normal;color:var(--volt)}
+.mast__nav{display:flex;gap:0;align-items:stretch;padding:0}
+.mast__nav a{
+  font-family:"Martian Mono",monospace;font-size:.64rem;letter-spacing:.14em;
+  text-transform:uppercase;text-decoration:none;display:flex;align-items:center;
+  padding:0 clamp(.7rem,1.6vw,1.4rem);border-right:1.5px solid var(--rule);position:relative;
+}
+.mast__nav a::after{
+  content:"";position:absolute;inset:auto 0 0 0;height:.42em;background:var(--volt);
+  transform:scaleY(0);transform-origin:bottom;transition:transform .18s cubic-bezier(.2,.8,.2,1);
+}
+.mast__nav a:hover::after,.mast__nav a:focus-visible::after{transform:scaleY(1)}
+.mast__nav a[aria-current="page"]{background:var(--ink);color:var(--bone)}
+.mast__hud{
+  display:flex;align-items:center;justify-content:flex-end;gap:.6ch;
+  font-family:"Martian Mono",monospace;font-size:.6rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink2);white-space:nowrap;
+  border-left:1.5px solid var(--rule);
+}
+.mast__hud b{color:var(--volt);font-variation-settings:"wght" 700;font-weight:400;
+  display:inline-block;min-width:3ch;text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:760px){
+  .mast{grid-template-columns:1fr auto}
+  .mast__code{grid-column:1;border-right:0}
+  /* explicit row: grid auto-placement is sparse, so without this the HUD
+     lands below the full-width nav instead of beside the wordmark */
+  .mast__hud{grid-row:1;grid-column:2;border-left:0;font-size:.55rem}
+  .mast__nav{grid-column:1/-1;border-top:1.5px solid var(--rule)}
+  .mast__nav a{flex:1;justify-content:center;padding:.55rem 0}
+  .mast__nav a:last-child{border-right:0}
+}
+.prog{position:fixed;inset:0 0 auto 0;height:3px;z-index:80;pointer-events:none}
+.prog__i{height:100%;background:var(--volt);width:0%}
+
+/* ============================================================
+   WEEK PAGE
+   ============================================================ */
+/* --- section rail: sticky, tracks position ---------------- */
+.rail{
+  position:sticky;top:0;z-index:55;background:var(--bone);
+  border-bottom:1.5px solid var(--rule);display:flex;overflow-x:auto;
+  scrollbar-width:none;
+}
+.rail::-webkit-scrollbar{display:none}
+.rail a{
+  font-family:"Martian Mono",monospace;font-size:.6rem;letter-spacing:.13em;
+  text-transform:uppercase;text-decoration:none;white-space:nowrap;
+  padding:.55rem clamp(.7rem,1.5vw,1.25rem);border-right:1.5px solid var(--rule);
+  color:var(--ink2);flex:none;
+}
+.rail a[data-on="1"]{background:var(--volt);color:var(--bone)}
+@media (max-width:760px){
+  .rail{top:auto}
+  /* the rail overflows on a phone and its scrollbar is hidden, so fade the
+     right edge to show there is more of it */
+  .rail{-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent 100%);
+        mask-image:linear-gradient(90deg,#000 82%,transparent 100%)}
+}
+
+/* --- week masthead ---------------------------------------- */
+.wh{padding:clamp(1.2rem,4vh,3rem) 0 0}
+.wh__kick{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  padding:0 var(--gut) .8rem;color:var(--ink2)}
+.wh__n{
+  font-size:clamp(7rem,27vw,26rem);padding-left:calc(var(--gut) * .3);
+  color:var(--volt);white-space:nowrap;
+}
+.wh__t{font-size:clamp(2.6rem,9.4vw,9rem);padding-left:var(--gut);max-width:22ch;text-wrap:balance}
+.wh__foot{
+  display:grid;grid-template-columns:minmax(0,var(--measure)) 1fr auto;gap:var(--gut);
+  align-items:end;padding:clamp(1.2rem,4vh,2.6rem) var(--gut) clamp(1.2rem,4vh,2.4rem);
+  border-bottom:1.5px solid var(--rule);
+}
+.wh__foot p{margin:0;font-variation-settings:"opsz" 18}
+.wh__stat{text-align:right}
+.wh__stat b{display:block;font-family:"Anybody",sans-serif;
+  font-variation-settings:"wght" 800,"wdth" 72;font-size:clamp(1.6rem,3.4vw,2.8rem);
+  font-weight:400;line-height:1;font-variant-numeric:tabular-nums}
+@media (max-width:760px){
+  .wh__foot{grid-template-columns:1fr;align-items:start}
+  .wh__stat{text-align:left}
+  .wh__t{font-size:clamp(2.2rem,11vw,3.4rem)}
+}
+
+/* --- generic section head --------------------------------- */
+.sh{
+  display:grid;grid-template-columns:14ch 1fr;align-items:baseline;gap:0;
+  border-bottom:1.5px solid var(--rule);
+}
+.sh__no{padding:.85rem var(--gut);color:var(--ink2);border-right:1.5px solid var(--rule)}
+.sh__t{padding:.85rem var(--gut);font-family:"Anybody",sans-serif;
+  font-variation-settings:"wght" 700,"wdth" 88;text-transform:uppercase;
+  font-size:clamp(1rem,2vw,1.5rem);letter-spacing:-.005em;line-height:1}
+@media (max-width:760px){
+  .sh{grid-template-columns:1fr}
+  .sh__no{border-right:0;padding-bottom:0}
+  .sh__t{padding-top:.3rem}
+}
+
+/* --- lecture: prose + spine ------------------------------- */
+.lec{display:grid;grid-template-columns:1fr 26ch;gap:0;border-bottom:1.5px solid var(--rule)}
+.lec__prose{
+  padding:clamp(1.4rem,4vh,2.6rem) var(--gut);
+  border-right:1.5px solid var(--rule);
+  columns:32ch 2;column-gap:var(--gut);column-rule:1px solid rgba(20,17,15,.2);
+}
+.lec__prose p{margin:0 0 1.1em}
+.lec__prose p+p{text-indent:1.4em}
+.lec__prose p:first-child::first-letter{
+  font-family:"Anybody",sans-serif;font-variation-settings:"wght" 900,"wdth" 62;
+  float:left;font-size:3em;line-height:.78;padding:.06em .12em 0 0;color:var(--volt);
+}
+.lec__prose em{font-style:italic}
+.spine{padding:clamp(1.4rem,4vh,2.6rem) var(--gut);align-self:start;position:sticky;top:6.2rem}
+.spine h3{margin:0 0 .9rem;color:var(--ink2)}
+.spine ol{list-style:none;margin:0;padding:0}
+.spine li{
+  display:grid;grid-template-columns:4.2ch 1fr;gap:.7rem;
+  padding:.5rem 0;border-top:1px solid rgba(20,17,15,.25);
+  font-size:.95rem;line-height:1.35;
+}
+.spine li:last-child{border-bottom:1px solid rgba(20,17,15,.25)}
+.spine time{font-family:"Martian Mono",monospace;font-size:.62rem;color:var(--volt);
+  font-variant-numeric:tabular-nums;padding-top:.28em}
+@media (max-width:900px){
+  .lec{grid-template-columns:1fr}
+  .lec__prose{border-right:0;border-bottom:1.5px solid var(--rule);columns:1}
+  .spine{position:static}
+}
+
+/* --- streams: full-bleed ruled bands, marginal glyph ------ */
+.band{
+  display:grid;grid-template-columns:clamp(5rem,13vw,15rem) 1fr;gap:0;
+  border-bottom:1.5px solid var(--rule);
+}
+.band__g{
+  font-family:"Anybody",sans-serif;font-variation-settings:"wght" 900,"wdth" 58;
+  font-size:clamp(4.5rem,12vw,13rem);line-height:.74;
+  color:transparent;-webkit-text-stroke:1.5px var(--ink);
+  padding:clamp(1rem,3vh,2rem) 0 0 calc(var(--gut) * .4);
+  border-right:1.5px solid var(--rule);
+  transition:color .3s,-webkit-text-stroke-color .3s;
+}
+.band:hover .band__g,.band:focus-within .band__g{color:var(--volt);-webkit-text-stroke-color:var(--volt)}
+.band__b{padding:clamp(1.2rem,3.5vh,2.4rem) var(--gut)}
+.band__hd{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  align-items:baseline;margin:0 0 .9rem}
+.band__t{font-family:"Anybody",sans-serif;font-variation-settings:"wght" 700,"wdth" 92;
+  text-transform:uppercase;font-size:clamp(1.15rem,2.4vw,1.9rem);line-height:.98;margin:0}
+.band__meta{color:var(--ink2)}
+.band__cols{columns:30ch 2;column-gap:var(--gut);column-rule:1px solid rgba(20,17,15,.2)}
+.band__cols p{margin:0 0 1em}
+.band__do{
+  margin:1rem 0 0;padding:.7rem 0 0;border-top:1.5px solid var(--rule);
+  display:grid;grid-template-columns:auto 1fr;gap:.9rem;align-items:baseline;
+}
+.band__do .m{color:var(--volt)}
+.band__do p{margin:0;font-size:.98rem}
+@media (max-width:760px){
+  .band{grid-template-columns:1fr}
+  /* Two changes, both because the desktop treatment does not scale down: a
+     1.5px outline disappears at phone sizes, so the glyph goes solid; and at
+     wdth 58 a 66px letter is a 24px-wide domino with its counters closed, so
+     the width axis opens up. The glyph stays a letter instead of a mark. */
+  .band__g{border-right:0;padding-left:var(--gut);padding-bottom:.2rem;
+    font-size:clamp(3.2rem,15vw,4.6rem);line-height:.82;
+    font-variation-settings:"wght" 900,"wdth" 122;
+    color:var(--volt);-webkit-text-stroke:0}
+  .band__cols{columns:1}
+}
+
+/* --- readings: ruled ledger ------------------------------- */
+.reads{list-style:none;margin:0;padding:0;border-bottom:1.5px solid var(--rule)}
+.reads li{
+  /* four columns for four children: a trailing spacer track strands the
+     metadata in the middle of the row instead of on the right edge */
+  display:grid;grid-template-columns:5.5ch minmax(0,30ch) minmax(0,var(--measure)) 1fr;
+  gap:var(--gut);align-items:baseline;
+  padding:clamp(.8rem,2vh,1.35rem) var(--gut);
+  border-top:1px solid rgba(20,17,15,.25);
+}
+.reads li:first-child{border-top:0}
+.reads__n{color:var(--volt)}
+.reads__t{font-family:"Anybody",sans-serif;font-variation-settings:"wght" 650,"wdth" 95;
+  text-transform:uppercase;font-size:clamp(.98rem,1.7vw,1.3rem);line-height:1.05}
+.reads__a{margin:0;color:var(--ink2);font-size:.96rem}
+.reads__k{grid-column:4;justify-self:end;text-align:right;color:var(--ink2);white-space:nowrap}
+.reads li:hover{background:var(--ink);color:var(--bone)}
+.reads li:hover .reads__a,.reads li:hover .reads__k{color:rgba(237,235,228,.8)}
+.reads li:hover .reads__n{color:var(--volt)}
+@media (max-width:760px){
+  .reads li{grid-template-columns:5.5ch 1fr;gap:.3rem var(--gut)}
+  .reads__a,.reads__k{grid-column:2;justify-self:start;text-align:left}
+}
+
+/* --- activity: accent field ------------------------------- */
+.act2{background:var(--volt);color:var(--bone);border-bottom:1.5px solid var(--rule)}
+.act2 .sh{border-bottom-color:var(--bone)}
+/* full bone, not translucent: bone at 72-85% over the vermilion field
+   drops small text under 3:1 and would fail an axe contrast check */
+.act2 .sh__no{border-right-color:var(--bone);color:var(--bone)}
+.act2__grid{display:grid;grid-template-columns:1fr minmax(0,38ch);gap:var(--gut);
+  padding:clamp(1.4rem,4vh,2.8rem) var(--gut)}
+.act2__h{font-size:clamp(2rem,6vw,4.6rem);max-width:18ch;text-wrap:balance}
+.act2__lead>p{max-width:40ch;margin:clamp(1.2rem,3vh,2rem) 0 0;
+  font-size:clamp(1rem,.9vw + .8rem,1.18rem)}
+.act2__meta{margin:clamp(1.6rem,4vh,2.6rem) 0 0;max-width:56ch;
+  border-top:1px solid rgba(237,235,228,.45)}
+.act2__meta>div{display:grid;grid-template-columns:11ch 1fr;gap:var(--gut);
+  padding:.55rem 0;border-bottom:1px solid rgba(237,235,228,.45)}
+.act2__meta dt{color:var(--bone)}
+/* values read as prose, not as more mono: long all-caps monospace strings
+   are the slowest thing on the page to read */
+.act2__meta dd{margin:0;font-family:"Newsreader",Georgia,serif;
+  text-transform:none;letter-spacing:0;font-size:1rem;line-height:1.4}
+.act2__steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.act2__steps li{
+  counter-increment:s;display:grid;grid-template-columns:3.2ch 1fr;gap:.9rem;
+  padding:.75rem 0;border-top:1px solid rgba(237,235,228,.45);
+}
+.act2__steps li::before{
+  content:counter(s,decimal-leading-zero);
+  font-family:"Martian Mono",monospace;font-size:.62rem;letter-spacing:.1em;
+  padding-top:.4em;
+}
+.act2__steps li:last-child{border-bottom:1px solid rgba(237,235,228,.45)}
+.act2__steps p{margin:0;font-size:.99rem;line-height:1.45}
+@media (max-width:880px){.act2__grid{grid-template-columns:1fr}}
+
+/* --- checklist: interactive -------------------------------- */
+.ck{border-bottom:1.5px solid var(--rule)}
+.ck__top{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  padding:clamp(1.1rem,3vh,2rem) var(--gut) .6rem}
+.ck__h{font-size:clamp(1.8rem,5vw,3.6rem);max-width:20ch;text-wrap:balance}
+.ck__count{font-family:"Anybody",sans-serif;font-variation-settings:"wght" 800,"wdth" 72;
+  font-size:clamp(1.4rem,3vw,2.4rem);line-height:1;font-variant-numeric:tabular-nums;
+  white-space:nowrap;align-self:flex-end}
+.ck__count[data-all="1"]{color:var(--volt)}
+.ck ol{list-style:none;margin:0;padding:0}
+.ck li{border-top:1px solid rgba(20,17,15,.25)}
+.ck__row{
+  display:grid;grid-template-columns:auto 1fr;gap:1.1rem;align-items:start;
+  padding:clamp(.75rem,1.9vh,1.15rem) var(--gut);cursor:pointer;
+  transition:background .15s;
+}
+.ck__row:hover{background:rgba(201,32,0,.07)}
+.ck__box{
+  appearance:none;-webkit-appearance:none;margin:0;flex:none;
+  width:1.2rem;height:1.2rem;border:1.5px solid var(--ink);background:transparent;
+  display:grid;place-content:center;cursor:pointer;margin-top:.22em;
+  transition:background .18s,border-color .18s;
+}
+.ck__box::after{
+  content:"";width:.55rem;height:.55rem;background:var(--bone);
+  transform:scale(0);transition:transform .18s cubic-bezier(.2,.8,.2,1);
+}
+.ck__box:checked{background:var(--volt);border-color:var(--volt)}
+.ck__box:checked::after{transform:scale(1)}
+.ck__t{position:relative;display:inline}
+.ck__t::after{
+  content:"";position:absolute;left:-.1em;right:-.1em;top:.58em;height:2px;
+  background:var(--volt);transform:scaleX(0);transform-origin:left;
+  transition:transform .42s cubic-bezier(.16,1,.3,1);
+}
+.ck__box:checked ~ .ck__t{color:var(--ink2)}
+.ck__box:checked ~ .ck__t::after{transform:scaleX(1)}
+.ck__note{padding:.4rem var(--gut) clamp(1.2rem,3.5vh,2.2rem);color:var(--ink2)}
+
+/* --- footer ----------------------------------------------- */
+.foot{display:grid;grid-template-columns:1fr minmax(0,var(--measure));gap:var(--gut);
+  padding:clamp(1.4rem,4vh,3rem) var(--gut)}
+.foot__big{font-size:clamp(2.6rem,10vw,9rem);white-space:nowrap}
+.foot p{margin:0 0 .9em}
+.foot__strip{border-top:1.5px solid var(--rule);display:flex;justify-content:space-between;
+  gap:1rem;flex-wrap:wrap;padding:.62rem var(--gut)}
+@media (max-width:760px){.foot{grid-template-columns:1fr}}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.001ms!important;animation-duration:.001ms!important}
+  :root{--kv-wght:380;--kv-wdth:112}
+  .spine{position:static}
+}
+</style>
+</head>
+<body>
+
+<a class="skip" href="#lecture">Skip to content</a>
+<div class="prog" aria-hidden="true"><div class="prog__i" id="prog"></div></div>
+
+<header class="mast">
+  <a class="mast__code" href="index.html">SLOP <i>/ 3841</i></a>
+  <nav class="mast__nav" aria-label="Main">
+    <a href="index.html">Home</a>
+    <a href="week-07.html" aria-current="page">Week 07</a>
+    <a href="deck.html">Deck</a>
+  </nav>
+  <div class="mast__hud" aria-hidden="true">
+    axes <b id="hudW">300</b><span>/</span><b id="hudX">128</b>
+  </div>
+</header>
+
+<nav class="rail" id="rail" aria-label="Sections in this week">
+  <a href="#lecture">&sect;01 Shared lecture</a>
+  <a href="#streams">&sect;02 Streams</a>
+  <a href="#readings">&sect;03 Readings</a>
+  <a href="#activity">&sect;04 Activity</a>
+  <a href="#checklist">&sect;05 Before next week</a>
+</nav>
+
+<main>
+
+  <!-- ===== WEEK MASTHEAD ===== -->
+  <section class="wh">
+    <div class="wh__kick m">
+      <span>Week 07 of 12 &middot; post-varnish &middot; no submission due</span>
+      <span>Studio building, Tuesday</span>
+    </div>
+    <div class="wh__n d" aria-hidden="true">07</div>
+    <h1 class="wh__t d">The pre-warmed stranger</h1>
+    <div class="wh__foot">
+      <p>Outreach, under one honesty constraint stated in the lecture: never misrepresent who you are or why you are writing. The tutorial is an outreach sprint. Sending is your choice &mdash; the Outreach Log records what was drafted, what was sent or deliberately not sent, and why, and it is graded identically either way.</p>
+      <div></div>
+      <div class="wh__stat m">
+        <b>118</b>
+        minutes, shared lecture<br>
+        plus one stream session
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 01 SHARED LECTURE ===== -->
+  <section id="lecture" aria-labelledby="lecT">
+    <div class="sh">
+      <div class="sh__no m">&sect;01</div>
+      <h2 class="sh__t" id="lecT">Shared lecture &mdash; the pre-warmed stranger</h2>
+    </div>
+    <div class="lec">
+      <div class="lec__prose">
+        <p>Cold outreach has a bad reputation because most of it is a stranger asking another stranger for free labour while pretending otherwise. The lecture teaches the alternative: a message that pre-warms itself, by being specific enough about the recipient&rsquo;s actual work that answering it costs them less than ignoring it would.</p>
+        <p>The honesty constraint is stated first and does not move: never misrepresent who you are or why you are writing. You are a student, you are asking because you want to learn something specific, and the message says so in the first line. Every rewrite this week is a rewrite for clarity and specificity, never a rewrite that edges toward implying a relationship or a status you do not have.</p>
+        <p>The second half is about the sending decision, because it is a genuine decision and not a formality. An earlier version of this week required at least one real send, which conscripts a non-consenting stranger into an assessment &mdash; the same objection that later shaped the week-9 practice interview pool. That requirement is gone. The Outreach Log records what you drafted, what you sent or chose not to, and why, and both routes are marked the same way.</p>
+        <p>Silence is taught as the standard reply, not a verdict. Most well-drafted, well-targeted messages get no reply at all, for reasons that have nothing to do with the message&rsquo;s quality. Treating silence as information about yourself is the most expensive mistake this week can teach, and the lecture spends real time on why the instinct is so strong anyway.</p>
+        <p>Bring a name: one specific person in your field whose actual work you could write three sentences about without checking notes. You will draft to them today, whether or not you decide to send it.</p>
+      </div>
+      <aside class="spine">
+        <h3 class="m">Lecture spine</h3>
+        <ol>
+          <li><time>00:00</time><span>Cold open: three real messages, one that got a reply and two that did not. You guess which.</span></li>
+          <li><time>00:12</time><span>The honesty constraint, stated and held to for the rest of the semester.</span></li>
+          <li><time>00:34</time><span>Answerability in one line: what makes a message cheap to reply to.</span></li>
+          <li><time>00:52</time><span>Break.</span></li>
+          <li><time>01:04</time><span>Sending as a choice, and why the Outreach Log grades both routes identically.</span></li>
+          <li><time>01:28</time><span>Silence as the standard reply, not a verdict.</span></li>
+          <li><time>01:46</time><span>Handover to the outreach sprint in stream sessions.</span></li>
+        </ol>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===== 02 STREAMS ===== -->
+  <section id="streams" aria-labelledby="strT">
+    <div class="sh">
+      <div class="sh__no m">&sect;02</div>
+      <h2 class="sh__t" id="strT">Stream sessions &mdash; the outreach sprint, three angles</h2>
+    </div>
+
+    <article class="band" aria-labelledby="sA">
+      <div class="band__g" aria-hidden="true">A</div>
+      <div class="band__b">
+        <div class="band__hd">
+          <h3 class="band__t" id="sA">Technical Practice &mdash; maintainers and meetup organisers</h3>
+          <span class="band__meta m">75 min &middot; seminar room 2 &middot; bring three targets</span>
+        </div>
+        <div class="band__cols">
+          <p>Targets this week are open-source maintainers, engineering-blog authors, and meetup organisers &mdash; people whose public work you can name specifically. A message that says which commit or which post prompted you costs them nothing to answer.</p>
+          <p>The failure mode this stream sees most is asking for a job in the first message. This week is not that. It is asking one specific, answerable question about their work, drafted well enough to send even if you decide not to.</p>
+        </div>
+        <div class="band__do">
+          <span class="m">In session</span>
+          <p>Draft three messages in the room. Peers score each for answerability in one line: could the recipient reply usefully in under thirty seconds?</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="band" aria-labelledby="sB">
+      <div class="band__g" aria-hidden="true">B</div>
+      <div class="band__b">
+        <div class="band__hd">
+          <h3 class="band__t" id="sB">Creative and Communications Practice &mdash; named practitioners</h3>
+          <span class="band__meta m">75 min &middot; studio floor &middot; bring three targets</span>
+        </div>
+        <div class="band__cols">
+          <p>Targets are practitioners whose specific piece you can speak about &mdash; not a vague admiration of their &ldquo;work&rdquo; in general, but one piece, one decision in it, one question you actually have. Generic flattery is the fastest way to signal a template.</p>
+          <p>This stream drafts toward people who might one day critique or commission work, so the honesty constraint matters doubly: you are a student asking a genuine question, not a peer pretending equal footing.</p>
+        </div>
+        <div class="band__do">
+          <span class="m">In session</span>
+          <p>Draft three messages, each naming one specific piece. Peers score each for answerability; the group flags any message that reads as a pitch rather than a question.</p>
+        </div>
+      </div>
+    </article>
+
+    <article class="band" aria-labelledby="sC">
+      <div class="band__g" aria-hidden="true">C</div>
+      <div class="band__b">
+        <div class="band__hd">
+          <h3 class="band__t" id="sC">Commercial and Public Practice &mdash; alumni and liaisons</h3>
+          <span class="band__meta m">75 min &middot; workshop &middot; bring three targets</span>
+        </div>
+        <div class="band__cols">
+          <p>Targets are alumni in the target field, industry-body contacts, and graduate-program liaisons &mdash; people whose role is partly to be reachable. That makes the specificity bar higher, not lower: a generic alumni message is the one this stream drafts most and sends least.</p>
+          <p>The useful question is usually about the path they took, not about an opening. Asking about a role directly reads as an application in disguise, and the honesty constraint forbids exactly that disguise.</p>
+        </div>
+        <div class="band__do">
+          <span class="m">In session</span>
+          <p>Draft three messages targeting the path, not the vacancy. Peers score each for answerability and flag anything that smuggles in a job ask.</p>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ===== 03 READINGS ===== -->
+  <section id="readings" aria-labelledby="rdT">
+    <div class="sh">
+      <div class="sh__no m">&sect;03</div>
+      <h2 class="sh__t" id="rdT">Readings &mdash; two required, the rest if outreach interests you</h2>
+    </div>
+    <ol class="reads">
+      <li>
+        <span class="m reads__n">R1</span>
+        <span class="reads__t">The honesty constraint, stated formally</span>
+        <p class="reads__a">Course reader, chapter seven. Never misrepresent who you are or why you are writing, and what that rules out in practice.</p>
+        <span class="m reads__k">Required &middot; 12 pp</span>
+      </li>
+      <li>
+        <span class="m reads__n">R2</span>
+        <span class="reads__t">Twelve messages, annotated</span>
+        <p class="reads__a">Real outreach from a previous cohort, half of which got a reply, with the structural difference marked. Read the annotations last.</p>
+        <span class="m reads__k">Required &middot; 18 pp</span>
+      </li>
+      <li>
+        <span class="m reads__n">R3</span>
+        <span class="reads__t">On silence as data</span>
+        <p class="reads__a">A short essay on why silence is the standard reply and what it does and does not tell you about the message.</p>
+        <span class="m reads__k">Optional &middot; 8 pp</span>
+      </li>
+      <li>
+        <span class="m reads__n">R4</span>
+        <span class="reads__t">Why the required-send draft was rejected</span>
+        <p class="reads__a">Field notes on the earlier version of this week that required a real send, and the non-consenting-stranger objection that removed it.</p>
+        <span class="m reads__k">Optional &middot; 6 pp</span>
+      </li>
+      <li>
+        <span class="m reads__n">R5</span>
+        <span class="reads__t">The Outreach Log, explained</span>
+        <p class="reads__a">The template for recording what was drafted, sent or not sent, and why &mdash; and why both routes are marked identically.</p>
+        <span class="m reads__k">Optional &middot; 5 pp</span>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ===== 04 ACTIVITY ===== -->
+  <section class="act2" id="activity" aria-labelledby="acT">
+    <div class="sh">
+      <div class="sh__no m">&sect;04</div>
+      <h2 class="sh__t" id="acT">The activity</h2>
+    </div>
+    <div class="act2__grid">
+      <div class="act2__lead">
+        <h3 class="d act2__h">Draft the Outreach Log</h3>
+        <p>Draft three messages to three specific people. Deciding not to send
+          any of them is a legitimate outcome &mdash; the log records the
+          decision either way, with the reasoning behind it.</p>
+        <dl class="act2__meta m">
+          <div><dt>Time</dt><dd>75 minutes, in your stream session</dd></div>
+          <div><dt>Needs</dt><dd>Three named people, one specific thing each</dd></div>
+          <div><dt>Produces</dt><dd>Three drafts, a send decision for each</dd></div>
+          <div><dt>Collected</dt><dd>No. Feeds the Outreach Log in your Dossier</dd></div>
+        </dl>
+      </div>
+      <ol class="act2__steps">
+        <li><p>Name three people whose specific work you can speak about without checking notes.</p></li>
+        <li><p>Draft one message to each, naming the specific thing and asking one answerable question.</p></li>
+        <li><p>Trade drafts with a peer. They score each for answerability in one line.</p></li>
+        <li><p>Decide, for each draft, whether to send it. Neither choice needs defending to the group.</p></li>
+        <li><p>Record the decision and the reason in the Outreach Log, whether or not you sent it.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ===== 05 CHECKLIST ===== -->
+  <section class="ck" id="checklist" aria-labelledby="ckT">
+    <div class="sh">
+      <div class="sh__no m">&sect;05</div>
+      <h2 class="sh__t" id="ckT">Before next week</h2>
+    </div>
+    <div class="ck__top">
+      <h3 class="d ck__h" id="ckT2">Six things, none of them submitted</h3>
+      <div class="ck__count" id="ckCount" role="status" aria-live="polite">0 / 6</div>
+    </div>
+    <ol id="ckList">
+      <li><label class="ck__row">
+        <input class="ck__box" type="checkbox">
+        <span class="ck__t">Read R1 and R2. Hold off on R3 until you have drafted at least one message yourself.</span>
+      </label></li>
+      <li><label class="ck__row">
+        <input class="ck__box" type="checkbox">
+        <span class="ck__t">Name three specific people in your field before the lecture starts.</span>
+      </label></li>
+      <li><label class="ck__row">
+        <input class="ck__box" type="checkbox">
+        <span class="ck__t">Draft three messages in your stream session and get peer scores on answerability.</span>
+      </label></li>
+      <li><label class="ck__row">
+        <input class="ck__box" type="checkbox">
+        <span class="ck__t">Decide, per message, whether to send. Both choices are complete outcomes.</span>
+      </label></li>
+      <li><label class="ck__row">
+        <input class="ck__box" type="checkbox">
+        <span class="ck__t">Record every decision in your Outreach Log, sent or not, with the reason.</span>
+      </label></li>
+      <li><label class="ck__row">
+        <input class="ck__box" type="checkbox">
+        <span class="ck__t">Look at Week 08 before it starts. Bring your materials for the red-team session.</span>
+      </label></li>
+    </ol>
+    <p class="ck__note m">Ticks are kept in this browser only. Nothing here is collected or marked.</p>
+  </section>
+
+  <footer>
+    <div class="foot">
+      <div>
+        <div class="foot__big d" aria-hidden="true">Next: 08</div>
+      </div>
+      <div>
+        <p>Week 08 is the plausibility budget: peers red-team your materials for the weakest claim and time how long it takes to find it. Assessment 2 is due that Friday.</p>
+        <p class="m"><a href="index.html">Home</a> &middot; <a href="deck.html">Week 6 deck</a> &middot; <a href="#lecture">Back to the lecture</a></p>
+      </div>
+    </div>
+    <div class="foot__strip">
+      <span class="m">Week 07 &middot; the pre-warmed stranger</span>
+      <span class="m">SLOP3841 &middot; Professional Identity Performance</span>
+    </div>
+  </footer>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var root = document.documentElement;
+
+  /* ---------- smooth scroll ------------------------------- */
+  var lenis = null;
+  if (!REDUCED && window.Lenis) {
+    lenis = new Lenis({ duration:1.05, smoothWheel:true, touchMultiplier:1.6 });
+    (function raf(t){ lenis.raf(t); requestAnimationFrame(raf); })(0);
+  }
+  function scrollY(){ return lenis ? lenis.scroll : window.scrollY; }
+
+  /* ---------- SIGNATURE: velocity -> font axes ------------- */
+  var hudW = document.getElementById("hudW");
+  var hudX = document.getElementById("hudX");
+  var prog = document.getElementById("prog");
+  var W_REST = 300, W_MAX = 900, X_REST = 128, X_MIN = 56;
+  var lastY = window.scrollY, smooth = 0;
+
+  function tick(){
+    var y = scrollY();
+    var vel = Math.abs(y - lastY); lastY = y;
+    var target = Math.min(1, vel / 70);
+    smooth += (target - smooth) * (target > smooth ? 0.34 : 0.055);
+    var w = W_REST + (W_MAX - W_REST) * smooth;
+    var x = X_REST + (X_MIN - X_REST) * smooth;
+    root.style.setProperty("--kv-wght", w.toFixed(0));
+    root.style.setProperty("--kv-wdth", x.toFixed(1));
+    if (hudW) hudW.textContent = w.toFixed(0);
+    if (hudX) hudX.textContent = x.toFixed(0);
+    if (prog) {
+      var max = root.scrollHeight - window.innerHeight;
+      prog.style.width = (max > 0 ? Math.min(1, y / max) * 100 : 0).toFixed(2) + "%";
+    }
+    requestAnimationFrame(tick);
+  }
+  if (!REDUCED) requestAnimationFrame(tick);
+
+  /* ---------- section rail tracking ----------------------- */
+  var railLinks = Array.prototype.slice.call(document.querySelectorAll("#rail a"));
+  var sections  = railLinks.map(function(a){ return document.querySelector(a.getAttribute("href")); });
+
+  function markRail(){
+    var line = window.innerHeight * 0.32, best = 0;
+    sections.forEach(function(s, i){
+      if (!s) return;
+      if (s.getBoundingClientRect().top <= line) best = i;
+    });
+    railLinks.forEach(function(a, i){
+      if (i === best) a.setAttribute("data-on", "1");
+      else a.removeAttribute("data-on");
+    });
+    // The rail overflows horizontally on a phone. Reading forward pushes the
+    // active item off the RIGHT edge, so both directions have to be handled —
+    // only correcting leftward left the marker invisible for most of the page.
+    var on = railLinks[best], r = document.getElementById("rail");
+    if (on && r) {
+      var l = on.offsetLeft, rr = l + on.offsetWidth;
+      if (l < r.scrollLeft) r.scrollTo({left:l - 8, behavior:"instant"});
+      else if (rr > r.scrollLeft + r.clientWidth) {
+        r.scrollTo({left:rr - r.clientWidth + 8, behavior:"instant"});
+      }
+    }
+  }
+  window.addEventListener("scroll", markRail, {passive:true});
+  if (lenis) lenis.on("scroll", markRail);
+  markRail();
+
+  /* ---------- checklist ----------------------------------- */
+  var boxes = Array.prototype.slice.call(document.querySelectorAll(".ck__box"));
+  var count = document.getElementById("ckCount");
+  function sync(){
+    var n = boxes.filter(function(b){ return b.checked; }).length;
+    count.textContent = n + " / " + boxes.length;
+    if (n === boxes.length) count.setAttribute("data-all", "1");
+    else count.removeAttribute("data-all");
+  }
+  boxes.forEach(function(b){ b.addEventListener("change", sync); });
+  sync();
+
+  /* ---------- debug hook (hidden-tab photography) --------- */
+  window.__kin = {
+    lenis: lenis,
+    axes: function(w, x){
+      root.style.setProperty("--kv-wght", w);
+      root.style.setProperty("--kv-wdth", x);
+      if (hudW) hudW.textContent = w;
+      if (hudX) hudX.textContent = x;
+    }
+  };
+})();
+</script>
+</body>
+</html>
