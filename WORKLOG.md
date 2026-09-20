@@ -573,3 +573,72 @@ once item 1's file-level context was already loaded.
   this session. No `pnpm check`/`check:evidence` run — pilot-a sits outside
   the Astro build and its own checks per the harness's platform-facts
   section.
+
+## 2026-09-20 — Round-3 fixes, six skills built, and an unwanted-port revert
+
+- **Decision (round-3 fan-out):** five agents fixed round-3 feedback on
+  `design/pilot-a/`, each with an exclusive file scope: fiction-leak removal
+  in `index.html`/`policies.html`/`week-07.html`, a three-stream card layout
+  on `index.html` linking to a new `streams.html`, four dedicated
+  `assessment-1..4.html` pages transcribed from `CURRICULUM.md` §4 (linked
+  from `assessments.html` and from the A1–A4 rows on `index.html`), a
+  bobbing `.scue` scroll-down cue on `weeks.html`, and a full 12-slide
+  `deck.html` reframe around each week's learning outcome. One agent (the
+  assessment/streams pages) died mid-task on an API error with zero files
+  written and was relaunched clean with the same brief.
+- **Bug caught pre-commit:** a direct `grep -rniE` sweep across all of
+  `design/pilot-a/*.html` (not yet run by the dedicated skill below) found a
+  fiction leak in `weeks.html`'s lead paragraph naming "index.html" and
+  "this pilot" directly — pre-existing from an earlier round, never caught.
+  Fixed inline. See `LEARNINGS.md`.
+- **Decision (skills):** built six project-level skills in `.claude/skills/`
+  so this session's recurring workflows survive into future sessions rather
+  than being re-invented each time: `fiction-leak-sweep` (grep first pass,
+  then a fresh no-context agent for narrative leaks), `verify-pilot`
+  (pilot-a's build-less sibling of `verify-frontend`), `agent-fanout`
+  (exclusive-scope delegation rule, including the "bounded single edit is
+  still agent work" test), `port-curriculum-content` (transcribe, don't
+  invent, flag every gap), `log-learnings`, `log-prompt`.
+- **Harness correction:** Ritesh corrected a misunderstanding — `LEARNINGS.md`
+  is not code-technique-only, it is where his own learning about *how he
+  works with me* belongs, and building a skill out of a recurring ritual is
+  itself exactly that kind of entry. `CLAUDE.md`'s permanent-learnings-log
+  section and `LEARNINGS.md` were both edited to say this explicitly. Read
+  that section before reporting "nothing to log" on a session whose output
+  was process/collaboration change rather than a site change.
+- **Discovered and reverted: an unwanted concurrent Astro port.** While
+  answering "what's pending for a complete course website," found via
+  `git log -- src/`, `git status`, and the shared `TaskList` that a peer
+  session (`comp4020-ass2-riteshsivaraman-c2`) had, without this session's
+  knowledge, been porting pilot-a's fixes into the real `src/` tree: 8
+  commits (`2ca1b60`..`eba7763`, including a `src/pages/preview/` fidelity
+  page, `axis-engine.client.js` and `site-config.ts` edits) plus 5
+  uncommitted file changes on top. Ritesh confirmed this was not wanted and
+  had rewound his own session to before it happened, asking to "come back
+  from completely."
+  - **Action taken:** nothing was discarded. `backup/unwanted-src-port`
+    branch created at the pre-revert HEAD (`eba7763`), with the uncommitted
+    working-tree state committed onto it too (`4b3f270`) so the full port is
+    recoverable if any of it turns out to be wanted later. `main` was then
+    `git reset --hard` to `f8d25d9` — this session's own last commit, the
+    point immediately before the port began.
+  - **Peer session notified:** messaged
+    `comp4020-ass2-riteshsivaraman-c2 [626d29]` to stop working in that
+    direction, pointed it at the backup branch, and asked it not to push or
+    re-apply anything to `main` unilaterally. Shared task #9 ("Get pilot-a
+    fidelity preview approved before re-porting pages") deleted.
+  - **Not yet resolved:** whether the two other idle peer sessions on this
+    repo (`comp4020-ass2-riteshsivaraman-ec`, `-2a`) are related to the
+    unwanted port and need the same notice — not yet checked. Confirmation
+    from `-c2` that it has stopped had not arrived when this session ended.
+- **Next session starts here:** `main` is at `f8d25d9`
+  ("deck.html: reframe all 12 slides around each week's learning outcome"),
+  working tree clean, `design/pilot-a/` round-3 fixes are all committed and
+  landed (see commits `5f46bff`..`f8d25d9`). The "what's pending for a
+  complete course website" todo list that was being built when the port was
+  discovered was never finished — re-derive it fresh from `main`'s actual
+  state, not from anything that referenced the reverted commits. Do not
+  treat `backup/unwanted-src-port` as dead weight without checking with
+  Ritesh first; it may still contain content worth deliberately re-porting
+  later, under this session's own control rather than an unreviewed parallel
+  one.
