@@ -185,6 +185,32 @@ a{color:inherit}
   .thesis__label{border-right:0;border-bottom:1.5px solid var(--rule);position:static}
   .thesis__body{columns:1}
 }
+.streams__wrap{border-top:1.5px solid var(--rule);padding:1.3rem var(--gut) clamp(2rem,5vh,3.4rem)}
+.streams__intro,.streams__outro{margin:0 0 1.1em;max-width:var(--measure)}
+.streams__outro a{text-decoration-thickness:1px;text-underline-offset:.22em}
+.streams{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border-top:1.5px solid var(--rule);border-bottom:1.5px solid var(--rule);
+  margin:0 0 1.3em;
+}
+.streams__card{
+  border-right:1.5px solid var(--rule);
+  padding:1.2rem 1.3rem 1.5rem;
+  display:flex;flex-direction:column;gap:.65rem;
+}
+.streams__card:last-child{border-right:0}
+.streams__n{color:var(--ink2)}
+.streams__t{
+  font-family:"Anybody",sans-serif;font-variation-settings:"wght" 700,"wdth" 90;
+  text-transform:uppercase;font-size:clamp(1.05rem,1.6vw,1.4rem);line-height:1.05;margin:0;
+}
+.streams__tag{margin:0;font-size:.94rem;line-height:1.45;color:var(--ink2)}
+.streams__f{margin:0;font-size:.84rem;line-height:1.4}
+@media (max-width:760px){
+  .streams{grid-template-columns:1fr}
+  .streams__card{border-right:0;border-bottom:1.5px solid var(--rule)}
+  .streams__card:last-child{border-bottom:0}
+}
 
 /* --- 03 HORIZONTAL ACT ------------------------------------ */
 .act{
@@ -403,8 +429,31 @@ a{color:inherit}
         <p>Everyone in this room is already performing a professional identity, including the staff. The only rule is the difference between framing what is true and claiming what is not — and the course's one piece of jargon worth learning in week one is the <strong>truthfloor</strong>: the lowest claim you could make about yourself and still defend it in a room containing someone able to check. Most CVs are written a full storey above their author's truthfloor. That is survivable right up until the follow-up question.</p>
         <p>Twelve weeks run one arc. The first four establish an honest baseline and teach you to read what a role is actually asking, underneath the advertisement's boilerplate. The next four build materials fitted to a real target and then attack them — your peers red-team your claims and time how long it takes to find the weakest one. The last four perform live: interview, negotiate, and audit afterwards what became genuine and what was only ever costume.</p>
         <p>One artefact runs the whole semester. The <strong>Dossier</strong> gains one numbered section a week, is submitted in part twice, swapped with a peer once, and closed at week twelve as the capstone — graded on the process record it contains, never on whether an offer arrived, and never on the prestige of who made it.</p>
-        <p>Three field streams run the tutorials, split by how a field actually screens candidates rather than by faculty: <strong>Technical Practice</strong>, where the performance is competence and someone will ask you to open a terminal; <strong>Creative and Communications Practice</strong>, where the performance is taste and the portfolio is the evidence; <strong>Commercial and Public Practice</strong>, where the performance is judgement and nobody asks to see the spreadsheet. Pick by how your target roles screen you, not by what your degree is called.</p>
       </div>
+    </div>
+    <div class="streams__wrap">
+      <p class="streams__intro">Three field streams run the tutorials, split by how a field actually screens candidates rather than by faculty.</p>
+      <div class="streams">
+        <article class="streams__card">
+          <div class="m streams__n">01</div>
+          <h3 class="streams__t">Technical Practice</h3>
+          <p class="streams__tag">For the fields where the performance is competence, and someone will eventually ask you to open a terminal in front of them.</p>
+          <p class="streams__f">Software, engineering, data and analytics, applied and environmental science, health and biomedical technology, IT operations.</p>
+        </article>
+        <article class="streams__card">
+          <div class="m streams__n">02</div>
+          <h3 class="streams__t">Creative and Communications Practice</h3>
+          <p class="streams__tag">For the fields where the performance is taste, and the portfolio is both the evidence and the alibi.</p>
+          <p class="streams__f">Design, media production, writing and editing, marketing and communications, architecture, arts and cultural administration.</p>
+        </article>
+        <article class="streams__card">
+          <div class="m streams__n">03</div>
+          <h3 class="streams__t">Commercial and Public Practice</h3>
+          <p class="streams__tag">For the fields where the performance is judgement, and nobody will ever ask to see the spreadsheet.</p>
+          <p class="streams__f">Consulting, finance, accounting, law, policy and public service, management, NGO and program delivery.</p>
+        </article>
+      </div>
+      <p class="streams__outro">Pick by how your target roles screen you, not by what your degree is called. <a href="streams.html">Find out more about the streams &rarr;</a></p>
     </div>
   </section>
 
@@ -488,7 +537,7 @@ a{color:inherit}
         <div class="rot__item" data-rot>
           <div class="m rot__no">Refusal 02</div>
           <h2 class="d rot__say" data-scramble>No non-consenting stranger</h2>
-          <p class="rot__gloss">Week 7's outreach log records what was sent or deliberately not sent, graded identically either way. Week 9's Practice Interview Partner Pool runs on signed written consent from every interviewer. An earlier design that deceived non-consenting recruiters was rejected on exactly these grounds.</p>
+          <p class="rot__gloss">Week 7's outreach log records what was sent or deliberately not sent, graded identically either way — nobody is coached to cold-contact a stranger under false pretences. Week 9's Practice Interview Partner Pool runs on signed written consent from every interviewer, so no real recruiter is ever practised on without knowing it.</p>
         </div>
 
         <div class="rot__item" data-rot>
@@ -520,25 +569,25 @@ a{color:inherit}
 
     <div class="row">
       <div class="m row__n">A1</div>
-      <h3 class="row__t">Role Teardown and Gap Map</h3>
+      <h3 class="row__t"><a href="assessment-1.html">Role Teardown and Gap Map</a></h3>
       <p class="row__d">Dossier §§1–4: evidenced Baseline Inventory, three target ads, one four-column annotated teardown, and the tiered Gap Map. Due Fri 19 Mar, week 4.</p>
       <div class="row__w">20</div>
     </div>
     <div class="row">
       <div class="m row__n">A2</div>
-      <h3 class="row__t">Performance Materials</h3>
+      <h3 class="row__t"><a href="assessment-2.html">Performance Materials</a></h3>
       <p class="row__d">Materials fitted to one named target — CV or résumé, cover letter or pitch, one field artefact — plus the Varnish Note recording what each decision reveals or conceals. Due Fri 23 Apr, week 8.</p>
       <div class="row__w">25</div>
     </div>
     <div class="row">
       <div class="m row__n">A3</div>
-      <h3 class="row__t">Peer Critique Contribution</h3>
+      <h3 class="row__t"><a href="assessment-3.html">Peer Critique Contribution</a></h3>
       <p class="row__d">The three most substantial written critiques you gave across the semester, each with a note on what it changed, countersigned by the recipient. Due Fri 14 May, week 11.</p>
       <div class="row__w">10</div>
     </div>
     <div class="row">
       <div class="m row__n">A4</div>
-      <h3 class="row__t">Capstone: Applications in the Wild</h3>
+      <h3 class="row__t"><a href="assessment-4.html">Capstone: Applications in the Wild</a></h3>
       <p class="row__d">Real applications sent, the twelve-entry reflection log, one interview debrief, the ninety-day ramp plan, and the performance-versus-genuine audit. Graded on process only. Due Wed 26 May, week 12.</p>
       <div class="row__w">45</div>
     </div>
