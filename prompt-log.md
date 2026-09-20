@@ -357,3 +357,61 @@ Six concrete, well-specified points, several with real architectural weight
 (a genuine site-wide nav hierarchy touches every existing page; "replace
 every placeholder with real content" means building out policies/support/
 assessments/people for real, not just relabelling). Entering plan mode.
+
+## 2026-09-20 — Stop the Stage-1 restyle, redesign the frontend from scratch
+
+**Context:** mid-way through Stage 1 of an approved 7-stage plan
+(`~/.claude/plans/glistening-moseying-mountain.md`) to rebuild `src/` to
+match `design/pilot-a/` exactly. Nav.astro and Footer.astro had just been
+forked, BaseLayout/ContentLayout/MdxPageLayout local wrappers written and
+wired across six pages, and `.mast`/`.colo`/`.d`/`.hero` CSS ported into
+`notepad.css` — build green, but `index.astro`'s hero markup itself not yet
+rewritten, so nothing new was visually verified. **Prompt (verbatim):** "Ok
+stop, we need a COMPLETE redesign of the frontend, using astro. Write a
+handoff to a new session that will give it the necessary context."
+
+Clear stop instruction, unambiguous about ending the current approach. Vague
+on what "complete redesign" means in scope: same pilot-a source reworked
+from scratch, or a new design direction entirely. Treated as a directive to
+write the handoff, not to also resolve that ambiguity by guessing — the
+handoff (`WORKLOG.md`, 2026-09-20 entry above the round-3 one) flags this
+explicitly as something the next session must confirm with Ritesh before
+writing code, rather than assuming "redesign" means "finish faster."
+
+## 2026-09-20 — Night Terminal build, Wave 0 through Wave 1 kickoff
+
+**Context:** fresh session picking up the round-3 handoff. Sequence:
+"can we switch to a model with larger context window? ... otherwise suggest
+ways to reduce running into the context limit" (real constraint, answered
+with concrete mitigations — forking, not re-reading large docs, delegating
+bounded work — since a model switch isn't available mid-session); "show me
+the options when it's done" (clear, waits on async work); "resume" (killed
+subagent, clear); "yes, i requested 2+2. Let's go with daylight concrete /
+violet signal for light / dark. Now, we must build the full website. What
+are the rough parts we'll proceed in, how many passes required? Let's not
+do everything all at once." (confirms a prior ambiguity in my favour, locks
+the theme choice, and asks for a staged plan rather than one big pass —
+well-scoped, led to the 5-wave plan approved via ExitPlanMode); "let me know
+if there is anything you need from me" (open-ended check-in, no action
+implied); "hold on, i hope subagents are aware of the carastrophy from the
+last two times, always give me an opportunity to view the website by
+providing the link" (a real process correction landing mid-turn — logged as
+a standing rule: brief subagents on the two prior failed attempts, and hand
+over an actual clickable link at every verification checkpoint rather than
+just reporting what I checked).
+
+**Wave 0 verification round:** "Yes, it works. But this looks very
+different to the agreed design?" — a fair challenge, not vague: pointed at
+a specific observation (screenshots looked like a bare document, not the
+mockup's band/card language) rather than a general complaint. Answered by
+distinguishing what Wave 0 was scoped to ship (rail nav, footer, tokens,
+layouts) from what it deliberately hadn't touched yet (inner-page markup,
+which is Wave 1/2's job) — this was the plan working as designed, not a
+regression, and worth calling out explicitly rather than letting the
+challenge stand unanswered.
+
+**Latest prompt:** "Yes, go ahead with Wave 1." A short approval, but not
+the vague kind the harness rule warns about — it's greenlighting a
+already-detailed, already-approved wave from the plan file, not signing off
+on a new large artefact whose scope was never stated. Treated as clear to
+proceed with Wave 1 as specified in `~/.claude/plans/buzzing-foraging-tide.md`.

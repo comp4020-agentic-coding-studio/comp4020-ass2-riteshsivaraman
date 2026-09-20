@@ -1,0 +1,29 @@
+---
+/**
+ * The colophon. Link list is read from `siteConfig.links` — the same
+ * source Nav.astro iterates — so the two can never drift the way the
+ * previous, abandoned attempt did (a separate hardcoded list here that
+ * fell out of sync with Nav's).
+ */
+import { siteConfig } from "../site-config";
+import { courseMeta } from "../course-config";
+import { withBase } from "astro-theme-university/url";
+
+const links = siteConfig.links ?? [];
+---
+
+<footer class="colophon">
+  <div>
+    {courseMeta.code} · {courseMeta.title} · {siteConfig.name}
+  </div>
+  <ul>
+    {
+      links.map((link) => (
+        <li>
+          <a href={withBase(link.href)}>{link.text}</a>
+        </li>
+      ))
+    }
+  </ul>
+  <div>{siteConfig.licence}</div>
+</footer>

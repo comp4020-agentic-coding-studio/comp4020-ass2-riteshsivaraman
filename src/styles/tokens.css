@@ -1,0 +1,123 @@
+/* Design tokens — "Night Terminal" identity, two finished directions:
+   Daylight Concrete (light, default) and Violet Signal (dark).
+
+   Three-state pattern: bare :root carries the light palette; the
+   prefers-color-scheme block (guarded so an explicit light choice always
+   wins) carries dark; the [data-theme] overrides let the toggle in Nav win
+   either direction. Never redeclare a token only inside a media query or
+   [data-theme] block — every token must resolve in the plain, un-stamped
+   state too.
+
+   --claim-text / --claim-fill (and the --evidence pair) are deliberately
+   separate: one hex cannot pass contrast both as foreground text on --ink
+   and as a filled background carrying white text. Keep that split when
+   adding any new accent role. */
+
+:root {
+  color-scheme: light;
+
+  /* Daylight Concrete — pale warm industrial grey, not cream */
+  --ink: #e8e4dc;
+  --ink-soft: #efece5;
+  --ink-line: #c4bdae;
+  --paper: #f5f2ea;
+  --paper-soft: #faf8f2;
+  --paper-line: #b8b0a0;
+  --text-ink: #1c1712;
+  --text-ink-dim: #5a5245;
+  --text-paper: #1c1712;
+  --text-paper-dim: #5a5245;
+
+  --claim: #b3451c;
+  --claim-dark: #7c2d0f;
+  --claim-text: #b3451c;
+  --claim-fill: #c2410c;
+  --evidence: #166534;
+  --evidence-dark: #14532d;
+  --evidence-text: #166534;
+  --evidence-fill: #15803d;
+  --accent-3-fill: #1d4ed8;
+
+  --rail-w: 280px;
+  --font-display: "Archivo Black", sans-serif;
+  --font-body: "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    /* Violet Signal — near-black violet ink/paper */
+    --ink: #0d0a14;
+    --ink-soft: #17121f;
+    --ink-line: #332a44;
+    --paper: #1c1826;
+    --paper-soft: #242032;
+    --paper-line: #0d0a14;
+    --text-ink: #f1eef7;
+    --text-ink-dim: #ada3c4;
+    --text-paper: #f1eef7;
+    --text-paper-dim: #ada3c4;
+
+    --claim: #fbbf24;
+    --claim-dark: #92400e;
+    --claim-text: #fbbf24;
+    --claim-fill: #92400e;
+    --evidence: #38bdf8;
+    --evidence-dark: #075985;
+    --evidence-text: #38bdf8;
+    --evidence-fill: #075985;
+    --accent-3-fill: #16a34a;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --ink: #0d0a14;
+  --ink-soft: #17121f;
+  --ink-line: #332a44;
+  --paper: #1c1826;
+  --paper-soft: #242032;
+  --paper-line: #0d0a14;
+  --text-ink: #f1eef7;
+  --text-ink-dim: #ada3c4;
+  --text-paper: #f1eef7;
+  --text-paper-dim: #ada3c4;
+
+  --claim: #fbbf24;
+  --claim-dark: #92400e;
+  --claim-text: #fbbf24;
+  --claim-fill: #92400e;
+  --evidence: #38bdf8;
+  --evidence-dark: #075985;
+  --evidence-text: #38bdf8;
+  --evidence-fill: #075985;
+  --accent-3-fill: #16a34a;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --ink: #e8e4dc;
+  --ink-soft: #efece5;
+  --ink-line: #c4bdae;
+  --paper: #f5f2ea;
+  --paper-soft: #faf8f2;
+  --paper-line: #b8b0a0;
+  --text-ink: #1c1712;
+  --text-ink-dim: #5a5245;
+  --text-paper: #1c1712;
+  --text-paper-dim: #5a5245;
+
+  --claim: #b3451c;
+  --claim-dark: #7c2d0f;
+  --claim-text: #b3451c;
+  --claim-fill: #c2410c;
+  --evidence: #166534;
+  --evidence-dark: #14532d;
+  --evidence-text: #166534;
+  --evidence-fill: #15803d;
+  --accent-3-fill: #1d4ed8;
+}

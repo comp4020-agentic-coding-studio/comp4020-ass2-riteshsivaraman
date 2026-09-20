@@ -1,0 +1,105 @@
+---
+/**
+ * Fresh fork of astro-theme-university/layouts/BaseLayout.astro, keeping
+ * the head/meta/SEO boilerplate worth preserving (title, description,
+ * favicon, robots) but swapping in this site's own Nav/Footer/tokens/base
+ * CSS instead of the theme's.
+ *
+ * The theme's own `<OpenGraph>` component is skipped rather than ported:
+ * this course has no image generation (the provisioned gateway is
+ * chat-only), so there is no social-card image to point one at, and a
+ * bare title/description og: pair without an image isn't worth the extra
+ * import surface this wave.
+ */
+import "@fontsource/archivo-black/400.css";
+import "@fontsource/ibm-plex-sans/400.css";
+import "@fontsource/ibm-plex-sans/500.css";
+import "@fontsource/ibm-plex-sans/600.css";
+import "@fontsource/ibm-plex-sans/700.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
+import "@fontsource/ibm-plex-mono/600.css";
+import "../styles/tokens.css";
+import "../styles/base.css";
+import Nav from "../components/Nav.astro";
+import Footer from "../components/Footer.astro";
+import type { ImageMetadata } from "astro";
+
+export interface BaseLayoutProps {
+  /** Page title, used in the HTML `<title>` element. */
+  title: string;
+  /** Page meta description for SEO. */
+  description?: string;
+  /** Unlisted page: emits `<meta name="robots" content="noindex">`. */
+  unlisted?: boolean;
+  /** Favicon image, passed through from siteConfig. */
+  favicon?: ImageMetadata;
+  /** The remaining fields accepted here only because pages spread
+   *  `{...siteConfig}` into ContentLayout, which forwards to this layout —
+   *  Nav and Footer import siteConfig themselves, so these are otherwise
+   *  unused, but must be accepted rather than rejected. */
+  name?: string;
+  links?: { text: string; href: string }[];
+  licence?: string;
+  /** Accepted for prop-contract compatibility with pages that pass a
+   *  heroImage (there is no image generation on this site, so it is never
+   *  rendered). */
+  heroImage?: unknown;
+  heroImageAlt?: string;
+}
+
+type Props = BaseLayoutProps;
+
+const { title, description, unlisted = false, favicon } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {/* Blocking, inline, and ahead of every stylesheet that reads
+        data-theme — reads the stored choice synchronously so there is no
+        flash of the wrong theme between first paint and hydration. Falls
+        back to leaving the attribute unset when nothing is stored, letting
+        tokens.css's `prefers-color-scheme` block decide instead. */}
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem("slop3841-theme");
+          if (stored === "dark" || stored === "light") {
+            document.documentElement.dataset.theme = stored;
+          }
+        } catch (e) {
+          /* storage unavailable — prefers-color-scheme decides instead */
+        }
+      })();
+    </script>
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {unlisted && <meta name="robots" content="noindex" />}
+    <meta name="generator" content={Astro.generator} />
+    {
+      favicon && (
+        <link
+          rel="icon"
+          type={favicon.format === "svg" ? "image/svg+xml" : undefined}
+          href={favicon.src}
+        />
+      )
+    }
+    <slot name="head" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <div class="shell">
+      <Nav />
+      <div class="main-col">
+        <main id="main">
+          <slot />
+        </main>
+        <Footer />
+      </div>
+    </div>
+  </body>
+</html>

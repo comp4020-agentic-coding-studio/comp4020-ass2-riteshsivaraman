@@ -1,0 +1,28 @@
+---
+/**
+ * Thin wrapper matching the prop surface existing pages already call:
+ * `title`, `description`, optional `heroImage`/`heroImageAlt` (accepted,
+ * never rendered — no image generation on this site), plus whatever
+ * `{...siteConfig}` spreads in (`name`, `links`, `favicon`, `licence`).
+ * Confirmed against src/pages/sessions/index.astro, src/pages/people/[slug].astro,
+ * src/pages/assessments/[slug].astro, src/pages/sessions/[slug].astro,
+ * src/pages/lectures/[slug].astro — all `<ContentLayout title=... description=...
+ * {...siteConfig}>`, two of them also pass `heroImage`/`heroImageAlt`.
+ */
+import BaseLayout, { type BaseLayoutProps } from "./BaseLayout.astro";
+
+export interface ContentLayoutProps extends Omit<BaseLayoutProps, "description"> {
+  description?: string | null;
+}
+
+type Props = ContentLayoutProps;
+
+const { title, description, ...rest } = Astro.props;
+---
+
+<BaseLayout title={title} description={description ?? undefined} {...rest}>
+  <slot name="head" slot="head" />
+  <h1>{title}</h1>
+  {description && <p class="lead">{description}</p>}
+  <slot />
+</BaseLayout>

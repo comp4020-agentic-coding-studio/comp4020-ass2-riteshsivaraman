@@ -1,0 +1,117 @@
+---
+/**
+ * The sticky left rail: brand, theme toggle, and course navigation.
+ *
+ * Links are read straight from `siteConfig.links` — never hardcoded here —
+ * so the rail can never drift from the single flat list the rest of the
+ * site treats as the nav's source of truth. `aria-current="page"` is
+ * derived from the current URL rather than passed in, so it stays correct
+ * on every route without each page having to say which link is "its own".
+ *
+ * The 12-week audit-progress tracker described in the design brief is
+ * deliberately not built here yet — `SemesterTracker.astro` already owns
+ * that computation (build-time + client-clock correction) for the homepage,
+ * and duplicating it into the rail is a later wave's job, not this one's.
+ */
+import { siteConfig } from "../site-config";
+import { withBase } from "astro-theme-university/url";
+
+const links = siteConfig.links ?? [];
+const currentPath = Astro.url.pathname;
+
+// A link is "current" if the page path matches it exactly, or sits under it
+// as a nested route (e.g. /sessions/week-01/ under /sessions/) — but never
+// for "/" itself, which would otherwise match every route's leading slash.
+const isCurrent = (href: string) => {
+  const base = withBase(href);
+  const normalise = (p: string) => (p.endsWith("/") ? p : `${p}/`);
+  if (base === withBase("/")) return normalise(currentPath) === normalise(base);
+  return normalise(currentPath).startsWith(normalise(base));
+};
+---
+
+<aside class="rail" id="rail">
+  <div class="brand">
+    <div>
+      <a class="brand__name" href={withBase("/")}>{siteConfig.name}</a>
+      <div class="brand__sub">{siteConfig.licence}</div>
+    </div>
+    <button class="mobile-bar" id="railToggle" type="button" aria-expanded="false" aria-controls="rail">
+      Menu
+    </button>
+  </div>
+
+  <button
+    class="theme-toggle"
+    id="themeToggle"
+    type="button"
+    aria-pressed="false"
+    aria-label="Switch to dark theme"
+  >
+    <span class="theme-toggle__icon" aria-hidden="true" data-theme-icon>◐</span>
+    <span data-theme-label>Dark mode</span>
+  </button>
+
+  <nav class="rail-nav" aria-label="Course">
+    {
+      links.map((link) => (
+        <a href={withBase(link.href)} aria-current={isCurrent(link.href) ? "page" : undefined}>
+          {link.text}
+        </a>
+      ))
+    }
+  </nav>
+
+  <div class="rail-foot">
+    {siteConfig.licence}
+  </div>
+</aside>
+
+<script is:inline data-astro-rerun>
+  (function () {
+    var STORAGE_KEY = "slop3841-theme";
+    var toggle = document.getElementById("themeToggle");
+    var railToggle = document.getElementById("railToggle");
+    var rail = document.getElementById("rail");
+
+    function currentTheme() {
+      return document.documentElement.dataset.theme === "dark" ||
+        (!document.documentElement.dataset.theme &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+        ? "dark"
+        : "light";
+    }
+
+    function paint(theme) {
+      var label = toggle.querySelector("[data-theme-label]");
+      var icon = toggle.querySelector("[data-theme-icon]");
+      var goingTo = theme === "dark" ? "light" : "dark";
+      toggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+      toggle.setAttribute("aria-label", "Switch to " + goingTo + " theme");
+      if (label) label.textContent = goingTo === "dark" ? "Dark mode" : "Light mode";
+      if (icon) icon.textContent = theme === "dark" ? "◑" : "◐";
+    }
+
+    if (toggle) {
+      paint(currentTheme());
+      toggle.addEventListener("click", function () {
+        var next = currentTheme() === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        try {
+          localStorage.setItem(STORAGE_KEY, next);
+        } catch (e) {
+          /* storage unavailable — theme still applies for this load */
+        }
+        paint(next);
+      });
+    }
+
+    if (railToggle && rail) {
+      railToggle.addEventListener("click", function () {
+        var open = rail.classList.toggle("is-open");
+        railToggle.setAttribute("aria-expanded", open ? "true" : "false");
+        railToggle.textContent = open ? "Close" : "Menu";
+      });
+    }
+  })();
+</script>

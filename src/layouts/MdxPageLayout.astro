@@ -1,0 +1,47 @@
+---
+/**
+ * Local mirror of astro-theme-university/layouts/MdxPageLayout.astro,
+ * wired to this site's own BaseLayout instead of the theme's. Same prop
+ * contract: `siteConfig`, optional `lead`, and frontmatter arriving either
+ * as `Astro.props.frontmatter` (MDX) or as direct props.
+ *
+ * PageLayout.astro (src/layouts/PageLayout.astro, the integration's
+ * `defaultLayout` for every `.mdx` page — assessments/index.mdx,
+ * policies/index.mdx, people/index.mdx, glossary/index.mdx,
+ * lectures/index.mdx) previously imported the theme's own MdxPageLayout
+ * directly, which would have left every MDX page wearing the old chrome.
+ * Its import was repointed at this file so those five pages pick up the
+ * new Nav/Footer/tokens — see PageLayout.astro for the title/lead
+ * rendering it already does before forwarding here.
+ */
+import type { ImageMetadata } from "astro";
+import BaseLayout from "./BaseLayout.astro";
+
+interface SiteConfigLike {
+  name: string;
+  links?: { text: string; href: string }[];
+  favicon?: ImageMetadata;
+  licence?: string;
+}
+
+interface Props {
+  siteConfig: SiteConfigLike;
+  lead?: boolean;
+  frontmatter?: Record<string, unknown>;
+}
+
+const { siteConfig, lead = true, frontmatter, ...direct } = Astro.props;
+const props = frontmatter ?? direct;
+const { title, description, heroImage, ...rest } = props as {
+  title: string;
+  description?: string;
+  heroImage?: unknown;
+  [key: string]: unknown;
+};
+---
+
+<BaseLayout title={title} description={description} {...siteConfig} {...rest}>
+  <slot name="head" slot="head" />
+  {lead && description && <p class="lead">{description}</p>}
+  <slot />
+</BaseLayout>
