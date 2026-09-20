@@ -271,7 +271,8 @@ whether design X carries a *known, already-fixed* bug before porting it
 verbatim — fidelity to the bug is not the goal, fidelity to the design
 intent is, and the fix is usually already sitting in this file.
 
-**Status: open, this fix was insufficient.** Round-2 feedback (2026-09-20)
+**Status: open, this fix was insufficient on the pages it did cover.**
+Round-2 feedback (2026-09-20)
 reported the same symptom still live in `index.html`'s pinned rotator and
 the week pages' `.wh__t`/`.act2__h`/`.ck__h` headings. The 78–96 band is one
 global number; each of those headings has its own `max-width` (in `ch`) and
@@ -288,7 +289,50 @@ porting) still holds; it just wasn't sufficient on its own here, because the
 prior fix's own clamp was itself unverified against every element it had to
 cover.
 
+**Status: open — still insufficient on `deck.html`.** Round-3 feedback
+(2026-09-20) found the same line-count-flip symptom in the deck, which
+`initGuards()` was never extended to cover (round 2 only touched
+`index.html`/week pages). Decision this round: remove the kinetic-stretch
+effect from the deck's headings rather than extend the guard there — the
+deck is single-slide, full-viewport content where the effect earns its keep
+less than on the scrolling pages, so subtracting the effect is simpler and
+more robust than adding a third measured-range instance.
+
+### The site can leak evidence it's a class project
+
+Round-3 feedback (2026-09-20) reported seeing artefacts in `design/pilot-a/`
+that read as belonging to a hypothetical build rather than a real course —
+references to filenames like `index.html`, and language implying prior
+design iterations. Nothing in the checks catches this class of defect: axe
+and the broken-links checker verify structure, not whether the copy admits
+to being an assignment. Main and content-authoring agents, both carrying
+full build history in context, are also the least likely people to notice
+it — they read "index.html" or "the pilot" as normal working vocabulary,
+not as a leak.
+
+**Status: open.** Mitigation agreed and recorded in `CLAUDE.md`'s "Design
+and content direction": periodically dispatch a fresh subagent with no
+prior build context to sweep rendered pages specifically for this failure
+mode, since a stranger's read is the only one that reliably notices it.
+
 ## Patterns that worked
+
+### Orchestration only pays off when execution, not just fan-out, is delegated
+
+A session diagnosed itself as having blown its context budget (154.5k/200k
+after one compaction) despite running an "agent team" round. Of the six
+round-2 fixes, only one (real content across four pages) was actually
+fan-out; the other five were bounded single edits main did inline because
+each was "just one small change." Inline execution is what consumes main's
+context — reading files, reasoning about diffs, writing edits — regardless
+of whether the task had anything to parallelise against.
+
+**Applied:** the test for delegating is "does this need main's judgement
+while it's being written," not "is there more than one of these." A single
+well-specified CSS tweak or effect removal goes to an agent exactly like a
+four-way content fan-out does; the difference between them is whether the
+agent needs mid-task direction from main, not whether main could technically
+do it in one edit. Recorded in `CLAUDE.md`'s "Agent team" section.
 
 ### Per-element measured-safe-range beats a shared numeric clamp
 

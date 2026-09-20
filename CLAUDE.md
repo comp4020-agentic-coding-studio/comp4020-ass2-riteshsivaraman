@@ -134,6 +134,15 @@ exclusive write scope, and no file has two owners in a wave — an agent
 needing a change outside its scope messages the main thread instead of
 editing.
 
+**Delegate execution, not just fan-out.** A bounded single edit that doesn't
+need main's judgement mid-execution is still agent work, even when there's
+only one of it and nothing to parallelise against. Diagnosed after a session
+that blew its context budget (154.5k/200k after one compaction) because main
+did four mechanical fixes inline and only parallelised the one task that had
+multiple pieces — inline execution is what burns main's context, not the
+absence of parallelism. The test is "does this need my judgement while it's
+being written," not "is there more than one of these."
+
 ## Git hygiene
 
 Commit after each meaningful unit of work with a descriptive message,
@@ -184,6 +193,16 @@ default above to a flat ban.
   whether an effect reads as alive or as jank. A vague "check it out" makes
   the user re-derive what "working" means from scratch, and a check they
   don't know to run doesn't get run.
+- **The site must read as shippable, not as evidence of being a class
+  project.** No leaked authoring artefacts in visible copy or content —
+  filenames like `index.html`, references to "pilot," prior design variants,
+  or any meta-language admitting this is an assignment. The fiction is that
+  Slop University actually runs this course; nothing on the live pages
+  should contradict that. Periodically dispatch a fresh subagent with no
+  prior context — one that hasn't been steeped in the build history and so
+  reads pages the way a marker or a stranger would — specifically to sweep
+  rendered content for this failure mode, since main and content-authoring
+  agents carrying full build context are the least likely to notice it.
 
 ## Session handoff
 

@@ -71,11 +71,13 @@ a{color:inherit}
   border-right:1.5px solid var(--rule);white-space:nowrap;
 }
 .mast__code i{font-style:normal;color:var(--volt)}
-.mast__nav{display:flex;gap:0;align-items:stretch;padding:0}
+.mast__nav{display:flex;gap:0;align-items:stretch;padding:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mast__nav::-webkit-scrollbar{display:none}
 .mast__nav a{
   font-family:"Martian Mono",monospace;font-size:.64rem;letter-spacing:.14em;
   text-transform:uppercase;text-decoration:none;display:flex;align-items:center;
   padding:0 clamp(.7rem,1.6vw,1.4rem);border-right:1.5px solid var(--rule);position:relative;
+  flex:0 0 auto;white-space:nowrap;
 }
 .mast__nav a::after{
   content:"";position:absolute;inset:auto 0 0 0;height:.42em;background:var(--volt);
@@ -97,8 +99,10 @@ a{color:inherit}
   /* explicit row: grid auto-placement is sparse, so without this the HUD
      lands below the full-width nav instead of beside the wordmark */
   .mast__hud{grid-row:1;grid-column:2;border-left:0;font-size:.55rem}
-  .mast__nav{grid-column:1/-1;border-top:1.5px solid var(--rule)}
-  .mast__nav a{flex:1;justify-content:center;padding:.55rem 0}
+  .mast__nav{grid-column:1/-1;border-top:1.5px solid var(--rule);
+    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent 100%);
+    mask-image:linear-gradient(90deg,#000 88%,transparent 100%)}
+  .mast__nav a{flex:0 0 auto;justify-content:center;padding:.55rem 1rem}
   .mast__nav a:last-child{border-right:0}
 }
 .prog{position:fixed;inset:0 0 auto 0;height:3px;z-index:80;pointer-events:none}
@@ -377,6 +381,9 @@ a{color:inherit}
     <a href="weeks.html" aria-current="page">Weeks</a>
     <a href="deck.html">Deck</a>
     <a href="assessments.html">Assessments</a>
+    <a href="people.html">People</a>
+    <a href="policies.html">Policies</a>
+    <a href="resources.html">Resources</a>
   </nav>
   <div class="mast__hud" aria-hidden="true">
     axes <b id="hudW">300</b><span>/</span><b id="hudX">96</b>
@@ -789,15 +796,21 @@ a{color:inherit}
   // Rail links are same-page anchors; left to the browser default they jump
   // instantly, which reads as broken next to Lenis smoothing every other
   // scroll on this page. Route the click through Lenis instead, offsetting
-  // by the sticky masthead height so the target section isn't hidden under it.
+  // by the sticky masthead height (plus the rail's own docked height, since
+  // the rail stays stuck under the masthead) and a 16px breathing gap so
+  // the target section isn't hidden under either and doesn't land flush.
+  var GAP = 16;
   railLinks.forEach(function(a){
     a.addEventListener("click", function(e){
       var target = document.querySelector(a.getAttribute("href"));
       if (!target) return;
       e.preventDefault();
       var navh = parseFloat(getComputedStyle(root).getPropertyValue("--navh")) || 0;
-      if (lenis) lenis.scrollTo(target, { offset: -navh - 12 });
-      else window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - navh - 12, behavior: REDUCED ? "auto" : "smooth" });
+      var railEl = document.getElementById("rail");
+      var railh = railEl ? railEl.getBoundingClientRect().height : 0;
+      var off = -navh - railh - GAP;
+      if (lenis) lenis.scrollTo(target, { offset: off });
+      else window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY + off, behavior: REDUCED ? "auto" : "smooth" });
     });
   });
 
