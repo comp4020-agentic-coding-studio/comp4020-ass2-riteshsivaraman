@@ -3,7 +3,6 @@ import { getPublishedCollection } from "astro-course-university/content";
 import { withBase } from "astro-theme-university/url";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ClaimStamp from "../components/ClaimStamp.astro";
-import SemesterTracker from "../components/SemesterTracker.astro";
 import { courseMeta } from "../course-config";
 import { formatCourseDate } from "../lib/dates";
 import { siteConfig } from "../site-config";
@@ -135,7 +134,6 @@ const ladderColors = ["var(--claim-fill)", "var(--accent-3-fill)", "var(--ink-li
         </dd>
       </div>
     </dl>
-    <SemesterTracker />
   </section>
 
   <section class="band band--paper" aria-labelledby="streams-heading">
@@ -313,7 +311,7 @@ const ladderColors = ["var(--claim-fill)", "var(--accent-3-fill)", "var(--ink-li
   /* ---------- streams ---------- */
   .streams-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1.3fr 1fr 1fr;
     gap: 24px;
     margin-top: 32px;
   }
@@ -359,30 +357,47 @@ const ladderColors = ["var(--claim-fill)", "var(--accent-3-fill)", "var(--ink-li
   /* ---------- week grid ---------- */
   .week-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(6, 1fr);
+    grid-auto-rows: 150px;
+    gap: 10px;
     margin-top: 32px;
   }
 
   .wk {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 6px;
     padding: 16px;
-    border: 1px solid var(--paper-line);
+    border: 2px solid var(--paper-line);
     background: var(--paper);
     text-decoration: none;
     color: var(--text-paper);
-    min-height: 108px;
+    transition:
+      transform 0.15s ease,
+      background 0.15s ease;
   }
 
   .wk:hover,
   .wk:focus-visible {
     border-color: var(--evidence-fill);
+    transform: translateY(-4px);
   }
 
   .wk--big {
     grid-column: span 2;
+    grid-row: span 2;
+    background: var(--evidence-fill);
+    color: #fff;
+    border-color: var(--evidence-fill);
+  }
+
+  .wk--big .wk__t {
+    font-size: 24px;
+  }
+
+  .wk--big:hover {
+    background: var(--evidence-text);
   }
 
   .wk--due {
@@ -419,12 +434,18 @@ const ladderColors = ["var(--claim-fill)", "var(--accent-3-fill)", "var(--ink-li
     font-weight: 600;
   }
 
+  .wk--big .wk__flag {
+    color: #ffe3d6;
+  }
+
   @media (max-width: 900px) {
     .week-grid {
       grid-template-columns: repeat(2, 1fr);
+      grid-auto-rows: 130px;
     }
 
     .wk--big {
+      grid-row: span 1;
       grid-column: span 2;
     }
   }
@@ -449,26 +470,28 @@ const ladderColors = ["var(--claim-fill)", "var(--accent-3-fill)", "var(--ink-li
 
   .assess-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: var(--ink-line);
   }
 
   .assess-card {
     display: block;
     padding: 20px;
-    border: 1px solid var(--ink-line);
+    background: var(--ink-soft);
     text-decoration: none;
     color: var(--text-ink);
   }
 
   .assess-card:hover,
   .assess-card:focus-visible {
-    border-color: var(--text-ink);
+    background: var(--paper);
   }
 
   .assess-card__w {
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 26px;
+    font-weight: 700;
     color: var(--evidence-text);
   }
 
@@ -487,7 +510,7 @@ const ladderColors = ["var(--claim-fill)", "var(--accent-3-fill)", "var(--ink-li
 
   @media (max-width: 900px) {
     .assess-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: 1fr 1fr;
     }
   }
 

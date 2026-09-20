@@ -415,3 +415,47 @@ the vague kind the harness rule warns about — it's greenlighting a
 already-detailed, already-approved wave from the plan file, not signing off
 on a new large artefact whose scope was never stated. Treated as clear to
 proceed with Wave 1 as specified in `~/.claude/plans/buzzing-foraging-tide.md`.
+
+**Mid-verification prompt:** "My suggestion would be, don't waste too many
+tokens on observing screenshots yourself, since they do take up many
+tokens, I can do that for you." A clear, specific process correction — not
+vague. Landed mid-visual-verification-crawl for Wave 1; cut the remaining
+screenshot-by-screenshot self-review short, reported what had already been
+visually confirmed (desktop dark, desktop light, mobile nav collapse), and
+handed the live preview link over for Ritesh to check the rest himself.
+Wave 1 committed as `9e2ea5f` on the strength of `pnpm check`/axe (already
+green pre-compaction) plus that partial visual pass.
+
+**Design-fidelity challenge:** "It does not resemble the original design,
+any reason why?" Real signal, not vague — treated as a direct instruction to
+investigate, not to reassure. Re-read the approved mockup
+(`/tmp/slop3841-mockup-v2.html`) in full and diffed it against the shipped
+`index.astro`/`Nav.astro`/`base.css`. Found three genuine gaps: the rail's
+signature always-visible 12-tick audit tracker was never built (Wave 1
+instead put a large list-based tracker in the homepage body only), the
+week-grid was 4 columns instead of the mockup's 6, and the assess-grid was
+2×2 instead of 4-across with the background-gap hairline-divider technique.
+The stampcard clip-path/rotation, initially also flagged as missing, turned
+out to already be correct in `base.css` — a false alarm from checking the
+wrong files first. Fixed all three real gaps (compact tick-grid tracker
+added to `Nav.astro` via a new shared `lib/semester.ts` helper, week-grid to
+6 columns with the `.wk--big` 2×2 solid-fill treatment, assess-grid to the
+4-column hairline-divider layout), reverified with `pnpm check` and a
+targeted visual pass. Per `feedback_dont_fix_on_question.md`, presented the
+findings and fixes without committing and asked Ritesh to confirm before
+folding them into history — did not commit as a follow-up fix
+unilaterally.
+
+**Approval plus new feedback:** "It looks much better. My only feedback is
+that the nice visual features/components are buried towards the end of the
+page and arent noticed as easily. Anyways, continue with building the rest
+of the website, we are going in a good direction now." Three things in one
+message: approval to commit the fidelity fixes, a new and specific (not
+vague) complaint about page structure, and authorisation to proceed into
+Wave 2+. Diagnosed the "buried" complaint as the homepage's detailed
+`<SemesterTracker />` list sitting between the hero and the streams grid,
+redundant now that the rail carries its own compact tracker and absent from
+the mockup's homepage body entirely — removed it from `index.astro` (kept
+the component for reuse on `sessions/index.astro` in Wave 2), reverified
+with `pnpm check` and a visual pass, and committed the fidelity fixes and
+this structural fix together.

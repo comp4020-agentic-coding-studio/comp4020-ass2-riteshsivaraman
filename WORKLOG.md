@@ -574,6 +574,136 @@ once item 1's file-level context was already loaded.
   the Astro build and its own checks per the harness's platform-facts
   section.
 
+## 2026-09-20 — src/ restyle-vs-eject attempt abandoned; full Astro redesign called for
+
+**This entry supersedes the "Stage 1" work-in-progress below it in this
+file's chronology (it's appended above, but happened after).** A fresh
+session picking this up should read this entry first, then decide with
+Ritesh whether anything in the uncommitted working tree is worth keeping
+before starting the redesign — do not assume yes or no.
+
+- **Context:** a prior session ran `pnpm approve-plan`-style sign-off on a
+  7-stage plan (still on disk at
+  `~/.claude/plans/glistening-moseying-mountain.md`) to rebuild `src/` (the
+  real, required Astro deliverable) so it looks exactly like
+  `design/pilot-a/` (a static-HTML "Kinetic Manifesto" prototype, never wired
+  into the build). Stage 1 was "design-system infra + home page only," gated
+  behind an explicit checkpoint before any other stage started.
+- **What happened in Stage 1, in order:**
+  1. CSS-only restyle of the theme's `.at-nav`/`.at-footer` against
+     `notepad.css`, plus new section CSS appended to `index.astro` below the
+     page's existing, untouched hero.
+  2. Ritesh inspected the running preview himself and said, verbatim: *"I've
+     opened up the preview and it looks like you already failed your task.
+     This looks almost identical to the astro project initially in src, and
+     doesn't look like pilot-a AT ALL... Do you see the difference? I'm not
+     sure why it is difficult to understand."* Two screenshots made the gap
+     concrete: pilot-a's giant edge-to-edge `.hl` headline with a red
+     highlight-wipe, inverted-tab masthead and live "AXES 300/96" HUD vs. the
+     site's small default `<h1>`/lead and a CSS-tinted version of the theme's
+     own nav.
+  3. **Root cause, self-diagnosed on inspection:** `astro-theme-university`'s
+     `BaseLayout.astro`/`ContentLayout.astro`/`MdxPageLayout.astro` hardcode
+     their own `Nav`/`Footer` imports and unconditionally inject a generic
+     `<h1>{title}</h1>`/`<p class="lead">` ahead of any page-authored hero
+     slot content, with no prop or slot to override either. A CSS restyle of
+     `.at-nav`/`.at-footer` was a ceiling from the start, not a path to
+     pixel parity — and a subagent's prior "hero: pass" visual-QA verdict on
+     this exact page was wrong, which is itself the bigger problem: a
+     subjective screenshot pass/fail was being treated as equivalent to an
+     actual structural diff against pilot-a's markup.
+  4. Ritesh's fix instruction: *"Eject and fork Nav.astro so it's
+     pixel-exact,"* then, once component-scoped forking was under way:
+     *"However, this is not just about the mast, it is about the whole
+     website."*
+  5. Acting on that, this session forked `Nav.astro` → pilot-a's `.mast`
+     (3-column grid: course-code wordmark / horizontal tab strip with
+     inverted current-tab + underline-slide / live axis HUD), `Footer.astro`
+     → pilot-a's `.colo` colophon (label + convenor prose + link rows, giant
+     `.colo__big` decorative wordmark, credit strip), and local
+     `BaseLayout.astro`/`ContentLayout.astro`/`MdxPageLayout.astro` wrappers
+     around the theme's so those two local components actually render, with
+     a `heroSlot` opt-out on `ContentLayout` for pages supplying their own
+     hero. Six pages' + `PageLayout.astro`'s imports were repointed at the
+     local forks. `.d` (wrapping display-type role) and the full
+     `.hero`/`.hero__kick`/`.hl`/`.field` wipe/`.hero__foot` CSS were ported
+     into `notepad.css`. `pnpm build` was green (axe clean, no broken links,
+     42 pages) after each tranche. **Not done:** `index.astro`'s body markup
+     itself was never rewritten to use the new `.hero` structure — the CSS
+     was staged but the page still renders its pre-existing hero markup, so
+     none of this was visually verified against pilot-a before the session
+     was stopped.
+- **Ritesh's stop instruction, verbatim:** *"Ok stop, we need a COMPLETE
+  redesign of the frontend, using astro. Write a handoff to a new session
+  that will give it the necessary context."* Read as: the fork-by-fork,
+  CSS-first, restyle-what-you-can approach — even once it escalated to
+  ejecting individual theme components — is not the right unit of work
+  anymore. The next session should treat the frontend as a from-scratch
+  Astro build against pilot-a's actual design (or a redesign it agrees with
+  Ritesh on), not a patch chain against the existing theme-derived `src/`.
+- **State left behind, uncommitted, nothing pushed:**
+  - Modified: `src/styles/notepad.css` (`.mast`/`.mast__*` fully replacing
+    `.at-nav`, `.colo`/`.colo__*` fully replacing `.at-footer`, `.d` utility
+    class, full `.hero`/`.hero__kick`/`.hl`/`.hl--bleed`/`.hl--in`/
+    `.hl--nudge`/`.field`/`.field__bg`/`.field__t`/`.hero__foot` block —
+    the last of these has no markup consumer yet), `src/scripts/axis-
+    engine.client.js` (added `#mast-hud-w`/`#mast-hud-x` live text updates,
+    wired to nothing else new), `src/pages/index.astro` (new CSS for
+    streams/act/rotator/ledger sections added earlier in the session, plus
+    two `withBase()` href fixes; hero markup itself unchanged), and the
+    import line in each of `src/layouts/PageLayout.astro`,
+    `src/pages/{index,sessions/index,sessions/[slug],people/[slug],
+    assessments/[slug],lectures/[slug]}.astro` (now pointing at local layout
+    forks instead of the theme's).
+  - New, untracked: `src/components/Nav.astro`, `src/components/Footer.astro`,
+    `src/layouts/BaseLayout.astro`, `src/layouts/ContentLayout.astro`,
+    `src/layouts/MdxPageLayout.astro`.
+  - `package.json`/`pnpm-lock.yaml` also show as modified in `git status`
+    from earlier in the session; not audited as part of this handoff — check
+    what changed before assuming it's redesign-related.
+  - None of this is committed. `main` is unchanged from `448555a`. A fresh
+    session should look at this diff and ask Ritesh whether any piece of it
+    (the Nav/Footer/layout forks in particular — they solve a real platform
+    constraint, forced markup with no override point, that will recur in any
+    from-scratch rebuild too) is worth keeping before a `git stash`/reset, or
+    whether he'd rather start the redesign on a clean tree. **Don't discard
+    or reset unilaterally — this is exactly the "investigate before
+    overwriting" case CLAUDE.md calls out, and there's a prior incident this
+    session (`backup/unwanted-src-port`, see the entry below) about
+    unreviewed `src/` changes on this exact repo.**
+- **Platform facts that constrain any redesign, restated from `CLAUDE.md`
+  because they will bite a fresh session immediately:** `published: false`
+  is banned (dangling-ref hard-fail; use `draft: true`); axe throws the
+  build and CI's deploy job re-runs `pnpm build`, so an accessibility
+  regression takes the live site down; the broken-links checker also throws
+  in `astro:build:done` and checks the *whole site* on any one nav/footer
+  link change, so a new nav/footer link and the page it points to must land
+  in the same commit (this bit twice this session — once on two
+  `index.astro` hrefs, once on `Footer.astro` linking to not-yet-built
+  `/deck/`/`/resources/`); there is no image generation, so any redesign
+  commits to type-and-CSS, not imagery; `{/* embed: <ref> */}` in body
+  content silently creates a graph edge and self-refs throw; the starter
+  sweep (`git grep -- src`) only sees tracked files, so `check:evidence`
+  must run after committing, not before.
+- **Design source of truth, unchanged:** `design/pilot-a/index.html` (plus
+  its per-week/assessment/etc. siblings) is the static-HTML reference for
+  what "the redesign" currently means, unless Ritesh redirects it. It is a
+  prototype, never wired into the Astro build — reading it does not require
+  running anything.
+- **Task list:** the 7-stage plan's tasks (`Stage 1` through `Stage 7`, all
+  still showing in `TaskList`) are stale against this pivot and should be
+  replaced with whatever task breakdown the redesign actually needs, once
+  scoped with Ritesh — don't resume Stage 2 onward as if Stage 1 merely
+  needs finishing.
+- **Prompt-log and per-reply discipline:** the stop instruction is logged to
+  `prompt-log.md`. It's a clear, well-scoped instruction — a full-scope
+  pivot stated in one sentence, not a vague approval — but it is also a
+  *decision that reopens a decision already made* (the 7-stage restyle
+  plan was pre-approved), so the fresh session should get an explicit
+  confirmation of scope (from scratch vs. from pilot-a's markup vs. new
+  design entirely) before writing any code, not assume "redesign" means
+  "finish what this session started, but faster."
+
 ## 2026-09-20 — Round-3 fixes, six skills built, and an unwanted-port revert
 
 - **Decision (round-3 fan-out):** five agents fixed round-3 feedback on
@@ -642,3 +772,64 @@ once item 1's file-level context was already loaded.
   Ritesh first; it may still contain content worth deliberately re-porting
   later, under this session's own control rather than an unreviewed parallel
   one.
+
+## 2026-09-20 — Wave 0–1 built against the approved mockup, fidelity gaps closed
+
+- **Superseding note:** the "COMPLETE redesign" pivot logged above is now
+  underway against `~/.claude/plans/buzzing-foraging-tide.md`, not
+  `design/pilot-a/`. The actual design source of truth changed again after
+  that handoff was written: a standalone static mockup
+  (`/tmp/slop3841-mockup-v2.html`, not in the repo) went through subagent
+  design critique and landed on "Night Terminal" — Archivo Black/IBM Plex
+  Sans/IBM Plex Mono, asymmetric grid, sticky left rail with a 12-week audit
+  tracker, claim/evidence "stamp" component — in two finished palettes,
+  Daylight Concrete (light, `nt-l2`) and Violet Signal (dark, `nt-d1`), wired
+  as a real persisted toggle rather than a single fixed look.
+- **Wave 0 (foundations) and Wave 1 (home page)** are built and were
+  committed at `9e2ea5f`: token stylesheet with the three-state light/OS-
+  dark/explicit-toggle CSS pattern, self-hosted `@fontsource` fonts (no CDN
+  font requests), fresh `Nav.astro`/`Footer.astro` sourced from
+  `siteConfig.links`, and a rebuilt `index.astro` with the stamp component,
+  streams grid, week grid, and assessment ladder.
+- **Design-fidelity check (Ritesh, verbatim): "It does not resemble the
+  original design, any reason why?"** Treated as a real audit request, not
+  reassurance-seeking — re-read the mockup in full and diffed it against the
+  shipped code rather than re-screenshotting. Found three genuine gaps: the
+  rail never got the mockup's signature always-visible 12-tick audit
+  tracker (Wave 1 only put a detailed tracker in the homepage body); the
+  week grid was 4 columns instead of the mockup's 6-column
+  `repeat(6,1fr)`/`grid-auto-rows:150px` with weeks 1 and 6 as 2×2
+  solid-fill `.wk--big` tiles; the assessment grid was a 2×2 box-border
+  layout instead of the mockup's 4-across background-gap hairline-divider
+  technique (`gap:2px; background:var(--ink-line)` with each card owning its
+  own solid fill). The stampcard clip-path/rotation was initially also
+  flagged as missing but turned out to already be correct in
+  `src/styles/base.css` — a false alarm from checking `ClaimStamp.astro`/
+  `index.astro` first instead of the shared CSS file.
+- **Fixes:** extracted `src/lib/semester.ts` (week/date → past/current/
+  upcoming state) so the rail's new compact tick-grid tracker and the
+  homepage's detailed list tracker read the same computation and can never
+  disagree about which week is current; added the tick-grid tracker to
+  `Nav.astro`; corrected `.week-grid`/`.wk--big` and `.assess-grid` CSS in
+  `index.astro` to match the mockup's actual grid geometry.
+- **Follow-up feedback (Ritesh, verbatim): "It looks much better. My only
+  feedback is that the nice visual features/components are buried towards
+  the end of the page and arent noticed as easily."** Diagnosed as the
+  homepage's `<SemesterTracker />` detailed list — a large block sitting
+  between the hero and the streams grid — pushing the more visually
+  distinctive sections (streams cards, week grid, assessment ladder) further
+  down the page. It was also redundant against the mockup's actual homepage
+  body, which never had a second tracker once the rail carried one, and
+  redundant against the rail's own compact tracker on every page. Removed
+  the `<SemesterTracker />` call and its import from `index.astro`; the
+  component itself is kept (not deleted) for reuse as the detailed week-list
+  view on `sessions/index.astro` in Wave 2, where that level of detail is
+  the right amount for a dedicated index page. Reverified with `pnpm check`
+  and a visual pass at both marking viewports — the streams grid now
+  appears directly after the facts list, one scroll below the hero.
+- **State:** Waves 0–1 plus these fixes are committed together (this
+  session did not commit the fidelity/buried-content fixes separately from
+  Wave 1's original landing, since they were caught and fixed before Wave 2
+  started). Waves 2–4 (session pages, secondary pages, deck re-skin) are
+  still open — see `~/.claude/plans/buzzing-foraging-tide.md` for the
+  remaining breakdown.

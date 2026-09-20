@@ -15,47 +15,17 @@
  * teaching break between weeks 6 and 7 falls out of the data rather than being
  * special-cased.
  */
-import { getPublishedCollection } from "astro-course-university/content";
-import { withBase } from "astro-theme-university/url";
-import { formatCourseDate } from "../lib/dates";
+import { getSemesterWeeks, type WeekState } from "../lib/semester";
 
-const DAY = 86_400_000;
-const WEEK = 7 * DAY;
+const WEEK = 7 * 86_400_000;
 
-type State = "past" | "current" | "upcoming";
-
-const FLAGS: Record<State, string> = {
+const FLAGS: Record<WeekState, string> = {
   past: "Taught",
   current: "This week",
   upcoming: "To come",
 };
 
-const sessions = (await getPublishedCollection("sessions")).sort(
-  (a, b) => a.data.week - b.data.week,
-);
-
-// Session dates are date-only strings, so they parse to UTC midnight. Compare
-// them against the *local* calendar day, floored the same way, rather than
-// against a timestamp — otherwise the current week flips over at whatever hour
-// the reader's offset happens to be.
-const now = new Date();
-const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-
-const stateFor = (start: number): State =>
-  today >= start + WEEK ? "past" : today >= start ? "current" : "upcoming";
-
-const weeks = sessions.map((session) => {
-  const start = session.data.date.getTime();
-  return {
-    week: session.data.week,
-    href: withBase(`/sessions/${session.id}/`),
-    title: session.data.title,
-    isoDate: session.data.date.toISOString().slice(0, 10),
-    dateLabel: formatCourseDate(session.data.date),
-    state: stateFor(start),
-    start,
-  };
-});
+const { weeks, today } = await getSemesterWeeks();
 
 const first = weeks[0];
 const last = weeks[weeks.length - 1];

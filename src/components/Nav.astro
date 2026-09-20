@@ -8,16 +8,23 @@
  * derived from the current URL rather than passed in, so it stays correct
  * on every route without each page having to say which link is "its own".
  *
- * The 12-week audit-progress tracker described in the design brief is
- * deliberately not built here yet — `SemesterTracker.astro` already owns
- * that computation (build-time + client-clock correction) for the homepage,
- * and duplicating it into the rail is a later wave's job, not this one's.
+ * The compact 12-tick audit tracker lives here, in the rail, because it's
+ * meant to stay visible on every page as you navigate the course — not just
+ * the homepage. It shares its week/state computation with
+ * `SemesterTracker.astro` via `lib/semester.ts` so the two never disagree
+ * about which week is "current".
  */
 import { siteConfig } from "../site-config";
 import { withBase } from "astro-theme-university/url";
+import { getSemesterWeeks } from "../lib/semester";
 
 const links = siteConfig.links ?? [];
 const currentPath = Astro.url.pathname;
+
+const { weeks } = await getSemesterWeeks();
+const current = weeks.find((w) => w.state === "current");
+const taught = weeks.filter((w) => w.state === "past").length + (current ? 1 : 0);
+const trackerLabel = current ? `WK ${current.week}/${weeks.length}` : `${taught}/${weeks.length}`;
 
 // A link is "current" if the page path matches it exactly, or sits under it
 // as a nested route (e.g. /sessions/week-01/ under /sessions/) — but never
@@ -61,6 +68,23 @@ const isCurrent = (href: string) => {
       ))
     }
   </nav>
+
+  <div class="tracker" aria-label="Semester progress">
+    <div class="tracker__label">
+      <span>Audit tracker</span>
+      <span>{trackerLabel}</span>
+    </div>
+    <progress class="tracker__bar" value={taught} max={weeks.length}></progress>
+    <div class="tracker__grid">
+      {
+        weeks.map((w) => (
+          <a class="tick" data-state={w.state} href={w.href} title={w.title}>
+            {String(w.week).padStart(2, "0")}
+          </a>
+        ))
+      }
+    </div>
+  </div>
 
   <div class="rail-foot">
     {siteConfig.licence}
