@@ -545,3 +545,10 @@ this round toward direct execution over further agent dispatch. Asked one
 clarifying question before acting (which logo variant(s) to self-host,
 since downloading a file requires explicit permission) rather than guessing
 — the user answered "both" and that was actioned as given.
+
+## 2026-09-21 — SHIP_INSTRUCTIONS.md/.claude-ship-kit resolved
+
+**Prompt:** "those can be ignored." Short, direct answer to a standing open
+question (whether the untracked ship-kit files were placed deliberately).
+Clear and sufficient — no further action needed; files remain untouched
+and excluded from every commit as before.
