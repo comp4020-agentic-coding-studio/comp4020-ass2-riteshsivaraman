@@ -110,6 +110,17 @@ window run out mid-task and decide it instead.
 - **Bugs/gotchas** — never delete an entry; mark it open or mitigated.
 - **Patterns that worked** — reusable methodology worth repeating elsewhere.
 
+**Both sections are about the development process, not just the code.**
+"Patterns that worked" is not restricted to technical/code-level technique —
+it is where the user's own learning about *how they work with me* belongs:
+noticing a recurring ritual across a session (a checklist reissued each
+round, a fan-out coordinated the same way twice, a sweep run periodically)
+and converting it into a skill is itself exactly this kind of pattern, and
+gets logged as one the moment it's noticed — not dismissed as "nothing to
+log" because no code changed. If a session's actual output was a change to
+*how the user and I collaborate* rather than a change to the site, that is
+still a learning worth the same entry it would get if it were a CSS fix.
+
 Check it before starting similar work; add to it after finishing any.
 
 **Every reply states, in one line, whether this interaction added a

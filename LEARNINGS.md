@@ -315,6 +315,20 @@ and content direction": periodically dispatch a fresh subagent with no
 prior build context to sweep rendered pages specifically for this failure
 mode, since a stranger's read is the only one that reliably notices it.
 
+**Confirmed still live (2026-09-20, same session).** Before the mitigation
+had actually been run once, a plain `grep -rn "index.html"` against visible
+copy across all of `design/pilot-a/*.html` caught a real instance main had
+authored earlier and never noticed: `weeks.html`'s lead paragraph read "The
+same twelve weeks index.html scrolls sideways through... the shared spine
+this pilot ports unmodified from the brief" — filename and "this pilot" both
+in body copy a marker would read. Rewritten to "the home page" and dropped
+"pilot" entirely. This is exactly the failure the fresh-subagent sweep
+exists to catch, found instead by a targeted grep during an unrelated diff
+review — the grep is cheap enough to run on every batch of pilot-a changes,
+not held in reserve for a periodic dedicated sweep. See `fiction-leak-sweep`
+skill, which should fold this grep in as a first-pass filter before the
+fresh-agent read-through.
+
 ## Patterns that worked
 
 ### Orchestration only pays off when execution, not just fan-out, is delegated
@@ -609,3 +623,32 @@ scroll or resize handler that reads layout (`getBoundingClientRect`,
 `offsetWidth`, `scrollLeft`) and conditionally writes back, on the general
 principle that a handler bound to a high-frequency event should never do
 more than one unit of expensive work per rendered frame.
+
+### A recurring workflow is a skill candidate the moment it recurs, not just verification
+
+By the point round-3 feedback landed, this session had re-run the same
+shapes more than once each: reissuing an exact frontend checklist, fanning
+out a round of fixes across agents with disjoint file scopes, dispatching a
+fresh no-context agent to sweep for fiction leaks, and transcribing
+`CURRICULUM.md` content into pages while flagging invented gap-filling
+separately. The earlier "turn a repeated verification ritual into a skill"
+entry above only converted the verification ritual; the other three had
+recurred just as many times and were still being re-derived from memory (or
+from this file) each round.
+
+**Applied:** converted all four recurring workflows into project-level
+Claude Code skills in one pass (`.claude/skills/verify-pilot`,
+`agent-fanout`, `fiction-leak-sweep`, `port-curriculum-content`), plus two
+for the standing per-reply logging discipline itself (`log-learnings`,
+`log-prompt`) — the discipline of writing this file and `prompt-log.md`
+consistently is exactly as repeatable-in-shape as the frontend checks are,
+and was being re-derived from `CLAUDE.md` prose each time rather than run
+from a fixed procedure.
+
+The broader miss this corrects: a session's output can be a change to *how
+the user and I work together*, not just a change to the site, and that is
+still a learning worth logging the moment it's noticed. Treating
+"nothing built this turn" as "nothing to log" is the same mistake as
+treating verification as a one-off chore instead of a ritual — the fix in
+both cases is to name the recurrence and write it down as a skill rather
+than let it stay a remembered habit.
