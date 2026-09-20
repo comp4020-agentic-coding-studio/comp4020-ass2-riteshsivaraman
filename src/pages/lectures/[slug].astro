@@ -6,17 +6,23 @@ import RelatedContent from "astro-course-university/components/RelatedContent.as
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import TeachingTeam from "../../components/TeachingTeam.astro";
 import { formatCourseDate } from "../../lib/dates";
-import { graphCollections, siteConfig } from "../../site-config";
+import { graphCollections, sessionLabels, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
   const lectures = (await getPublishedCollection("lectures")).sort((a, b) => a.data.week - b.data.week);
+  const sessions = await getPublishedCollection("sessions");
   return lectures.map((lecture, i) => ({
     params: { slug: lecture.id },
-    props: { lecture, prev: lectures[i - 1], next: lectures[i + 1] },
+    props: {
+      lecture,
+      prev: lectures[i - 1],
+      next: lectures[i + 1],
+      session: sessions.find((s) => s.id === lecture.id),
+    },
   }));
 }
 
-const { lecture, prev, next } = Astro.props;
+const { lecture, prev, next, session } = Astro.props;
 const { Content } = await render(lecture);
 
 // `slides` comes through courseNodeSchema's `.loose()` passthrough (src/content.config.ts),
@@ -44,6 +50,13 @@ const extra = lecture.data as unknown as LectureExtra;
       extra.slides && (
         <a class="tagpill" href={withBase(extra.slides)}>
           Open the slides
+        </a>
+      )
+    }
+    {
+      session && (
+        <a class="tagpill" href={withBase(`/sessions/${session.id}/`)}>
+          This week's {sessionLabels.singular.toLowerCase()} →
         </a>
       )
     }

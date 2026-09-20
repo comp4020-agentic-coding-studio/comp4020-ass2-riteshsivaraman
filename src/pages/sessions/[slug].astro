@@ -10,13 +10,19 @@ import { graphCollections, sessionLabels, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
   const sessions = (await getPublishedCollection("sessions")).sort((a, b) => a.data.week - b.data.week);
+  const lectures = await getPublishedCollection("lectures");
   return sessions.map((session, i) => ({
     params: { slug: session.id },
-    props: { session, prev: sessions[i - 1], next: sessions[i + 1] },
+    props: {
+      session,
+      prev: sessions[i - 1],
+      next: sessions[i + 1],
+      lecture: lectures.find((l) => l.id === session.id),
+    },
   }));
 }
 
-const { session, prev, next } = Astro.props;
+const { session, prev, next, lecture } = Astro.props;
 const { Content } = await render(session);
 
 // `format`/`term`/`termGloss`/`streams` come through courseNodeSchema's
@@ -47,6 +53,13 @@ const streams = extra.streams ?? [];
     <h1 class="h-display">{session.data.title}</h1>
     {session.data.description && <p class="lead">{session.data.description}</p>}
     {extra.format && <span class="tagpill">{extra.format}</span>}
+    {
+      lecture && (
+        <a class="tagpill" href={withBase(`/lectures/${lecture.id}/`)}>
+          This week's lecture →
+        </a>
+      )
+    }
   </section>
 
   {

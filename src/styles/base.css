@@ -147,6 +147,16 @@ svg {
   border-top: 1px solid var(--ink-line);
 }
 
+.rail-nav__label {
+  margin: 12px 0 4px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-ink-dim);
+}
+
 .rail-nav a {
   display: flex;
   justify-content: space-between;
@@ -277,6 +287,14 @@ svg {
 
 .tick[data-state="upcoming"] {
   background: transparent;
+}
+
+/* The tick for the week page you're actually on — a navigation fact,
+   independent of `data-state`, so it can land on a past/current/upcoming
+   tick alike and never gets confused with the calendar-driven pulse above. */
+.tick[data-selected="true"] {
+  outline: 2px solid var(--claim-fill);
+  outline-offset: 1px;
 }
 
 .rail-foot {

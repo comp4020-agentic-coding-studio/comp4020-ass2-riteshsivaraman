@@ -1,7 +1,7 @@
 ---
 import { withBase } from "astro-theme-university/url";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import SemesterTracker from "../../components/SemesterTracker.astro";
+import SemesterWeekGrid from "../../components/SemesterWeekGrid.astro";
 import { sessionLabels, siteConfig } from "../../site-config";
 
 const description =
@@ -24,6 +24,7 @@ const description =
     <p>
       Every week coins one term, collected on the <a href={withBase("/glossary/")}>glossary</a>.
     </p>
-    <SemesterTracker />
   </section>
+
+  <SemesterWeekGrid />
 </BaseLayout>

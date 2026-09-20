@@ -1,13 +1,14 @@
 import { defineSiteConfig } from "astro-theme-university/types";
 import { slopBranding } from "astro-theme-slop";
 
-// Plain labels, matching the collection and the URL. An in-voice renaming was
-// considered and dropped: the satire in this course is carried by the content,
-// and a marker hunting for the weekly schedule should never have to translate
-// the navigation to find it.
+// Display copy only — the `sessions` content collection, its `/sessions/`
+// URL path, and every file/folder under it keep the original name. "Tutorial"
+// is what a marker or a student actually expects on the page; renaming only
+// the label costs nothing that "Session" was buying, since the satire lives
+// in the content, not the nav.
 export const sessionLabels = {
-  singular: "Session",
-  plural: "Sessions",
+  singular: "Tutorial",
+  plural: "Tutorials",
 } as const;
 
 export const graphCollections = ["sessions", "assessments", "lectures", "people"];

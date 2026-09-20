@@ -492,3 +492,31 @@ tokens, and what remains (merge build, verification, one deck re-skin,
 final ship) is smaller in kind than what Wave 3 alone just cost — and gave
 a concrete fallback triage against the 45/20/35 mark split in case the
 budget runs out mid-Wave-4.
+
+## 2026-09-20 — six-point frontend feedback list, post-Wave-3
+
+**Context:** Wave 3 just closed out; I'd proposed doing Wave 4 (deck re-skin,
+cross-page pass) either inline or as a single agent given the stated budget
+constraint, and asked which. Instead of answering that, the user came back
+with direct design/content feedback on the built site.
+
+**Prompt:** six items — clear nav on the home page; highlight the selected
+week's cell in the SemesterTracker grid; rename "session" to "tutorial" in
+display copy; the home page's three-stream cards ("they are n" — genuinely
+truncated); cross-links between a lecture page and its matching tutorial
+page and back; and de-duplicate the "where the semester is" tracker on the
+tutorial page against the "where the semester goes" boxes on the home page,
+keeping only the boxes version. Also opened with a caution that doing this
+work inline in the current session risks forcing an auto-compaction —
+useful, actionable signal, not vague.
+
+Five of six items were clear and specific enough to act on directly. One
+(the streams line) was cut off mid-sentence and had to be asked back rather
+than guessed — "they are n" could plausibly have meant several different
+problems with that section, and guessing wrong burns a round-trip anyway.
+The "sessions → tutorials" item also had a real fork worth surfacing before
+touching anything: display wording only, or the URL path too, since the
+latter touches nav config and the broken-links-checker gotcha. Asked both
+in one round; got "not equally sized" for the streams issue and "display
+wording only" for the rename. Good prompt overall — the one gap was a
+literal truncation, not an ambiguity in the request itself.

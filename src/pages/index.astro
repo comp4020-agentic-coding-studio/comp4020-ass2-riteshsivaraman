@@ -3,6 +3,7 @@ import { getPublishedCollection } from "astro-course-university/content";
 import { withBase } from "astro-theme-university/url";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import ClaimStamp from "../components/ClaimStamp.astro";
+import SemesterWeekGrid from "../components/SemesterWeekGrid.astro";
 import { courseMeta } from "../course-config";
 import { formatCourseDate } from "../lib/dates";
 import { siteConfig } from "../site-config";
@@ -27,7 +28,6 @@ interface SessionExtra {
 }
 const extra = (s: (typeof sessions)[number]) => s.data as unknown as SessionExtra;
 
-const dueByWeek = new Map(assessments.map((a) => [a.data.week, a]));
 const totalWeight = assessments.reduce((sum, a) => sum + a.data.weight, 0);
 
 // Streams are a curricular fact, not content nodes: the names and taglines are
@@ -158,29 +158,7 @@ const ladderColors = ["var(--claim-fill)", "var(--accent-3-fill)", "var(--ink-li
     </div>
   </section>
 
-  <section class="band band--soft" aria-labelledby="weeks-heading">
-    <p class="eyebrow">The twelve weeks</p>
-    <h2 id="weeks-heading">Where the semester goes</h2>
-    <div class="week-grid">
-      {
-        sessions.map((session) => {
-          const due = dueByWeek.get(session.data.week);
-          const big = session.data.week === 1 || session.data.week === 6;
-          return (
-            <a
-              class={`wk${big ? " wk--big" : ""}${due ? " wk--due" : ""}`}
-              href={withBase(`/sessions/${session.id}/`)}
-            >
-              <span class="wk__n">Week {String(session.data.week).padStart(2, "0")}</span>
-              <span class="wk__t">{session.data.title}</span>
-              {extra(session).format && <span class="wk__tag">{extra(session).format}</span>}
-              {due && <span class="wk__flag">{due.data.weight}% due</span>}
-            </a>
-          );
-        })
-      }
-    </div>
-  </section>
+  <SemesterWeekGrid />
 
   <section class="band band--ink" aria-labelledby="ladder-heading">
     <p class="eyebrow">Assessment ladder</p>
@@ -309,12 +287,13 @@ const ladderColors = ["var(--claim-fill)", "var(--accent-3-fill)", "var(--ink-li
   }
 
   /* ---------- streams ----------
-     .stream-card / .stream-card__* live in base.css: this page's asymmetric
+     .stream-card / .stream-card__* live in base.css: this page's even
      3-column grid is homepage-specific, but the card itself is shared with
      the session page's dark .stream-strip variant. */
   .streams-grid {
     display: grid;
-    grid-template-columns: 1.3fr 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    align-items: stretch;
     gap: 24px;
     margin-top: 32px;
   }
@@ -322,102 +301,6 @@ const ladderColors = ["var(--claim-fill)", "var(--accent-3-fill)", "var(--ink-li
   @media (max-width: 900px) {
     .streams-grid {
       grid-template-columns: 1fr;
-    }
-  }
-
-  /* ---------- week grid ---------- */
-  .week-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-auto-rows: 150px;
-    gap: 10px;
-    margin-top: 32px;
-  }
-
-  .wk {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    gap: 6px;
-    padding: 16px;
-    border: 2px solid var(--paper-line);
-    background: var(--paper);
-    text-decoration: none;
-    color: var(--text-paper);
-    transition:
-      transform 0.15s ease,
-      background 0.15s ease;
-  }
-
-  .wk:hover,
-  .wk:focus-visible {
-    border-color: var(--evidence-fill);
-    transform: translateY(-4px);
-  }
-
-  .wk--big {
-    grid-column: span 2;
-    grid-row: span 2;
-    background: var(--evidence-fill);
-    color: #fff;
-    border-color: var(--evidence-fill);
-  }
-
-  .wk--big .wk__t {
-    font-size: 24px;
-  }
-
-  .wk--big:hover {
-    background: var(--evidence-text);
-  }
-
-  .wk--due {
-    border-color: var(--claim-fill);
-  }
-
-  .wk__n {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    color: var(--text-paper-dim);
-  }
-
-  .wk__t {
-    font-weight: 600;
-    font-size: 15px;
-    flex: 1;
-  }
-
-  .wk__tag {
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    letter-spacing: 0.04em;
-    color: var(--text-paper-dim);
-  }
-
-  .wk__flag {
-    align-self: flex-start;
-    font-family: var(--font-mono);
-    font-size: 10.5px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--claim-text);
-    font-weight: 600;
-  }
-
-  .wk--big .wk__flag {
-    color: #ffe3d6;
-  }
-
-  @media (max-width: 900px) {
-    .week-grid {
-      grid-template-columns: repeat(2, 1fr);
-      grid-auto-rows: 130px;
-    }
-
-    .wk--big {
-      grid-row: span 1;
-      grid-column: span 2;
     }
   }
 
