@@ -1,71 +1,137 @@
 ---
 import { render } from "astro:content";
 import { getPublishedCollection } from "astro-course-university/content";
+import { withBase } from "astro-theme-university/url";
 import RelatedContent from "astro-course-university/components/RelatedContent.astro";
-import SpecList from "astro-course-university/components/SpecList.astro";
-import ContentLayout from "../../layouts/ContentLayout.astro";
-import StreamBands from "../../components/StreamBands.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import TeachingTeam from "../../components/TeachingTeam.astro";
 import { formatCourseDate } from "../../lib/dates";
 import { graphCollections, sessionLabels, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
-  const sessions = await getPublishedCollection("sessions");
-  return sessions.map((session) => ({ params: { slug: session.id }, props: { session } }));
+  const sessions = (await getPublishedCollection("sessions")).sort((a, b) => a.data.week - b.data.week);
+  return sessions.map((session, i) => ({
+    params: { slug: session.id },
+    props: { session, prev: sessions[i - 1], next: sessions[i + 1] },
+  }));
 }
 
-const { session } = Astro.props;
+const { session, prev, next } = Astro.props;
 const { Content } = await render(session);
-const specTotal = session.data.spec?.length ?? 0;
+
+// `format`/`term`/`termGloss`/`streams` come through courseNodeSchema's
+// `.loose()` passthrough (src/content.config.ts), so Astro/Zod types them as
+// `unknown` at the call site — cast here rather than widen the shared schema
+// from a page outside this task's write scope (same approach index.astro
+// takes).
+interface SessionExtra {
+  format?: string;
+  term?: string;
+  termGloss?: string;
+  streams?: { name: string; slug: string; focus?: string }[];
+}
+const extra = session.data as unknown as SessionExtra;
+const streams = extra.streams ?? [];
 ---
 
-<ContentLayout
+<BaseLayout
   title={`Week ${session.data.week} ${sessionLabels.singular}: ${session.data.title}`}
-  description={session.data.description}
-  {...siteConfig}
+  description={session.data.description ?? undefined}
+  favicon={siteConfig.favicon}
 >
-  <p><strong>{formatCourseDate(session.data.date)}</strong></p>
-  <Content />
-  <StreamBands streams={session.data.streams} />
+  <section class="band band--ink wk-header">
+    <p class="eyebrow">
+      Week {String(session.data.week).padStart(2, "0")} · {formatCourseDate(session.data.date)} ·{" "}
+      {sessionLabels.singular}
+    </p>
+    <h1 class="h-display">{session.data.title}</h1>
+    {session.data.description && <p class="lead">{session.data.description}</p>}
+    {extra.format && <span class="tagpill">{extra.format}</span>}
+  </section>
+
   {
-    specTotal > 0 && (
-      <div class="spec-counter" data-all="true">
-        <p class="spec-counter__label">
-          {specTotal} of {specTotal} spec lines
-        </p>
+    extra.term && extra.termGloss && (
+      <div class="term-band">
+        <div class="term-card">
+          <p class="term-card__label">Term of the week</p>
+          <p><span class="term-card__term">{extra.term}</span> — {extra.termGloss}</p>
+        </div>
       </div>
     )
   }
-  <SpecList spec={session.data.spec}>
-    What you bring to the session. Written so a reader can tell whether it has
-    been met without asking you.
-  </SpecList>
-  <TeachingTeam teachers={session.data.teachers} />
-  <RelatedContent entry={session} collections={graphCollections} />
-</ContentLayout>
 
-<style>
-  /* SpecList (astro-course-university/components/SpecList.astro, read from
-     node_modules) renders a plain <ul><li> with no interactive/checkable
-     state — there is nothing on the page to check off, so this is a static
-     "N of N" total computed at build time from the same spec array SpecList
-     itself renders, rather than a live checked-count requiring JS.
-     data-all="true" is a permanent completion state, not one that flips:
-     every spec line rendered is, by definition, "present". */
-  .spec-counter {
-    font-family: var(--at-font-mono);
-    font-size: 0.8125rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--at-text-secondary);
-    margin-block-end: var(--at-spacing-sm);
+  <section class="band band--paper">
+    <div class="week-body" data-week-body>
+      <Content />
+    </div>
+  </section>
+
+  {
+    streams.length > 0 && (
+      <section class="band band--soft" aria-labelledby="stream-heading">
+        <div class="section-head">
+          <p class="eyebrow">This week, by stream</p>
+          <h2 id="stream-heading">Your stream's version</h2>
+        </div>
+        <div class="stream-strip">
+          {streams.map((stream, i) => (
+            <div class="stream-card">
+              <p class="stream-card__n">Stream {String(i + 1).padStart(2, "0")} of {String(streams.length).padStart(2, "0")}</p>
+              <h3>{stream.name}</h3>
+              {stream.focus && <p class="stream-card__focus">{stream.focus}</p>}
+            </div>
+          ))}
+        </div>
+      </section>
+    )
   }
 
-  .spec-counter[data-all="true"] {
-    color: var(--np-volt);
-  }
+  <section class="band band--paper">
+    <TeachingTeam teachers={session.data.teachers} />
+    <RelatedContent entry={session} collections={graphCollections} />
+  </section>
 
-  .spec-counter__label {
-    margin: 0;
-  }
-</style>
+  <nav class="pagefoot" aria-label="Week navigation">
+    {prev ? <a href={withBase(`/sessions/${prev.id}/`)}>← Week {prev.data.week}</a> : <span />}
+    <span class="pagefoot__spacer" />
+    {next ? <a href={withBase(`/sessions/${next.id}/`)}>Week {next.data.week} →</a> : <span />}
+  </nav>
+</BaseLayout>
+
+<script is:inline data-astro-rerun>
+  /**
+   * Progressive enhancement, not a load-bearing behaviour: every week's body
+   * uses whatever ## heading names actually fit its content (confirmed by
+   * grepping all twelve — only "Leaving with" is consistent, and only ten of
+   * twelve keep it as the last heading). Rather than hardcode a heading name
+   * into the markdown-render pipeline, this lifts whichever heading matches
+   * "leaving with" — and everything after it — out of the two-column split
+   * and into its own full-width band, client-side. With JS off the content
+   * is still fully present, just inline in the two-column flow instead of
+   * broken into a distinct band.
+   */
+  (function () {
+    var body = document.querySelector("[data-week-body]");
+    if (!body) return;
+    var headings = Array.prototype.slice.call(body.querySelectorAll("h2"));
+    var target = headings.find(function (h) {
+      return /^leaving with/i.test((h.textContent || "").trim());
+    });
+    if (!target) return;
+
+    var lifted = [];
+    var node = target;
+    while (node) {
+      var nextNode = node.nextElementSibling;
+      lifted.push(node);
+      node = nextNode;
+    }
+
+    var band = document.createElement("div");
+    band.className = "leaving-band";
+    lifted.forEach(function (el) {
+      band.appendChild(el);
+    });
+    body.insertAdjacentElement("afterend", band);
+  })();
+</script>

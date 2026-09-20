@@ -1,24 +1,29 @@
 ---
-import ContentLayout from "../../layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
-import SessionsGrid from "../../components/SessionsGrid.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SemesterTracker from "../../components/SemesterTracker.astro";
 import { sessionLabels, siteConfig } from "../../site-config";
+
+const description =
+  "Twelve tutorials, no two run the same way, each one adding a numbered section to the Dossier.";
 ---
 
-<ContentLayout
-  title={`Weekly ${sessionLabels.plural}`}
-  description="Twelve tutorials, no two run the same way, each one adding a numbered section to the Dossier."
-  {...siteConfig}
->
-  <p>
-    One page per week, carrying all three streams: the lecture is shared, the
-    tutorial rooms are not, so each page ends with what your stream does
-    differently. A teaching break falls between weeks 6 and 7, and the
-    instruction for it is to build rather than polish.
-  </p>
-  <p>
-    Every week coins one term, collected on the <a href={withBase("/glossary/")}>glossary</a
-    >.
-  </p>
-  <SessionsGrid />
-</ContentLayout>
+<BaseLayout title={`Weekly ${sessionLabels.plural}`} description={description} favicon={siteConfig.favicon}>
+  <section class="band band--ink wk-header">
+    <p class="eyebrow">The semester, week by week</p>
+    <h1 class="h-display">Weekly {sessionLabels.plural}</h1>
+    <p class="lead">{description}</p>
+  </section>
+
+  <section class="band band--paper">
+    <p>
+      One page per week, carrying all three streams: the lecture is shared, the tutorial rooms
+      are not, so each page ends with what your stream does differently. A teaching break falls
+      between weeks 6 and 7, and the instruction for it is to build rather than polish.
+    </p>
+    <p>
+      Every week coins one term, collected on the <a href={withBase("/glossary/")}>glossary</a>.
+    </p>
+    <SemesterTracker />
+  </section>
+</BaseLayout>

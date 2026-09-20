@@ -344,6 +344,21 @@ dd {
   color: var(--text-paper);
 }
 
+/* The theme's markdown-heading plugin injects a permalink anchor after every
+   heading in rendered content. Hidden until keyboard focus or hover so it
+   never reads as a stray "#" in body copy, but stays reachable both ways. */
+.at-heading-anchor {
+  margin-left: 0.4em;
+  text-decoration: none;
+  opacity: 0;
+  color: var(--text-paper-dim);
+}
+
+:is(h1, h2, h3, h4):hover .at-heading-anchor,
+.at-heading-anchor:focus-visible {
+  opacity: 1;
+}
+
 .lead {
   font-size: 19px;
   line-height: 1.5;
@@ -655,6 +670,196 @@ footer.colophon ul {
 
   .hero {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- stream card: shared by the homepage grid and the session
+   page's dark stream-strip variant, so the two never drift apart ---------- */
+.stream-card {
+  background: var(--paper-soft);
+  border: 1px solid var(--paper-line);
+  padding: 30px 26px;
+}
+
+.stream-card__n {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-paper-dim);
+  margin: 0 0 10px;
+}
+
+.stream-card h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+}
+
+.stream-card__focus {
+  border-left: 3px solid var(--evidence-fill);
+  padding-left: 12px;
+  font-size: 14.5px;
+  color: var(--text-paper-dim);
+}
+
+.stream-card__convenor {
+  font-size: 13.5px;
+  color: var(--text-paper-dim);
+}
+
+.stream-strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: var(--ink-line);
+}
+
+.stream-strip .stream-card {
+  background: var(--ink-soft);
+  color: var(--text-ink);
+  border: none;
+}
+
+.stream-strip .stream-card__n,
+.stream-strip .stream-card__focus,
+.stream-strip .stream-card__convenor {
+  color: var(--text-ink-dim);
+}
+
+.stream-strip .stream-card h3 {
+  color: var(--text-ink);
+}
+
+@media (max-width: 900px) {
+  .stream-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- tagpill: format label on a session/week header ---------- */
+.tagpill {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+  padding: 4px 10px;
+  opacity: 0.85;
+}
+
+/* ---------- term band: the week's vocabulary term, offset over the header
+   band it sits below ---------- */
+.term-band {
+  padding: 0 56px;
+  margin-top: -40px;
+  position: relative;
+  z-index: 2;
+}
+
+.term-card {
+  max-width: 640px;
+  background: var(--ink-soft);
+  color: var(--text-ink);
+  border-left: 4px solid var(--evidence-fill);
+  padding: 22px 28px;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
+}
+
+.term-card__label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--evidence-text);
+  margin: 0 0 8px;
+}
+
+.term-card__term {
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .term-band {
+    padding: 0 20px;
+    margin-top: -24px;
+  }
+}
+
+/* ---------- section head: heading row with a trailing detail ---------- */
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.section-head h2 {
+  margin: 0;
+}
+
+/* ---------- week body: generic two-column split for whatever sections
+   precede "Leaving with", which is JS-lifted into its own .leaving-band
+   (see sessions/[slug].astro) ---------- */
+.week-body {
+  columns: 2 320px;
+  column-gap: 48px;
+}
+
+.week-body :is(h2, h3) {
+  break-after: avoid;
+}
+
+.week-body :is(h2, h3, p, ul, ol, blockquote) {
+  break-inside: avoid;
+}
+
+@media (max-width: 720px) {
+  .week-body {
+    columns: 1;
+  }
+}
+
+.leaving-band {
+  margin-top: 40px;
+  padding: 28px 32px;
+  background: var(--ink-soft);
+  border: 1px dashed var(--ink-line);
+}
+
+.leaving-band h2 {
+  margin-top: 0;
+}
+
+/* ---------- pagefoot: prev/next week navigation ---------- */
+.pagefoot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 56px;
+  background: var(--ink);
+  color: var(--text-ink);
+}
+
+.pagefoot a {
+  color: inherit;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pagefoot__spacer {
+  flex: 1;
+}
+
+@media (max-width: 640px) {
+  .pagefoot {
+    padding: 20px 20px;
+    flex-wrap: wrap;
   }
 }
 
