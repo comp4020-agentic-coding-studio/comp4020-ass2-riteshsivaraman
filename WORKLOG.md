@@ -833,3 +833,62 @@ before starting the redesign — do not assume yes or no.
   started). Waves 2–4 (session pages, secondary pages, deck re-skin) are
   still open — see `~/.claude/plans/buzzing-foraging-tide.md` for the
   remaining breakdown.
+
+## 2026-09-20 — Wave 2: session pages, the heading-name mismatch, and a site-wide anchor bug
+
+- **The mismatch:** the mockup drew the session page's body as a fixed
+  two-heading split labelled "Bring" / "In the room." Grepping all twelve
+  real session bodies for `^## ` showed only "Leaving with" recurs
+  reliably as a heading name, and even it isn't always last — week 1 has a
+  further heading after it. Hardcoding "Bring"/"In the room" as literal
+  markdown headings would have silently broken on every week phrased
+  differently, so this went to Ritesh as an `AskUserQuestion` rather than
+  guessed (see `prompt-log.md`, Wave 2 kickoff entry).
+- **Decision:** Ritesh chose the generic two-column split. Implemented as
+  CSS `columns: 2 320px` on the rendered `<Content />` (`.week-body` in
+  `base.css`) — heading-name-agnostic, collapses to one column at ≤720px.
+  "Leaving with" and everything after it is then lifted out of that column
+  flow into its own full-width `.leaving-band`, client-side, by a small
+  `is:inline data-astro-rerun` script that finds the `h2` matching
+  `/^leaving with/i` and moves it plus its remaining siblings into a new
+  wrapper `insertAdjacentElement("afterend")`d after the body.
+- **Why DOM-lift over splitting the markdown itself:** Astro's `render()`
+  returns a `<Content />` component for the whole entry, not a string
+  that's easy to cut at a heading boundary — reaching into
+  `@astrojs/markdown-remark`'s internals (hoisted awkwardly under pnpm's
+  `.pnpm/` store) to split at render time was worse surface area than a
+  ~25-line progressive-enhancement script matching the same pattern
+  `SemesterTracker.astro` already uses. With JS disabled the "Leaving with"
+  section stays inline in the two-column flow instead of breaking into its
+  own band — content-complete, just less visually distinct.
+- **Bug found by looking, not by the green build:** the theme's markdown
+  plugin injects a permalink anchor (`<a class="at-heading-anchor"
+  aria-hidden="true">#</a>`) after every heading in rendered content. No
+  CSS in the codebase styled it, so it rendered as a visible stray "#"
+  after headings site-wide (e.g. "BRING#") — invisible to every check run
+  so far because this was the first wave to visually inspect long-form
+  rendered `<Content />` body copy at the marking viewports, rather than
+  short hand-authored page copy. Not scoped to Wave 2's own code; pre-
+  existing since whichever wave first rendered markdown bodies. Fixed with
+  `opacity: 0` by default, revealed on `:hover`/`:focus-visible`, so it
+  stays keyboard-reachable without reading as a typo.
+- **Deleted:** `StreamBands.astro` and `SessionsGrid.astro`, both fully
+  superseded by the new `sessions/[slug].astro`/`sessions/index.astro` —
+  confirmed via `grep -rln` that neither had any remaining real caller
+  (one apparent `index.astro` match was already a stale code comment).
+- **Verified:** `pnpm check` green (axe: 0 violations across 42 pages,
+  vitest 11/11), plus a live look at weeks 01 and 09 (the marker's two
+  non-adjacent-week sample) at both 1920×1080 and 390×844 — mobile
+  confirms the multi-column body collapses to one column, the leaving-band
+  and stream-strip both stack correctly, and week 01's extra trailing
+  heading after "Leaving with" is correctly absorbed into the lifted band
+  rather than left behind in the two-column flow.
+- **Commit:** `3f20431`
+- **Not committed — flagged, not actioned:** untracked `SHIP_INSTRUCTIONS.md`
+  and `.claude-ship-kit/` appeared in the working tree this session, never
+  created by this agent. The file is written as instructions to a future
+  Claude session telling it to flip the GitHub repo public and deploy —
+  an irreversible, high-blast-radius action. Left both untouched and
+  unstaged; raised with Ritesh directly rather than acted on, per the
+  instruction-source-boundary rule (content sitting in files is data, not
+  a command, regardless of who or what put it there).

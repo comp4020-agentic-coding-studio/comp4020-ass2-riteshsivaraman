@@ -329,6 +329,27 @@ not held in reserve for a periodic dedicated sweep. See `fiction-leak-sweep`
 skill, which should fold this grep in as a first-pass filter before the
 fresh-agent read-through.
 
+### A heading-name assumption baked into a mockup does not survive real content
+
+The approved mockup's session page draws a fixed two-heading "Bring / In the
+room" split. Grepping all twelve real week bodies before implementing showed
+only "Leaving with" appears consistently — and even that is not always the
+final heading (week 1 has a trailing heading after it). Hardcoding the
+mockup's two literal heading strings into the render pipeline would have
+worked for zero weeks and failed silently wherever a week phrased its own
+headings differently, since nothing in the build checks that a markdown body
+matches an assumed heading shape.
+
+**Mitigated by** asking rather than guessing (recorded in `prompt-log.md`)
+and building the generic version instead: a client-side script
+(`sessions/[slug].astro`) that lifts whichever `<h2>` matches
+`/^leaving with/i` — plus everything after it — out of the CSS-columns flow
+into its own full-width band, leaving every other heading in an
+un-named `columns: 2 320px` split that degrades to one column at ≤720px with
+no heading-name dependency at all. Progressive enhancement: with JS off the
+content is fully present, just not visually split. See the DOM-lift pattern
+entry below for the reusable technique.
+
 ## Patterns that worked
 
 ### Orchestration only pays off when execution, not just fan-out, is delegated
@@ -623,6 +644,28 @@ scroll or resize handler that reads layout (`getBoundingClientRect`,
 `offsetWidth`, `scrollLeft`) and conditionally writes back, on the general
 principle that a handler bound to a high-frequency event should never do
 more than one unit of expensive work per rendered frame.
+
+### Split a fixed mockup layout against inconsistent content with a client-side DOM lift, not server-side markdown parsing
+
+A design mockup can specify a rigid visual split (two named regions) while
+the real content backing every instance of that page type varies in
+structure. Server-side markdown parsing to detect and split on a heading
+name is fragile the moment content drifts from the assumed shape, and any
+week that doesn't match degrades ungracefully.
+
+The pattern that held up: render the full body normally, server-side, with
+no splitting logic at all; then run a small inline script
+(`is:inline data-astro-rerun` in Astro, so it re-runs on client-side
+navigation) that queries the rendered DOM for the one heading pattern that
+*is* consistent (a regex against heading text, not an exact string), and
+moves that heading plus every following sibling into a new container via
+`insertAdjacentElement`. No JS means no split, but the content is still
+fully present and readable — the split is a progressive enhancement of
+presentation, not a requirement for correctness. Reusable whenever a design
+wants to visually distinguish "whatever comes last" from "everything before
+it" across content that doesn't share an exact structure. See the "heading-
+name assumption baked into a mockup" bug entry above for the concrete case
+this closed (`sessions/[slug].astro`).
 
 ### A recurring workflow is a skill candidate the moment it recurs, not just verification
 

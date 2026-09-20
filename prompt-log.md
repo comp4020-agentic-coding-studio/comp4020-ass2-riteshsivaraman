@@ -446,6 +446,21 @@ findings and fixes without committing and asked Ritesh to confirm before
 folding them into history — did not commit as a follow-up fix
 unilaterally.
 
+**AskUserQuestion, Wave 2 kickoff:** the mockup's session page draws a rigid
+two-heading "Bring / In-the-room" split, but the real twelve week bodies
+don't share consistent heading names — only "Leaving with" appears
+reliably, and not even always last (week 1 has a trailing heading after
+it). Asked how to reconcile the mockup's visual rhythm with per-week
+heading drift rather than guessing or hardcoding week-specific logic.
+Ritesh selected **"Generic two-column split (Recommended)"**: whatever `##`
+sections precede "Leaving with" go into a responsive two-column grid
+(stacking on mobile), with "Leaving with" always breaking out into its own
+receipt-card band regardless of what precedes it. This is exactly the
+right question to have asked rather than defaulted, since the alternative
+(hardcoding "Bring"/"In the room" as literal heading text) would have
+silently broken on every week that phrased its own headings differently —
+confirmed by grep across all twelve session files before asking.
+
 **Approval plus new feedback:** "It looks much better. My only feedback is
 that the nice visual features/components are buried towards the end of the
 page and arent noticed as easily. Anyways, continue with building the rest
