@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Assessments &mdash; SLOP3841</title>
+<title>A4 &middot; Capstone: Applications in the Wild &mdash; SLOP3841</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wdth,wght@0,50..150,100..900;1,50..150,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..700;1,6..72,200..700&family=Martian+Mono:wdth,wght@75..112.5,300..700&display=swap" rel="stylesheet">
@@ -78,9 +78,11 @@ a{color:inherit}
   .mast__nav a{flex:0 0 auto;justify-content:center;padding:.55rem 1rem}
   .mast__nav a:last-child{border-right:0}
 }
+.crumb{padding:.7rem var(--gut) 0;color:var(--ink2)}
+.crumb a{text-decoration-color:var(--ink2)}
 .wh{padding:clamp(1.2rem,4vh,3rem) 0 0}
-.wh__kick{padding:0 var(--gut) .8rem;color:var(--ink2)}
-.wh__t{font-size:clamp(2.6rem,9.4vw,7rem);padding-left:var(--gut);max-width:22ch;text-wrap:balance}
+.wh__kick{padding:0 var(--gut) .8rem;color:var(--ink2);display:flex;flex-wrap:wrap;gap:.4em 1em;justify-content:space-between}
+.wh__t{font-size:clamp(2.2rem,7.6vw,5.4rem);padding-left:var(--gut);max-width:26ch;text-wrap:balance}
 .wh__lead{
   padding:clamp(1.2rem,4vh,2.6rem) var(--gut) clamp(1.4rem,4vh,2.4rem);
   border-bottom:1.5px solid var(--rule);max-width:var(--measure);
@@ -101,17 +103,11 @@ a{color:inherit}
   color:var(--volt);min-width:3ch}
 .ladder__sum{color:var(--ink2)}
 
-.sh{padding:clamp(1.6rem,4vh,2.6rem) var(--gut) .7rem;display:flex;gap:.8rem;
-  align-items:baseline;border-bottom:1px solid var(--ink2)}
-.sh__no{color:var(--volt)}
-
 .asm{padding:0 var(--gut) clamp(1.4rem,4vh,2.6rem);border-bottom:1.5px solid var(--rule)}
 .asm:last-of-type{border-bottom:0}
-.asm__hd{display:flex;flex-wrap:wrap;gap:.6em 1em;align-items:baseline;padding-top:1rem}
-.asm__t{font-size:clamp(1.5rem,3.4vw,2.1rem);max-width:26ch}
-.asm__code{color:var(--ink2)}
-.asm__meta{display:flex;flex-wrap:wrap;gap:.4em 1.2em;padding:.6rem 0 0;color:var(--ink2)}
+.asm__meta{display:flex;flex-wrap:wrap;gap:.4em 1.2em;padding:1rem 0 0;color:var(--ink2)}
 .asm__meta b{color:var(--volt);font-variation-settings:"wght" 700;font-weight:400}
+.asm__code{color:var(--ink2)}
 .asm__submits{max-width:var(--measure);padding-top:.9rem}
 .asm__submits dt{font-weight:400}
 .asm__submits dt.m{color:var(--ink2)}
@@ -127,6 +123,10 @@ a{color:inherit}
   font-family:"Anybody",sans-serif;font-variation-settings:"wght" 700,"wdth" 90}
 .crit tfoot td{border-top:1.5px solid var(--rule);font-family:"Anybody",sans-serif;
   font-variation-settings:"wght" 700,"wdth" 90}
+.net{padding:0 var(--gut) clamp(1.4rem,4vh,2.6rem);border-bottom:1.5px solid var(--rule);max-width:var(--measure)}
+.net h2{font-size:1.6rem;margin:0 0 .9rem}
+.net p{margin:0 0 1em}
+.net p:last-child{margin-bottom:0}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{transition-duration:.001ms!important;animation-duration:.001ms!important}
 }
@@ -150,112 +150,27 @@ a{color:inherit}
 </header>
 
 <main>
+  <p class="m crumb"><a href="assessments.html">&larr; All assessments</a></p>
+
   <section class="wh" id="main-content">
     <div class="wh__kick m">
-      <span>Brief and rubric, together &middot; four assessments</span>
+      <span>Assessment 4 of 4 &middot; week 12 &middot; capstone</span>
+      <span>Due Wed 26 May 2027, 5:00pm</span>
     </div>
-    <h1 class="wh__t d">Assessments</h1>
+    <h1 class="wh__t d">A4 &mdash; Capstone: Applications in the Wild</h1>
     <div class="wh__lead">
-      <p>Each assessment&rsquo;s brief and rubric sit on this one page &mdash; A1 through A4 &mdash; rather than split out separately, so following one link gets you everything you need for a given piece: what it submits, when it&rsquo;s due, and exactly how it&rsquo;s weighted.</p>
-      <p>Four assessments, not three. Keeping the capstone under a 50% ceiling while leaving the earlier pieces honestly weighted needed a fourth, smaller component &mdash; that component is peer critique, graded on submitted written critiques, never on attendance or airtime.</p>
+      <p>The Dossier closes here, against applications the student is actually pursuing. This is graded on process artefacts only &mdash; never on outcome, never on offer, never on the prestige of the organisation.</p>
     </div>
   </section>
 
   <div class="ladder">
-    <div class="ladder__row m"><span class="ladder__w">20</span> <a href="assessment-1.html">A1 &middot; Role Teardown and Gap Map</a></div>
-    <div class="ladder__row m"><span class="ladder__w">25</span> <a href="assessment-2.html">A2 &middot; Performance Materials</a></div>
-    <div class="ladder__row m"><span class="ladder__w">10</span> <a href="assessment-3.html">A3 &middot; Peer Critique Contribution</a></div>
-    <div class="ladder__row m"><span class="ladder__w">45</span> <a href="assessment-4.html">A4 &middot; Capstone: Applications in the Wild</a></div>
-    <div class="ladder__row m ladder__sum">20 + 25 + 10 + 45 = 100. Largest is 45, under the 50% ceiling.</div>
+    <div class="ladder__row m"><span class="ladder__w">45</span> This assessment is worth 45% of the final grade, under the 50% ceiling.</div>
   </div>
 
-  <article class="asm" id="a1" aria-labelledby="a1t">
-    <div class="asm__hd">
-      <h2 class="asm__t d" id="a1t"><a href="assessment-1.html">A1 &mdash; Role Teardown and Gap Map</a></h2>
-      <span class="m asm__code">assessments/01-role-teardown</span>
-    </div>
+  <article class="asm" aria-labelledby="a4t">
+    <h2 class="d" id="a4t" style="font-size:1.6rem;padding:1.2rem var(--gut) 0">Brief and rubric</h2>
     <div class="m asm__meta">
-      <span>Week <b>4</b></span>
-      <span>Weight <b>20%</b></span>
-      <span>Due <b>Fri 19 Mar 2027, 5:00pm</b></span>
-    </div>
-    <dl class="asm__submits m">
-      <dt>Submits</dt>
-      <dd>Dossier &sect;&sect;1&ndash;4 &mdash; evidenced Baseline Inventory, three target ads, one four-column annotated teardown, and the tiered Gap Map.</dd>
-    </dl>
-    <table class="crit">
-      <caption class="m">Marking &mdash; weighted</caption>
-      <thead><tr><th class="m" scope="col">Criterion</th><th class="m" scope="col">Weight</th></tr></thead>
-      <tbody>
-        <tr><td>Accuracy of the teardown &mdash; does the four-column split hold up against the ad</td><td>30</td></tr>
-        <tr><td>Specificity of gap articulation &mdash; planned against, not apologised for</td><td>40</td></tr>
-        <tr><td>Evidence behind every baseline claim</td><td>20</td></tr>
-        <tr><td>Legibility of the Dossier as a working document someone else could read</td><td>10</td></tr>
-      </tbody>
-      <tfoot><tr><td>Total</td><td>100</td></tr></tfoot>
-    </table>
-  </article>
-
-  <article class="asm" id="a2" aria-labelledby="a2t">
-    <div class="asm__hd">
-      <h2 class="asm__t d" id="a2t"><a href="assessment-2.html">A2 &mdash; Performance Materials</a></h2>
-      <span class="m asm__code">assessments/02-performance-materials</span>
-    </div>
-    <div class="m asm__meta">
-      <span>Week <b>8</b></span>
-      <span>Weight <b>25%</b></span>
-      <span>Due <b>Fri 23 Apr 2027, 5:00pm</b></span>
-    </div>
-    <dl class="asm__submits m">
-      <dt>Submits</dt>
-      <dd>Materials fitted to one named target &mdash; CV or r&eacute;sum&eacute;, a cover letter or pitch, one field-appropriate artefact (repo front page, portfolio case study, or one-page capability brief) &mdash; plus the Varnish Note recording every presentational decision and what it reveals or conceals.</dd>
-    </dl>
-    <table class="crit">
-      <caption class="m">Marking &mdash; weighted</caption>
-      <thead><tr><th class="m" scope="col">Criterion</th><th class="m" scope="col">Weight</th></tr></thead>
-      <tbody>
-        <tr><td>Fitness to the named target rather than to a generic reader</td><td>30</td></tr>
-        <tr><td>Evidence behind every claim; receipt debt paid down</td><td>25</td></tr>
-        <tr><td>Performance awareness &mdash; the Varnish Note&rsquo;s honesty and specificity</td><td>25</td></tr>
-        <tr><td>Craft and legibility of the materials themselves</td><td>20</td></tr>
-      </tbody>
-      <tfoot><tr><td>Total</td><td>100</td></tr></tfoot>
-    </table>
-  </article>
-
-  <article class="asm" id="a3" aria-labelledby="a3t">
-    <div class="asm__hd">
-      <h2 class="asm__t d" id="a3t"><a href="assessment-3.html">A3 &mdash; Peer Critique Contribution</a></h2>
-      <span class="m asm__code">assessments/03-peer-critique</span>
-    </div>
-    <div class="m asm__meta">
-      <span>Week <b>11</b></span>
-      <span>Weight <b>10%</b></span>
-      <span>Due <b>Fri 14 May 2027, 5:00pm</b></span>
-    </div>
-    <dl class="asm__submits m">
-      <dt>Submits</dt>
-      <dd>The three most substantial written critiques the student <em>gave</em> across the semester &mdash; from any of weeks 3, 6, 8 or 11 &mdash; each with a short note on what it changed in the recipient&rsquo;s work, countersigned by the recipient.</dd>
-    </dl>
-    <p class="asm__note m">Graded on submitted written critiques only, never on attendance or on talking in a tutorial.</p>
-    <table class="crit">
-      <caption class="m">Marking &mdash; weighted</caption>
-      <thead><tr><th class="m" scope="col">Criterion</th><th class="m" scope="col">Weight</th></tr></thead>
-      <tbody>
-        <tr><td>Specificity &mdash; critique of a decision, not of polish</td><td>40</td></tr>
-        <tr><td>Usefulness &mdash; evidence it changed what someone did next</td><td>35</td></tr>
-        <tr><td>Reciprocity and conduct across the semester</td><td>25</td></tr>
-      </tbody>
-      <tfoot><tr><td>Total</td><td>100</td></tr></tfoot>
-    </table>
-  </article>
-
-  <article class="asm" id="a4" aria-labelledby="a4t">
-    <div class="asm__hd">
-      <h2 class="asm__t d" id="a4t"><a href="assessment-4.html">A4 &mdash; Capstone: Applications in the Wild</a></h2>
-      <span class="m asm__code">assessments/04-capstone-applications</span>
-    </div>
-    <div class="m asm__meta">
+      <span class="asm__code">assessments/04-capstone-applications</span>
       <span>Week <b>12</b></span>
       <span>Weight <b>45%</b></span>
       <span>Due <b>Wed 26 May 2027, 5:00pm</b></span>
@@ -265,7 +180,6 @@ a{color:inherit}
       <dd>The application materials as actually sent, the consolidated twelve-entry reflection log, one interview debrief, the ninety-day ramp plan, and the performance-versus-genuine audit.</dd>
     </dl>
     <p class="asm__note m">Graded on process artefacts only. Never on outcome, never on offer, never on the prestige of the organisation.</p>
-    <p>Students apply to roles they are actually pursuing anyway &mdash; applying to a role with no intention of taking it is not permitted. By the end of the week&nbsp;9 tutorial, every student declares an interview route: a real one, or the Practice Interview Partner Pool, coordinated by Margot Tse, of recruiters and practitioners who have given signed written consent to conduct a practice interview knowing it is a teaching exercise. The debrief below is graded identically either way &mdash; there is no mark difference between routes. Full framing of the pool and the consent it runs on is on <a href="policies.html">Policies</a>.</p>
     <table class="crit">
       <caption class="m">Marking &mdash; weighted &middot; graded on process, never on outcome</caption>
       <thead><tr><th class="m" scope="col">Criterion</th><th class="m" scope="col">Weight</th></tr></thead>
@@ -280,12 +194,26 @@ a{color:inherit}
     </table>
   </article>
 
+  <section class="net" aria-labelledby="netT">
+    <h2 class="d" id="netT">The interview route, and the practice pool</h2>
+    <p>Students apply to roles they are actually pursuing anyway. Applying to a role with no intention of taking it is not permitted.</p>
+    <p>By the end of the week&nbsp;9 tutorial, every student declares an interview route. A student with a confirmed real interview names it. A student without one opts into the Practice Interview Partner Pool, coordinated by Margot Tse.</p>
+    <p>Pool interviewers are recruiters and practitioners who have given signed written consent, knowing they are conducting a SlopU practice interview for a course in which the interview is a teaching exercise. Nobody is deceived, and nobody who has not consented is approached.</p>
+    <p>The debrief is graded identically either way. There is no mark difference between routes, and no requirement to disclose which route was used beyond the factual note in the reflection log.</p>
+    <p>Misrepresenting facts about yourself to any employer, real or pool, is an academic integrity matter and is handled under <a href="policies.html">Policies</a>. The course teaches framing, not fabrication.</p>
+  </section>
+
+  <div class="ladder">
+    <div class="ladder__row m"><a href="assessment-3.html">&larr; A3 Peer Critique Contribution, 10%, week 11</a></div>
+    <div class="ladder__row m ladder__sum"><a href="assessments.html">All four assessments &middot; 20 + 25 + 10 + 45 = 100</a></div>
+  </div>
+
   <footer>
     <div class="foot">
-      <p class="m"><a href="index.html">Home</a> &middot; <a href="people.html">People</a> &middot; <a href="policies.html">Policies</a> &middot; <a href="resources.html">Resources</a></p>
+      <p class="m"><a href="index.html">Home</a> &middot; <a href="assessments.html">Assessments</a> &middot; <a href="people.html">People</a> &middot; <a href="policies.html">Policies</a> &middot; <a href="resources.html">Resources</a></p>
     </div>
     <div class="foot__strip">
-      <span class="m">Assessments</span>
+      <span class="m">Assessment 4</span>
       <span class="m">SLOP3841 &middot; Professional Identity Performance</span>
     </div>
   </footer>
