@@ -91,6 +91,24 @@ a{color:inherit}
 .wh__lead p{margin:0 0 1em}
 .wh__lead p:last-child{margin-bottom:0}
 
+/* --- scroll cue ------------------------------------------------
+   Static in normal flow (not fixed/sticky) so it scrolls out of
+   view on its own once the visitor starts scrolling — no JS
+   needed, and nothing to conflict with the rail's own scroll
+   handling elsewhere in the pilot. */
+.scue{
+  display:flex;align-items:center;gap:.7ch;
+  padding:.55rem var(--gut);border-bottom:1.5px solid var(--rule);color:var(--ink2);
+}
+.scue__arrow{
+  display:inline-block;color:var(--volt);font-size:.85rem;line-height:1;
+  animation:scue-bob 1.7s ease-in-out infinite;
+}
+@keyframes scue-bob{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(.4em)}
+}
+
 /* --- twelve-tile grid -----------------------------------------
    Same card component as index.html's horizontal act, laid out as
    a wrapping grid instead of a pinned scroll strip — this page is
@@ -172,11 +190,13 @@ a.wk .wk__d{text-decoration:none}
     <h1 class="wh__t d">Twelve weeks</h1>
   </div>
   <div class="wh__lead">
-    <p>The same twelve weeks index.html scrolls sideways through, here as a
-    plain grid — every title, in order, in one look. Weeks 01 and 07 are
-    built as full pages; the rest are the shared spine this pilot ports
-    unmodified from the brief.</p>
+    <p>The same twelve weeks the home page scrolls sideways through, here as a
+    plain grid — every title, in order, in one look. Weeks 01 and 07 have
+    their own dedicated session pages; the rest share the same lecture and
+    tutorial spine.</p>
   </div>
+
+  <p class="scue m" aria-hidden="true"><span class="scue__arrow">&darr;</span>&nbsp;Scroll for all twelve</p>
 
   <section class="sh" aria-hidden="true">
     <span class="sh__no m">§01</span>
