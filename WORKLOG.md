@@ -963,3 +963,54 @@ more than deck polish or nav-parity nice-to-haves.
 **Still open, unchanged from the previous entry:** `SHIP_INSTRUCTIONS.md`/
 `.claude-ship-kit/` remain untracked and untouched. No `gh` command has been
 run.
+
+## 2026-09-20 — Post-Wave-3 feedback round: nav, tracker highlight, tutorial rename, cross-links, dedupe
+
+Ritesh gave six items of direct feedback on the built site rather than
+answering which shape Wave 4 should take. Two needed a clarifying round
+first: the three-streams complaint arrived truncated ("they are n" — turned
+out to mean "not equally sized"), and the sessions-to-tutorials rename had a
+real fork worth surfacing (display wording vs. URL path) given the
+broken-links-checker gotcha. Confirmed: display wording only.
+
+Given his explicit caution that doing this inline risked forcing an
+auto-compaction, delegated the whole implementation to a single forked
+agent (not a multi-agent fan-out — the six items touch overlapping shared
+files, `site-config.ts` and the nav/tracker component, so one owner was
+safer than disjoint scopes here) rather than editing inline. The fork
+investigated current file state itself rather than trusting the wave
+summaries, then implemented and reported:
+
+- Nav: added a visible "Navigate" label — the rail's nav list had no
+  heading while the adjacent audit tracker did, a real asymmetry.
+- Rail tracker: current-page week gets a claim-fill highlight ring
+  (`aria-current`), matched against `Astro.url.pathname` for both
+  `/sessions/<id>/` and `/lectures/<id>/`.
+- `sessionLabels` singular/plural changed to "Tutorial"/"Tutorials" in
+  `site-config.ts` — the only place user-facing session copy is sourced
+  from, confirmed via grep. No URL, collection, or filename changes.
+- Three-stream grid: `1.3fr 1fr 1fr` → `repeat(3, 1fr)` with
+  `align-items: stretch`.
+- Lecture ↔ tutorial cross-links added both directions, matched by shared
+  week id in each page's `getStaticPaths` rather than a new `related:`
+  graph edge (avoids the dangling-ref/self-ref/symmetrised-edge risks
+  documented in `CLAUDE.md`).
+- Deduplicated the two separate "week overview" widgets: extracted the
+  home page's "where the semester goes" box grid into
+  `SemesterWeekGrid.astro`, used on both the home page and the tutorials
+  index page. The old `SemesterTracker.astro` (previously only rendered on
+  the tutorials index) was deleted outright rather than left orphaned —
+  the fork's own judgement call, flagged for confirmation; grepped after
+  the fact and confirmed zero remaining references.
+
+Merge build: 0 typecheck errors, 42 pages, 0 axe violations, 0 broken
+links, 11/11 tests. Visual check at both viewports on home, a tutorial
+page (week 4), and a lecture page (week 4) — nav label, highlighted
+tracker cell, renamed labels, even stream cards, and both cross-links all
+confirmed rendering correctly. Mobile check needed the injected-iframe
+technique from `LEARNINGS.md` again — `resize_window` silently no-opped on
+this window (`window.innerWidth` stayed 1512 after a reported-successful
+390px resize), same failure mode as before. Committed as `375b6e3`.
+
+Still open: `SHIP_INSTRUCTIONS.md`/`.claude-ship-kit/` remain untouched.
+Wave 4 (deck re-skin, final cross-page pass, final ship) not yet started.
