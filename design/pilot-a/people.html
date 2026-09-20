@@ -3,37 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Resources &mdash; SLOP3841</title>
+<title>People &mdash; SLOP3841</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anybody:ital,wdth,wght@0,50..150,100..900;1,50..150,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..700;1,6..72,200..700&family=Martian+Mono:wdth,wght@75..112.5,300..700&display=swap" rel="stylesheet">
 <style>
-/* ============================================================
-   KINETIC MANIFESTO &mdash; shared base (identical to week pages)
-   ============================================================ */
 :root{
-  --bone:#EDEBE4;
-  --ink:#14110F;
-  --ink2:#5A544E;
-  --volt:#C92000;
-  --rule:#14110F;
-  --kv-wght:300;
-  --kv-wdth:96;
-  --gut:clamp(1.1rem,4vw,3.25rem);
-  --measure:34ch;
+  --bone:#EDEBE4;--ink:#14110F;--ink2:#5A544E;--volt:#C92000;--rule:#14110F;
+  --kv-wght:300;--kv-wdth:96;--gut:clamp(1.1rem,4vw,3.25rem);--measure:34ch;
 }
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{
-  margin:0;background:var(--bone);color:var(--ink);
-  touch-action:manipulation;
+  margin:0;background:var(--bone);color:var(--ink);touch-action:manipulation;
   -webkit-tap-highlight-color:rgba(201,32,0,.22);
-  font-family:"Newsreader",Georgia,serif;
-  font-variation-settings:"opsz" 16;
-  font-size:clamp(1rem,.55vw + .92rem,1.1rem);
-  line-height:1.55;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
+  font-family:"Newsreader",Georgia,serif;font-variation-settings:"opsz" 16;
+  font-size:clamp(1rem,.55vw + .92rem,1.1rem);line-height:1.55;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
 ::selection{background:var(--volt);color:var(--bone)}
 .d{
@@ -57,7 +43,6 @@ a{color:inherit}
   text-transform:uppercase;transition:top .16s;
 }
 .skip:focus{top:.5rem}
-
 .mast{
   position:sticky;top:0;z-index:60;background:var(--bone);
   border-bottom:1.5px solid var(--rule);
@@ -91,7 +76,7 @@ a{color:inherit}
   .mast__nav a:last-child{border-right:0}
 }
 
-/* --- page hero (reuses the week masthead's proportions) ---- */
+/* --- page hero ---------------------------------------------- */
 .wh{padding:clamp(1.2rem,4vh,3rem) 0 0}
 .wh__kick{padding:0 var(--gut) .8rem;color:var(--ink2)}
 .wh__t{font-size:clamp(2.6rem,9.4vw,7rem);padding-left:var(--gut);max-width:22ch;text-wrap:balance}
@@ -102,7 +87,7 @@ a{color:inherit}
 .wh__lead p{margin:0 0 1em}
 .wh__lead p:last-child{margin-bottom:0}
 
-/* --- generic section head ----------------------------------- */
+/* --- generic section head ------------------------------------ */
 .sh{
   display:grid;grid-template-columns:14ch 1fr;align-items:baseline;gap:0;
   border-bottom:1.5px solid var(--rule);
@@ -117,22 +102,21 @@ a{color:inherit}
   .sh__t{padding-top:.3rem}
 }
 
-/* --- resource groups ----------------------------------------- */
-.grp{
+/* --- person card ----------------------------------------------
+   Same two-column note/body split as the Resources page's .grp,
+   carrying role + stream in the narrow column and the bio as the
+   body &mdash; a card without inventing a new grid. */
+.person{
   padding:clamp(1.2rem,4vh,2.2rem) var(--gut) clamp(1.4rem,4vh,2.4rem);
   border-bottom:1.5px solid var(--rule);
   display:grid;grid-template-columns:minmax(0,var(--measure)) 1fr;gap:var(--gut);
 }
-.grp__note{margin:0;color:var(--ink2);align-self:start}
-.grp__list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem}
-.grp__list a{
-  font-family:"Martian Mono",monospace;font-size:.72rem;letter-spacing:.1em;
-  text-transform:uppercase;text-decoration:underline;text-underline-offset:.25em;
-  display:inline-block;
-}
-.grp__list a:hover,.grp__list a:focus-visible{color:var(--volt)}
+.person__meta{margin:0;align-self:start;display:flex;flex-direction:column;gap:.4rem}
+.person__role{color:var(--ink2)}
+.person__stream{color:var(--volt)}
+.person__bio{margin:0;max-width:52ch}
 @media (max-width:760px){
-  .grp{grid-template-columns:1fr}
+  .person{grid-template-columns:1fr}
 }
 
 /* --- footer --------------------------------------------------- */
@@ -148,7 +132,7 @@ a{color:inherit}
 </head>
 <body>
 
-<a class="skip" href="#lecture-slides">Skip to content</a>
+<a class="skip" href="#wren-halloway">Skip to content</a>
 
 <header class="mast">
   <a class="mast__code" href="index.html">SLOP <i>/ 3841</i></a>
@@ -165,87 +149,93 @@ a{color:inherit}
   <!-- ===== PAGE HERO ===== -->
   <section class="wh">
     <div class="wh__kick m">
-      <span>Everything the course hands you &middot; one page</span>
+      <span>Five staff &middot; no photos</span>
     </div>
-    <h1 class="wh__t d">Resources</h1>
+    <h1 class="wh__t d">People</h1>
     <div class="wh__lead">
-      <p>This is the sitewide index for course material &mdash; slides, briefs, rubrics, policies and support contacts. Four groups, one link each: the deck for the pitch, the assessments page for brief and rubric together, policies for the rules the course actually enforces, and support for the one non-satirical contact point in the site. Start here if you are not sure which page has what you need.</p>
+      <p>No photos here &mdash; the bios carry them. One convenor holds the course, three stream convenors run Technical Practice, Creative and Communications Practice, and Commercial and Public Practice, and one practice fellow runs the machinery around week&nbsp;9 and beyond. All five are performing a professional identity too; the course does not pretend otherwise.</p>
     </div>
   </section>
 
-  <!-- ===== LECTURE SLIDES ===== -->
-  <section id="lecture-slides" aria-labelledby="slidesT">
+  <!-- ===== WREN HALLOWAY ===== -->
+  <section id="wren-halloway" aria-labelledby="wrenT">
     <div class="sh">
       <div class="sh__no m">&sect;01</div>
-      <h2 class="sh__t" id="slidesT">Lecture slides</h2>
+      <h2 class="sh__t" id="wrenT">Dr Wren Halloway</h2>
     </div>
-    <div class="grp">
-      <p class="grp__note m">One deck, one slide per week &mdash; the pitch for what that week covers, not a transcript of it.</p>
-      <ul class="grp__list">
-        <li><a href="deck.html#s1">Week 01 &middot; Truthfloor</a></li>
-        <li><a href="deck.html#s2">Week 02 &middot; Reqspeak</a></li>
-        <li><a href="deck.html#s3">Week 03 &middot; Gapshape</a></li>
-        <li><a href="deck.html#s4">Week 04 &middot; Receipt debt</a></li>
-        <li><a href="deck.html#s5">Week 05 &middot; The load-bearing anecdote</a></li>
-        <li><a href="deck.html#s6">Week 06 &middot; Artefact varnish</a></li>
-        <li><a href="deck.html#s7">Week 07 &middot; The pre-warmed stranger</a></li>
-        <li><a href="deck.html#s8">Week 08 &middot; Plausibility budget</a></li>
-        <li><a href="deck.html#s9">Week 09 &middot; Interview weather</a></li>
-        <li><a href="deck.html#s10">Week 10 &middot; The negotiation flinch</a></li>
-        <li><a href="deck.html#s11">Week 11 &middot; Competence lag</a></li>
-        <li><a href="deck.html#s12">Week 12 &middot; Seamwork</a></li>
-      </ul>
+    <div class="person">
+      <div class="person__meta m">
+        <span class="person__role">Convenor</span>
+      </div>
+      <p class="person__bio">Designed the course after a decade on hiring panels, and now teaches the thing she spent that decade watching candidates get wrong. Opens every semester by naming which parts of her own job she is still performing. Contact for course-level questions and anything the stream convenors escalate.</p>
     </div>
   </section>
 
-  <!-- ===== ASSESSMENT BRIEFS & RUBRICS ===== -->
-  <section id="assessments" aria-labelledby="assessT">
+  <!-- ===== ANSELM PIKE ===== -->
+  <section id="anselm-pike" aria-labelledby="anselmT">
     <div class="sh">
       <div class="sh__no m">&sect;02</div>
-      <h2 class="sh__t" id="assessT">Assessment briefs &amp; rubrics</h2>
+      <h2 class="sh__t" id="anselmT">Dr Anselm Pike</h2>
     </div>
-    <div class="grp">
-      <p class="grp__note m">Brief and rubric live together on one page per assessment &mdash; not split across two half-pages.</p>
-      <ul class="grp__list">
-        <li><a href="assessments.html">All assessments &mdash; briefs and rubrics</a></li>
-      </ul>
+    <div class="person">
+      <div class="person__meta m">
+        <span class="person__role">Stream convenor</span>
+        <span class="person__stream">Technical Practice</span>
+      </div>
+      <p class="person__bio">Former engineering manager who has read more README files than is medically advisable. Asks &ldquo;does it run&rdquo; before anything else and means it kindly. Runs the week&#8209;2 teardown and the week&#8209;8 red team.</p>
     </div>
   </section>
 
-  <!-- ===== POLICIES ===== -->
-  <section id="policies" aria-labelledby="policyT">
+  <!-- ===== NADIA FERRANTE ===== -->
+  <section id="nadia-ferrante" aria-labelledby="nadiaT">
     <div class="sh">
       <div class="sh__no m">&sect;03</div>
-      <h2 class="sh__t" id="policyT">Policies</h2>
+      <h2 class="sh__t" id="nadiaT">Nadia Ferrante</h2>
     </div>
-    <div class="grp">
-      <p class="grp__note m">Late submission, extensions, and the invented-record line the course actually enforces.</p>
-      <ul class="grp__list">
-        <li><a href="policies.html">Course policies</a></li>
-      </ul>
+    <div class="person">
+      <div class="person__meta m">
+        <span class="person__role">Stream convenor</span>
+        <span class="person__stream">Creative and Communications Practice</span>
+      </div>
+      <p class="person__bio">A working designer who reviews portfolios for a living and can name the exact slide where she stopped reading. Teaches sequencing as a discipline rather than as taste. Delivers the week&#8209;6 lecture.</p>
     </div>
   </section>
 
-  <!-- ===== SUPPORT ===== -->
-  <section id="support" aria-labelledby="supportT">
+  <!-- ===== SUNIL RAMAN ===== -->
+  <section id="sunil-raman" aria-labelledby="sunilT">
     <div class="sh">
       <div class="sh__no m">&sect;04</div>
-      <h2 class="sh__t" id="supportT">Support</h2>
+      <h2 class="sh__t" id="sunilT">Dr Sunil Raman</h2>
     </div>
-    <div class="grp">
-      <p class="grp__note m">Wellbeing, accessibility, and where to ask for an extension before it is due, not after.</p>
-      <ul class="grp__list">
-        <li><a href="support.html">Support and contacts</a></li>
-      </ul>
+    <div class="person">
+      <div class="person__meta m">
+        <span class="person__role">Stream convenor</span>
+        <span class="person__stream">Commercial and Public Practice</span>
+      </div>
+      <p class="person__bio">Eleven years on public-sector selection panels, and can recite the four words that sink a criteria response. Presides over the week&#8209;4 claims tribunal and enjoys it more than he will admit.</p>
+    </div>
+  </section>
+
+  <!-- ===== MARGOT TSE ===== -->
+  <section id="margot-tse" aria-labelledby="margotT">
+    <div class="sh">
+      <div class="sh__no m">&sect;05</div>
+      <h2 class="sh__t" id="margotT">Margot Tse</h2>
+    </div>
+    <div class="person">
+      <div class="person__meta m">
+        <span class="person__role">Practice fellow</span>
+      </div>
+      <p class="person__bio">Coordinates the Practice Interview Partner Pool and its consent paperwork. The person to see about the week&#8209;9 route declaration, extensions, and any application process that is making you feel unwell. Not a marker for A4 debriefs she facilitated &mdash; see <a href="support.html">Support</a> for how to reach her.</p>
     </div>
   </section>
 
   <footer>
     <div class="foot">
-      <p class="m"><a href="index.html">Home</a> &middot; <a href="people.html">People</a> &middot; <a href="policies.html">Policies</a> &middot; <a href="resources.html" aria-current="page">Resources</a></p>
+      <p class="m"><a href="index.html">Home</a> &middot; <a href="people.html" aria-current="page">People</a> &middot; <a href="policies.html">Policies</a> &middot; <a href="resources.html">Resources</a></p>
     </div>
     <div class="foot__strip">
-      <span class="m">Resources</span>
+      <span class="m">People</span>
       <span class="m">SLOP3841 &middot; Professional Identity Performance</span>
     </div>
   </footer>

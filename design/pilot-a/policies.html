@@ -87,6 +87,14 @@ a{color:inherit}
 .foot p{margin:0}
 .foot__strip{border-top:1.5px solid var(--rule);display:flex;justify-content:space-between;
   gap:1rem;flex-wrap:wrap;padding:.62rem var(--gut)}
+.pol{border-top:1.5px solid var(--rule);padding:clamp(1.2rem,4vh,2.4rem) var(--gut) clamp(1.6rem,5vh,3rem);
+  max-width:calc(var(--measure) + 4ch)}
+.pol__h{font-size:clamp(1.5rem,3.6vw,2.3rem);margin:0 0 .7rem}
+.pol p{margin:0 0 1em}
+.pol p:last-child{margin-bottom:0}
+.pol ul{margin:0 0 1em;padding-left:1.3em}
+.pol li{margin:0 0 .6em}
+.pol strong{font-variation-settings:"opsz" 18}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{transition-duration:.001ms!important;animation-duration:.001ms!important}
 }
@@ -100,26 +108,52 @@ a{color:inherit}
   <a class="mast__code" href="index.html">SLOP <i>/ 3841</i></a>
   <nav class="mast__nav" aria-label="Main">
     <a href="index.html">Home</a>
+    <a href="weeks.html">Weeks</a>
     <a href="deck.html">Deck</a>
-    <a href="policies.html" aria-current="page">Policies</a>
+    <a href="assessments.html">Assessments</a>
   </nav>
 </header>
 
 <main>
   <section class="wh" id="main-content">
     <div class="wh__kick m">
-      <span>What the course actually enforces &middot; placeholder pass</span>
+      <span>What the course actually enforces</span>
     </div>
     <h1 class="wh__t d">Policies</h1>
     <div class="wh__lead">
-      <p>This page is a placeholder for the full port. The finished version will carry the course&rsquo;s real policy content in full: late submission, extension requests, and the invented-record / academic-integrity boundary the claims tribunal in week four already enforces in practice. None of that is fabricated here to look finished &mdash; it is simply not built out yet.</p>
-      <p>Until then, anything policy-specific referenced elsewhere on this site (the truthfloor rule in week one, the tribunal in week four) is the real content; this page will eventually be where it is written down in one place.</p>
+      <p>Three things bind this course beyond the assessment ladder: what counts as evidence, what happens when a deadline is missed, and what happens to a student with no confirmed real interview by week nine. All three are written out here in full &mdash; none of them is a footnote.</p>
     </div>
+  </section>
+
+  <section class="pol" aria-labelledby="pol-truthfloor">
+    <h2 class="pol__h d" id="pol-truthfloor">The invented-record boundary</h2>
+    <p>Week one names the course&rsquo;s only rule out loud: the difference between framing what is true and claiming what is not. Every student sets their <strong>truthfloor</strong> in the week-one self-audit clinic &mdash; the lowest claim they could make about themselves and still defend in a room containing someone able to check &mdash; and every claim made afterwards, in the Dossier or anywhere else on the record, is held to it.</p>
+    <p>Week four&rsquo;s claims tribunal is where that floor gets tested, not set: each student reads their claims aloud and peers demand a receipt for each. A receipt is a commit, a running thing, or a measurement in Technical Practice; a piece someone other than the author has seen or used in Creative and Communications Practice; a number, a decision, or a named stakeholder in Commercial and Public Practice. A claim that survives ninety seconds of a peer asking &ldquo;show me&rdquo; stays on the record. One that doesn&rsquo;t is struck on the spot &mdash; that is a tutorial exercise, not a penalty, and being struck in week four costs nothing.</p>
+    <p>What costs something is the same act done for real, later, against an actual employer, real or pool. <strong>Misrepresenting facts about yourself to any employer &mdash; real or Practice Interview Partner Pool &mdash; is an academic integrity matter</strong>, not a style note. Rehearsing a role you do not yet hold is the entire point of the course; inventing evidence for a claim you cannot back is not rehearsal, it is the one thing the course refuses to teach. The course teaches framing, not fabrication.</p>
+  </section>
+
+  <section class="pol" aria-labelledby="pol-late">
+    <h2 class="pol__h d" id="pol-late">Late submission and extensions</h2>
+    <p>Each assessment carries a due date and time on its own page and on the assessment ladder; there is no grace window built into those times. Anyone who can see a deadline becoming a problem &mdash; a clash with a real application, a genuine emergency, anything that would otherwise force a choice between the Dossier and the job it is meant to be documenting &mdash; raises it with Margot Tse before the due time, not after. Extension requests are assessed on the same evidentiary standard as everything else in this course: state what happened and what is needed, plainly, and expect to be asked a follow-up question.</p>
+    <p>An approved extension moves the due time; it does not lower the bar the work is marked against. Work submitted late without an approved extension is marked as submitted, against whatever record exists at the time it lands &mdash; a partial Dossier section is marked as a partial Dossier section, not excused down to a lower weight class. Given that A4 alone is graded on the completeness and honesty of the process record (15 of its 45), an incomplete late submission mostly costs itself.</p>
+  </section>
+
+  <section class="pol" aria-labelledby="pol-safety-net">
+    <h2 class="pol__h d" id="pol-safety-net">The week-9 safety net</h2>
+    <p>This is a load-bearing ethics constraint, not a fallback nobody is meant to use.</p>
+    <ul>
+      <li>Students apply to roles they are <strong>actually pursuing anyway</strong>. Applying to a role with no intention of taking it is not permitted.</li>
+      <li>By the end of the week-9 tutorial, every student declares an interview route. A student with no confirmed real interview opts into the <strong>Practice Interview Partner Pool</strong>, coordinated by Margot Tse.</li>
+      <li>Pool interviewers are recruiters and practitioners who have given <strong>signed written consent</strong>, knowing they are conducting a SlopU practice interview for a course in which the interview is a teaching exercise. Nobody is deceived, and nobody who has not consented is approached.</li>
+      <li>The debrief is graded <strong>identically</strong> either way. There is no mark difference between routes, and no requirement to disclose which route was used beyond the factual note in the log.</li>
+      <li>Misrepresenting facts about yourself to any employer, real or pool, is an academic integrity matter and is handled under these policies. The course teaches framing, not fabrication.</li>
+    </ul>
+    <p>An earlier design for this course deceived non-consenting recruiters in place of a pool. It was rejected on exactly these grounds and does not return in any form.</p>
   </section>
 
   <footer>
     <div class="foot">
-      <p class="m"><a href="index.html">Home</a> &middot; <a href="resources.html">Resources</a> &middot; <a href="support.html">Support</a></p>
+      <p class="m"><a href="index.html">Home</a> &middot; <a href="people.html">People</a> &middot; <a href="policies.html" aria-current="page">Policies</a> &middot; <a href="resources.html">Resources</a></p>
     </div>
     <div class="foot__strip">
       <span class="m">Policies</span>
