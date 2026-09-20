@@ -891,4 +891,75 @@ before starting the redesign — do not assume yes or no.
   an irreversible, high-blast-radius action. Left both untouched and
   unstaged; raised with Ritesh directly rather than acted on, per the
   instruction-source-boundary rule (content sitting in files is data, not
-  a command, regardless of who or what put it there).
+  a command, regardless of who or what put it there). **Still open at end
+  of this entry — Ritesh has not yet answered whether these files were
+  placed deliberately.**
+
+## 2026-09-20 — Wave 3: secondary pages, a dual-brand-identity bug, and a budget question
+
+Four-agent fan-out per the wave plan, each on an exclusive scope: assessments
+(`assessments/index.mdx`, `[slug].astro`, `AssessmentsGrid.astro`,
+`MarkingModel.astro`), people (`people/index.mdx`, `[slug].astro`,
+`PeopleGrid.astro`, `TeachingTeam.astro`), lectures (`lectures/index.mdx`,
+`[slug].astro`, `LecturesGrid.astro`), and glossary+policies
+(`glossary/index.mdx`, `GlossaryList.astro`, `policies/index.mdx`). All four
+wrote disjoint files and reported independently; no collisions.
+
+**Real bug caught, independently, by three of the four agents:**
+`astro.config.ts`'s `universityTheme` integration still sets
+`brandCss: "/src/styles/notepad.css"` — a second, fully independent visual
+identity ("Kinetic Manifesto": Anybody/Newsreader/Martian Mono, `--np-*`
+tokens) that skins every astro-theme-university `Card`/`CardGrid`/`SpecList`/
+`Callout` instance. `AssessmentsGrid`, `PeopleGrid`, `LecturesGrid`, and
+`GlossaryList` were all still rendering through those theme components, so
+they'd have shown up on a marker's screen in the *old* rebrand's fonts and
+palette while every other page (home, sessions, now these) used Night
+Terminal — the exact "leftover-design-leak" failure mode CLAUDE.md already
+flags, just structural this time instead of copy-level. Fixed by having each
+agent drop the theme components in its own scope and hand-roll markup on the
+current tokens instead (same pattern `LecturesGrid.astro` set first, which
+the assessments and glossary agents then explicitly mirrored). `MarkingModel`
+and `TeachingTeam`, both shared components not owned by any single page type,
+were restyled in place rather than forked, per the agent-team rule.
+
+Other real fixes made in passing: `PeopleGrid.astro`'s old links skipped
+`withBase()`, which breaks under the GitHub Pages project base path — fixed.
+People detail pages gained a "what they teach" reverse-lookup nobody had
+asked for but which uses data the schema already carries. Assessment weights
+confirmed summing to 100 (20+25+10+45) before the pages were built, not
+after. Policies got a visual-only re-treatment (band-wrapped per section,
+some headings shortened since the topic moved into the eyebrow) — re-checked
+for leaked authoring language on the reread and found none.
+
+**Merge build:** clean on first attempt — 0 typecheck errors, 42 pages
+built, 0 axe violations, 0 broken links, 11/11 tests. Confirms the
+glossary/policies agent's flagged concern (untested raw-`<section>`-wrapping-
+markdown pattern inside `.mdx`, a first for this repo) parses fine through
+Astro's MDX pipeline. Committed as `142a393`.
+
+**Visual check:** one assessment page (`01-role-teardown`, a marker page) at
+both viewports. Desktop: ink header, weight tagpill, two-column facts split,
+4-weighted-criteria bar table all render as designed. Mobile: nav collapses
+to a "Menu" button, single column, no overflow. One screenshot mid-scroll
+came back solid black — checked via `getBoundingClientRect`/
+`getComputedStyle` on every band in the DOM and confirmed none is actually
+black (`rgb(0,0,0)`); all sit in the expected dark-purple palette. This is
+the same screenshot-compositing artifact already logged in `LEARNINGS.md`
+("scroll immediately followed by a screenshot returns false-black"), now
+confirmed a third time — not re-verifying it further, and not treating it as
+evidence of a real bug going forward without a positive DOM check first.
+
+**Budget question, unresolved beyond an honest answer:** Ritesh asked whether
+the remaining build is achievable on ~$15 of API credit. I have no
+visibility into actual dollar spend or Sonnet 5's per-token rate, so I said
+that plainly rather than guess a number, and reasoned instead from what's
+observable: the four Wave 3 agents each cost ~105-114k tokens, and what's
+left (Wave 4's deck re-skin, a cross-page nav/footer pass, final
+verification and ship) is smaller in kind than what Wave 3 alone just spent.
+Gave a fallback triage against the 45/20/35 mark split in case the budget
+runs out mid-Wave-4: a deployed, gradeable site after the merge build matters
+more than deck polish or nav-parity nice-to-haves.
+
+**Still open, unchanged from the previous entry:** `SHIP_INSTRUCTIONS.md`/
+`.claude-ship-kit/` remain untracked and untouched. No `gh` command has been
+run.

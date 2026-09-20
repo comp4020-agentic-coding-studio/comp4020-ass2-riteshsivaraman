@@ -350,6 +350,49 @@ no heading-name dependency at all. Progressive enhancement: with JS off the
 content is fully present, just not visually split. See the DOM-lift pattern
 entry below for the reusable technique.
 
+### A second, dead brand identity kept overriding the current one through a config field nobody was watching
+
+`astro.config.ts`'s `universityTheme` integration still pointed `brandCss` at
+`src/styles/notepad.css` — a leftover from an earlier rebrand, styling
+Anybody/Newsreader/Martian Mono and `--np-*`/`--at-*` tokens — while every
+hand-authored page had already moved to the current "Night Terminal" tokens
+in `tokens.css`. Nothing broke: `brandCss` is unlayered CSS injected after
+the theme (see "Unlayered brand CSS is a whole-identity lever" above), so it
+silently applied to any component still using the theme's own
+`Card`/`CardGrid`/`SpecList`/`Callout` primitives, while hand-rolled markup
+elsewhere was unaffected. The result was a site that looked internally
+consistent on any single page and was actually running two unreconciled
+identities depending on which components a given page happened to import —
+found only because three of four Wave 3 subagents, working on different
+pages, each independently hit theme components still wired to it
+(`AssessmentsGrid`, `PeopleGrid`, `LecturesGrid`, `GlossaryList`).
+
+**Mitigated by** dropping theme-provided `Card`/`CardGrid`/`SpecList`/
+`Callout` usage from every affected component and hand-rolling markup on the
+current tokens instead — the same move `LecturesGrid.astro` made first,
+which the other three then mirrored once flagged. The general lesson: a
+brand/theme config field that still resolves to a real file is not evidence
+it's the file currently in use — grep for what actually imports the
+theme's own components before assuming a full token migration reached
+everywhere, especially when the migration happened incrementally, page type
+by page type, rather than in one pass.
+
+### Two more real, previously undetected bugs, both invisible to any automated check
+
+Found by Wave 3 agents while restyling components, not while looking for
+bugs: `GlossaryList.astro` referenced `--at-*` custom properties that were
+never defined anywhere after `tokens.css` replaced the old stylesheet —
+silently falling back to browser defaults rather than erroring, so the page
+rendered *a* colour, just not the intended one, and nothing short of reading
+the rendered page against its source would show the mismatch. Separately,
+`PeopleGrid.astro`'s links were built as raw `/people/${id}/` with no
+`withBase()` call — correct in local dev (empty base path) and silently
+broken under the GitHub Pages project base path used in production, the
+exact class of bug that only a deployed-artefact check (not `pnpm build`)
+would surface. Both fixed in place. Neither would fail `pnpm check`,
+`check:evidence`, or axe — undefined CSS custom properties and locally-valid
+relative links are both syntactically fine.
+
 ## Patterns that worked
 
 ### Orchestration only pays off when execution, not just fan-out, is delegated
