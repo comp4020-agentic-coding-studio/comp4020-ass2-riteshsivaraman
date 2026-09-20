@@ -334,3 +334,26 @@ explicit ask for a hierarchy document as a separate deliverable.
 updated." A check-in on process discipline, not a new task — answered by
 continuing to keep `LEARNINGS.md` current through this round of fixes (see
 the two bug entries and the rAF-coalescing pattern added 2026-09-20).
+
+## 2026-09-20 — Second pilot-a review: stretch fix incomplete, nav inconsistent, real content required
+
+**Context:** after the first feedback round's fixes (hero, rotator debounce,
+rail throttle/sticky, spine, resources, deck repurpose) were committed
+(`3b78a30`) and handed back with a visual-check request. **Prompt (verbatim
+list):** the stretch text still looks weird when line count changes — the
+effect should only ever stretch horizontally, never change line count from
+the text's natural/resting state; week-07 (and all future week pages) rail
+links should smooth-scroll to their target; the top masthead nav (Home / Deck
+/ Week 07 / Resources, varying per page) is inconsistent and needs a proper
+hierarchy where every page is reachable in one or two steps, obviously;
+enable actual sideways/swipe scrolling on the pinned 12-week horizontal act,
+on top of whatever drives it now; a lot of current content reads as
+placeholder — for this prototype (not all weeks ported yet) the site should
+be a genuine subset of the final site, so replace every placeholder instance
+with real course content; and on the 12-week horizontal act, put each week's
+title below its big number for recognisability.
+
+Six concrete, well-specified points, several with real architectural weight
+(a genuine site-wide nav hierarchy touches every existing page; "replace
+every placeholder with real content" means building out policies/support/
+assessments/people for real, not just relabelling). Entering plan mode.
