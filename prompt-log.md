@@ -548,7 +548,10 @@ since downloading a file requires explicit permission) rather than guessing
 
 ## 2026-09-21 — SHIP_INSTRUCTIONS.md/.claude-ship-kit resolved
 
-**Prompt:** "those can be ignored." Short, direct answer to a standing open
-question (whether the untracked ship-kit files were placed deliberately).
-Clear and sufficient — no further action needed; files remain untouched
-and excluded from every commit as before.
+**Prompt:** "those can be ignored." Read at the time as "no action needed at
+all." Corrected next turn: "when i said those can be ignored, I meant don't
+commit them" — narrower than my reading. No harm done since the actual
+behaviour (leave untouched, exclude from every commit) was already
+identical under both readings, but worth naming: "ignore" was genuinely
+ambiguous between "no action" and "specifically don't commit," and I picked
+one without checking. Files remain untouched, excluded from every commit.
