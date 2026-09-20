@@ -41,61 +41,93 @@ const entries = sessions.flatMap((session) => {
 });
 ---
 
-<dl class="glossary">
-  {
-    entries.map((entry) => (
-      <div class="glossary-entry">
-        <dt id={entry.anchor}>{entry.term}</dt>
-        <dd>
-          <p class="glossary-gloss">{entry.gloss}</p>
-          <p class="glossary-source">
-            <a href={entry.href}>
-              Week {entry.week}: {entry.title}
-            </a>
-          </p>
-        </dd>
-      </div>
-    ))
-  }
-</dl>
+<section class="band band--paper" aria-labelledby="glossary-heading">
+  <p class="eyebrow">Coined week by week, in teaching order</p>
+  <h2 id="glossary-heading">The lexicon</h2>
+  <dl class="glossary">
+    {
+      entries.map((entry) => (
+        <div class="glossary-entry">
+          <dt id={entry.anchor}>
+            <span class="glossary-entry__n">Week {String(entry.week).padStart(2, "0")}</span>
+            <span class="glossary-entry__term">{entry.term}</span>
+          </dt>
+          <dd>
+            <p class="glossary-gloss">{entry.gloss}</p>
+            <p class="glossary-source">
+              <a href={entry.href}>
+                Week {entry.week}: {entry.title} →
+              </a>
+            </p>
+          </dd>
+        </div>
+      ))
+    }
+  </dl>
+</section>
 
 <style>
   .glossary {
     display: grid;
-    gap: var(--at-spacing-lg);
-    margin-block: var(--at-spacing-xl);
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin: 32px 0 0;
+    padding: 0;
+    list-style: none;
   }
 
   .glossary-entry {
-    padding-block-end: var(--at-spacing-lg);
-    border-block-end: 1px solid var(--at-divider);
+    background: var(--paper-soft);
+    border: 1px solid var(--paper-line);
+    border-left: 4px solid var(--evidence-fill);
+    padding: 22px 26px;
   }
 
-  .glossary-entry:last-child {
-    padding-block-end: 0;
-    border-block-end: none;
+  .glossary-entry__n {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-paper-dim);
+    margin-bottom: 8px;
   }
 
-  .glossary dt {
-    font-family: var(--at-font-display);
-    font-variation-settings: "wght" 700, "wdth" 100;
-    font-size: var(--at-font-size-h3);
+  .glossary-entry__term {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 19px;
     letter-spacing: -0.01em;
-    color: var(--at-heading);
+    color: var(--text-paper);
   }
 
   .glossary dd {
-    margin: 0;
+    margin: 12px 0 0;
   }
 
   .glossary-gloss {
-    margin-block: var(--at-spacing-xs) var(--at-spacing-xs);
+    margin: 0 0 10px;
+    font-size: 15px;
+    line-height: 1.55;
   }
 
   .glossary-source {
     margin: 0;
-    font-family: var(--at-font-mono);
-    font-size: var(--at-font-size-xs);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
     letter-spacing: 0.02em;
+  }
+
+  .glossary-source a {
+    color: var(--evidence-text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (max-width: 720px) {
+    .glossary {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

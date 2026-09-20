@@ -1,47 +1,105 @@
 ---
 import { render } from "astro:content";
 import { getPublishedCollection } from "astro-course-university/content";
+import { withBase } from "astro-theme-university/url";
 import RelatedContent from "astro-course-university/components/RelatedContent.astro";
-import SpecList from "astro-course-university/components/SpecList.astro";
-import Callout from "astro-theme-university/components/Callout.astro";
-import ContentLayout from "../../layouts/ContentLayout.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import MarkingModel from "../../components/MarkingModel.astro";
 import { formatCourseDate } from "../../lib/dates";
 import { graphCollections, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
-  const assessments = await getPublishedCollection("assessments");
-  return assessments.map((assessment) => ({
+  const assessments = (await getPublishedCollection("assessments")).sort((a, b) => a.data.week - b.data.week);
+  return assessments.map((assessment, i) => ({
     params: { slug: assessment.id },
-    props: { assessment },
+    props: { assessment, prev: assessments[i - 1], next: assessments[i + 1] },
   }));
 }
 
-const { assessment } = Astro.props;
+const { assessment, prev, next } = Astro.props;
 const { Content } = await render(assessment);
 ---
 
-<ContentLayout
-  title={assessment.data.title}
-  description={assessment.data.description}
-  {...siteConfig}
+<BaseLayout
+  title={`${assessment.data.title} — ${assessment.data.weight}%`}
+  description={assessment.data.description ?? undefined}
+  favicon={siteConfig.favicon}
 >
+  <section class="band band--ink wk-header">
+    <p class="eyebrow">
+      Week {String(assessment.data.week).padStart(2, "0")} · Due {formatCourseDate(assessment.data.due)} · Assessment
+    </p>
+    <h1 class="h-display">{assessment.data.title}</h1>
+    {assessment.data.description && <p class="lead">{assessment.data.description}</p>}
+    <span class="tagpill">Worth {assessment.data.weight}% of the course</span>
+  </section>
+
   {
     assessment.data.draft && (
-      <Callout type="warning">
-        <p>
-          <strong>Draft.</strong> This brief is still being finalised and may change.
-        </p>
-      </Callout>
+      <div class="term-band">
+        <div class="term-card">
+          <p class="term-card__label">Draft</p>
+          <p>This brief is still being finalised and may change before it is due.</p>
+        </div>
+      </div>
     )
   }
-  <p><strong>Due:</strong> {formatCourseDate(assessment.data.due)} · <strong>Weight:</strong> {assessment.data.weight}%</p>
-  <Content />
-  <SpecList spec={assessment.data.spec}>
-    The brief poses the problem and leaves room for a response. The spec is the
-    fixed part: what a marker checks. Some lines can be checked mechanically;
-    the rest call for judgement.
-  </SpecList>
-  {assessment.data.marking && <MarkingModel marking={assessment.data.marking} />}
-  <RelatedContent entry={assessment} collections={graphCollections} />
-</ContentLayout>
+
+  <section class="band band--paper">
+    <div class="week-body" data-week-body>
+      <Content />
+    </div>
+  </section>
+
+  {
+    assessment.data.spec && assessment.data.spec.length > 0 && (
+      <section class="band band--soft" aria-labelledby="spec-heading">
+        <div class="section-head">
+          <p class="eyebrow">The spec</p>
+          <h2 id="spec-heading">What a marker checks</h2>
+        </div>
+        <p class="spec-intro">
+          The brief poses the problem and leaves room for a response. The spec is the fixed
+          part — some lines can be checked mechanically, the rest call for judgement.
+        </p>
+        <ul class="spec-list">
+          {assessment.data.spec.map((line: string) => (
+            <li>{line}</li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <section class="band band--paper">
+    {assessment.data.marking && <MarkingModel marking={assessment.data.marking} />}
+    <RelatedContent entry={assessment} collections={graphCollections} />
+  </section>
+
+  <nav class="pagefoot" aria-label="Assessment navigation">
+    {prev ? <a href={withBase(`/assessments/${prev.id}/`)}>← {prev.data.title}</a> : <span />}
+    <span class="pagefoot__spacer" />
+    {next ? <a href={withBase(`/assessments/${next.id}/`)}>{next.data.title} →</a> : <span />}
+  </nav>
+</BaseLayout>
+
+<style>
+  .spec-intro {
+    max-width: 62ch;
+    margin-bottom: 24px;
+  }
+
+  .spec-list {
+    display: grid;
+    gap: 12px;
+    max-width: 68ch;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .spec-list li {
+    padding-inline-start: 20px;
+    border-inline-start: 3px solid var(--evidence-fill);
+  }
+</style>

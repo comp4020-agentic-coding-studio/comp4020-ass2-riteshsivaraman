@@ -1,7 +1,14 @@
 ---
+/**
+ * Restyled for the Night Terminal identity, replacing the theme's own
+ * Card/CardGrid (unstyled here, and missing withBase — every href pointed
+ * at the un-prefixed `/people/<slug>/`, which is wrong under a GitHub
+ * Pages project base). Follows the same self-contained-band pattern as
+ * GlossaryList.astro: the component owns its own `<section class="band">`
+ * rather than leaving the page to wrap it.
+ */
 import { getPublishedCollection } from "astro-course-university/content";
-import Card from "astro-theme-university/components/Card.astro";
-import CardGrid from "astro-theme-university/components/CardGrid.astro";
+import { withBase } from "astro-theme-university/url";
 
 const people = await getPublishedCollection("people");
 
@@ -31,15 +38,98 @@ const visible = people.sort((a, b) => {
 });
 ---
 
-<CardGrid columns={2}>
-  {
-    visible.map((person) => (
-      <Card headingLevel="h2" title={person.data.title} href={`/people/${person.id}/`}>
-        <p>
-          <small>{asLabel(person.data.role)}</small>
-        </p>
-        <p>{person.data.description}</p>
-      </Card>
-    ))
+<section class="band band--paper" aria-labelledby="people-heading">
+  <p class="eyebrow">Five people, one room</p>
+  <h2 id="people-heading">Meet the team</h2>
+  <ul class="people-grid">
+    {
+      visible.map((person) => (
+        <li class="person-card" data-rank={rank(person.data.role)}>
+          <a href={withBase(`/people/${person.id}/`)} class="person-card__link">
+            <p class="person-card__role">{asLabel(person.data.role)}</p>
+            <h3 class="person-card__name">{person.data.title}</h3>
+            <p class="person-card__desc">{person.data.description}</p>
+            <span class="person-card__more">Read more →</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .people-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin: 32px 0 0;
+    padding: 0;
+    list-style: none;
   }
-</CardGrid>
+
+  .person-card {
+    background: var(--paper-soft);
+    border: 1px solid var(--paper-line);
+    border-left: 4px solid var(--evidence-fill);
+  }
+
+  .person-card[data-rank="0"] {
+    border-left-color: var(--claim-fill);
+  }
+
+  .person-card__link {
+    display: block;
+    height: 100%;
+    padding: 26px 28px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .person-card__link:hover .person-card__name,
+  .person-card__link:focus-visible .person-card__name {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .person-card__role {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-paper-dim);
+    margin: 0 0 10px;
+  }
+
+  .person-card__name {
+    font-family: var(--font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    font-size: 21px;
+    margin: 0 0 12px;
+    color: var(--text-paper);
+  }
+
+  .person-card__desc {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text-paper);
+    margin: 0 0 14px;
+  }
+
+  .person-card__more {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    color: var(--evidence-text);
+  }
+
+  @media (max-width: 720px) {
+    .people-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

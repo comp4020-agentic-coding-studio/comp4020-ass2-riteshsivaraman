@@ -461,7 +461,8 @@ right question to have asked rather than defaulted, since the alternative
 silently broken on every week that phrased its own headings differently —
 confirmed by grep across all twelve session files before asking.
 
-**Approval plus new feedback:** "It looks much better. My only feedback is
+**Approval plus new feedback:**
+ "It looks much better. My only feedback is
 that the nice visual features/components are buried towards the end of the
 page and arent noticed as easily. Anyways, continue with building the rest
 of the website, we are going in a good direction now." Three things in one
@@ -474,3 +475,20 @@ the mockup's homepage body entirely — removed it from `index.astro` (kept
 the component for reuse on `sessions/index.astro` in Wave 2), reverified
 with `pnpm check` and a visual pass, and committed the fidelity fixes and
 this structural fix together.
+
+## 2026-09-20 — "we have around $15 dollars of credit left, is the final product achievable by then?"
+
+**Context:** mid Wave 3, four parallel subagents just reported back
+(assessments, people, lectures, glossary+policies), merge build not yet
+run. **Prompt:** a real budget constraint, phrased as a direct yes/no
+question, arriving with a number attached — exactly what the "quantify a
+vague constraint" rule asks for, except this time the number came
+unprompted and the constraint I cannot resolve is on my side: I have no
+visibility into this account's actual dollar spend or Sonnet 5's exact
+per-token rate, so "is it achievable" cannot be answered as a clean yes.
+Answered honestly with that limitation stated up front, then reasoned from
+what's observable — the four just-finished agents each burned ~105-114k
+tokens, and what remains (merge build, verification, one deck re-skin,
+final ship) is smaller in kind than what Wave 3 alone just cost — and gave
+a concrete fallback triage against the 45/20/35 mark split in case the
+budget runs out mid-Wave-4.

@@ -1,4 +1,11 @@
 ---
+/**
+ * Shared by every assessment detail page. Restyled in the Night Terminal
+ * tokens (base.css has no generic `table` styling, so the unstyled markup
+ * rendered as a bare browser table) rather than forked, since this
+ * component is genuinely shared across assessments and not assessment-only
+ * markup — see the exclusive-write-scope note on the assessments task.
+ */
 interface WeightedMarking {
   mode: "weighted";
   criteria: { name: string; weight: number }[];
@@ -14,20 +21,80 @@ interface Props {
 }
 
 const { marking } = Astro.props;
+const total = marking.mode === "weighted" ? marking.criteria.reduce((sum, c) => sum + c.weight, 0) : null;
 ---
 
-<section aria-labelledby="how-marked">
-  <h2 id="how-marked">How it is marked</h2>
-  {marking.mode === "holistic" ? (
-    <p>{marking.description}</p>
-  ) : (
-    <table>
-      <thead><tr><th scope="col">Criterion</th><th scope="col">Weight</th></tr></thead>
-      <tbody>
+<section class="marking-model" aria-labelledby="how-marked">
+  <p class="eyebrow">How it is marked</p>
+  <h2 id="how-marked">{marking.mode === "weighted" ? `${marking.criteria.length} weighted criteria` : "Holistic judgement"}</h2>
+  {
+    marking.mode === "holistic" ? (
+      <p class="marking-model__holistic">{marking.description}</p>
+    ) : (
+      <div class="marking-model__rows">
         {marking.criteria.map((criterion) => (
-          <tr><td>{criterion.name}</td><td>{criterion.weight}%</td></tr>
+          <div class="marking-row">
+            <span class="marking-row__bar" style={`width:${criterion.weight}%`} />
+            <span class="marking-row__weight">{criterion.weight}%</span>
+            <span class="marking-row__name">{criterion.name}</span>
+          </div>
         ))}
-      </tbody>
-    </table>
-  )}
+        <p class="marking-model__total">Sums to {total}%.</p>
+      </div>
+    )
+  }
 </section>
+
+<style>
+  .marking-model {
+    margin: 40px 0;
+  }
+
+  .marking-model__holistic {
+    max-width: 62ch;
+  }
+
+  .marking-model__rows {
+    display: grid;
+    gap: 14px;
+    margin-top: 20px;
+  }
+
+  .marking-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    align-items: baseline;
+    gap: 16px;
+    padding: 10px 0;
+    border-block-end: 1px solid var(--paper-line);
+  }
+
+  .marking-row__bar {
+    position: absolute;
+    inset-block-end: 0;
+    inset-inline-start: 0;
+    height: 3px;
+    background: var(--evidence-fill);
+  }
+
+  .marking-row__weight {
+    font-family: var(--font-mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--evidence-text);
+  }
+
+  .marking-row__name {
+    font-size: 15.5px;
+  }
+
+  .marking-model__total {
+    margin: 4px 0 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-paper-dim);
+  }
+</style>

@@ -1,26 +1,123 @@
 ---
+/**
+ * Hand-rolled in the Night Terminal tokens rather than the theme's
+ * Card/CardGrid — those render through astro.config.ts's `brandCss:
+ * "/src/styles/notepad.css"`, which is a different, unrelated visual
+ * identity ("Kinetic Manifesto") layered on top of the theme's own
+ * components. Same fix LecturesGrid.astro applied for /lectures/: a
+ * hairline-rule seam grid built from this site's own tokens, collapsing to
+ * one column at 720px.
+ */
 import { getPublishedCollection } from "astro-course-university/content";
-import Card from "astro-theme-university/components/Card.astro";
-import CardGrid from "astro-theme-university/components/CardGrid.astro";
+import { withBase } from "astro-theme-university/url";
 import { formatCourseDate } from "../lib/dates";
 
-const assessments = await getPublishedCollection("assessments");
-const visible = assessments.sort((a, b) => a.data.week - b.data.week);
+const assessments = (await getPublishedCollection("assessments")).sort((a, b) => a.data.week - b.data.week);
+const ladderColors = ["var(--claim-fill)", "var(--accent-3-fill)", "var(--ink-line)", "var(--evidence-fill)"];
 ---
 
-<CardGrid columns={2}>
+<div class="ladder-bar" role="img" aria-label={`Assessment weights: ${assessments.map((a) => `${a.data.title} ${a.data.weight}%`).join(", ")}`}>
   {
-    visible.map((assessment) => (
-      <Card headingLevel="h2" title={assessment.data.title} href={`/assessments/${assessment.id}/`}>
-        {assessment.data.description && <p>{assessment.data.description}</p>}
-        {assessment.data.weight != null && (
-          <p>
-            <small>
-              Due {formatCourseDate(assessment.data.due)} · Weight: {assessment.data.weight}%{assessment.data.draft && " · Draft"}
-            </small>
-          </p>
-        )}
-      </Card>
+    assessments.map((a, i) => (
+      <div class="ladder-seg" style={`width:${a.data.weight}%; background:${ladderColors[i % ladderColors.length]}`}>
+        {a.data.weight}%
+      </div>
     ))
   }
-</CardGrid>
+</div>
+
+<div class="assess-grid">
+  {
+    assessments.map((assessment) => (
+      <a class="assess-card" href={withBase(`/assessments/${assessment.id}/`)}>
+        <p class="assess-card__w">{assessment.data.weight}%</p>
+        <h2 class="assess-card__title">{assessment.data.title}</h2>
+        {assessment.data.description && <p class="assess-card__desc">{assessment.data.description}</p>}
+        <p class="assess-card__due">
+          Due week {assessment.data.week} · {formatCourseDate(assessment.data.due)}
+          {assessment.data.draft && " · Draft"}
+        </p>
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .ladder-bar {
+    display: flex;
+    height: 34px;
+    margin: 0 0 2px;
+  }
+
+  .ladder-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .assess-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--paper-line);
+  }
+
+  .assess-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 26px 28px;
+    background: var(--paper);
+    color: var(--text-paper);
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+
+  .assess-card:hover,
+  .assess-card:focus-visible {
+    background: var(--paper-soft);
+  }
+
+  .assess-card__w {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--evidence-text);
+  }
+
+  .assess-card__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 19px;
+    line-height: 1.15;
+  }
+
+  .assess-card__desc {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--text-paper-dim);
+    flex: 1;
+  }
+
+  .assess-card__due {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-paper-dim);
+  }
+
+  @media (max-width: 720px) {
+    .assess-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

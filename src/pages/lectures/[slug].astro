@@ -1,27 +1,68 @@
 ---
 import { render } from "astro:content";
 import { getPublishedCollection } from "astro-course-university/content";
-import RelatedContent from "astro-course-university/components/RelatedContent.astro";
-import ContentLayout from "../../layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
+import RelatedContent from "astro-course-university/components/RelatedContent.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import TeachingTeam from "../../components/TeachingTeam.astro";
 import { formatCourseDate } from "../../lib/dates";
 import { graphCollections, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
-  const lectures = await getPublishedCollection("lectures");
-  return lectures.map((lecture) => ({ params: { slug: lecture.id }, props: { lecture } }));
+  const lectures = (await getPublishedCollection("lectures")).sort((a, b) => a.data.week - b.data.week);
+  return lectures.map((lecture, i) => ({
+    params: { slug: lecture.id },
+    props: { lecture, prev: lectures[i - 1], next: lectures[i + 1] },
+  }));
 }
 
-const { lecture } = Astro.props;
+const { lecture, prev, next } = Astro.props;
 const { Content } = await render(lecture);
-const title = `Week ${lecture.data.week}: ${lecture.data.title}`;
+
+// `slides` comes through courseNodeSchema's `.loose()` passthrough (src/content.config.ts),
+// so Astro/Zod types it as `unknown` at the call site — cast here rather than widen the
+// shared schema from a page outside this task's write scope (same approach
+// sessions/[slug].astro takes for its own passthrough fields).
+interface LectureExtra {
+  slides?: string;
+}
+const extra = lecture.data as unknown as LectureExtra;
 ---
 
-<ContentLayout title={title} description={lecture.data.description} {...siteConfig}>
-  <p><strong>{formatCourseDate(lecture.data.date)}</strong></p>
-  {lecture.data.slides && <p><a href={withBase(lecture.data.slides)}>Open the slides</a></p>}
-  <Content />
-  <TeachingTeam teachers={lecture.data.teachers} />
-  <RelatedContent entry={lecture} collections={graphCollections} />
-</ContentLayout>
+<BaseLayout
+  title={`Week ${lecture.data.week} lecture: ${lecture.data.title}`}
+  description={lecture.data.description ?? undefined}
+  favicon={siteConfig.favicon}
+>
+  <section class="band band--ink wk-header">
+    <p class="eyebrow">
+      Week {String(lecture.data.week).padStart(2, "0")} · {formatCourseDate(lecture.data.date)} · Lecture
+    </p>
+    <h1 class="h-display">{lecture.data.title}</h1>
+    {lecture.data.description && <p class="lead">{lecture.data.description}</p>}
+    {
+      extra.slides && (
+        <a class="tagpill" href={withBase(extra.slides)}>
+          Open the slides
+        </a>
+      )
+    }
+  </section>
+
+  <section class="band band--paper">
+    <div class="week-body" data-week-body>
+      <Content />
+    </div>
+  </section>
+
+  <section class="band band--paper">
+    <TeachingTeam teachers={lecture.data.teachers} />
+    <RelatedContent entry={lecture} collections={graphCollections} />
+  </section>
+
+  <nav class="pagefoot" aria-label="Lecture navigation">
+    {prev ? <a href={withBase(`/lectures/${prev.id}/`)}>← Week {prev.data.week}</a> : <span />}
+    <span class="pagefoot__spacer" />
+    {next ? <a href={withBase(`/lectures/${next.id}/`)}>Week {next.data.week} →</a> : <span />}
+  </nav>
+</BaseLayout>

@@ -1,8 +1,22 @@
 ---
+/**
+ * Rebuilt on BaseLayout directly, matching the band system Wave 2 set on
+ * sessions/[slug].astro, rather than the plain ContentLayout wrapper this
+ * page used before (a bare `<h1>` + `<dl>` with no ink/paper banding and no
+ * link back to `/people/`).
+ *
+ * Every populated schema field on `people` now renders somewhere on this
+ * page — role, affiliation, email, url, contact, plus the reverse lookup of
+ * which sessions and lectures this person teaches, which the old page never
+ * showed at all.
+ */
 import { render } from "astro:content";
 import { getPublishedCollection } from "astro-course-university/content";
-import ContentLayout from "../../layouts/ContentLayout.astro";
-import { siteConfig } from "../../site-config";
+import { withBase } from "astro-theme-university/url";
+import RelatedContent from "astro-course-university/components/RelatedContent.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatCourseDate } from "../../lib/dates";
+import { graphCollections, siteConfig } from "../../site-config";
 
 export async function getStaticPaths() {
   const people = await getPublishedCollection("people");
@@ -12,68 +26,201 @@ export async function getStaticPaths() {
 const { person } = Astro.props;
 const { Content } = await render(person);
 
-// `role` is a free string in our schema, not the enum this lookup was written
-// for, so the map is a nicety for the four bare values and the raw string is
-// the fallback. Without the fallback, every role we actually use except
-// "convenor" resolved to undefined and the Role row silently vanished.
-const roleLabels: Record<string, string> = {
-  convenor: "Convenor",
-  tutor: "Tutor",
-  guest: "Guest lecturer",
-};
-const roleLabel = person.data.role ? (roleLabels[person.data.role] ?? person.data.role) : undefined;
+// `role` is a free string in this schema ("stream convenor — Technical
+// Practice" carries which stream), not an enum, so this just title-cases it
+// rather than mapping a fixed set of values — the same function PeopleGrid
+// uses for card labels, kept in sync by eye since it's four lines.
+function asLabel(role: string): string {
+  return role.charAt(0).toUpperCase() + role.slice(1);
+}
+const roleLabel = asLabel(person.data.role);
+
 // Astro's generated type does not retain the image/alt refinement relationship,
 // so narrow the alt at the rendering boundary as well.
 const rawPhotoAlt = (person.data as { photoAlt?: unknown }).photoAlt;
-const photoAlt = typeof rawPhotoAlt === "string" ? rawPhotoAlt : "";
-// Every page owes a description --- it is what a search result and a shared
-// link show underneath the title.
-const description = person.data.description;
+const photoAlt = typeof rawPhotoAlt === "string" ? rawPhotoAlt : undefined;
+
+// Teachers point at people, not the other way around, so "what does this
+// person teach" is a reverse lookup rather than a field on `people` itself.
+const [sessions, lectures] = await Promise.all([
+  getPublishedCollection("sessions"),
+  getPublishedCollection("lectures"),
+]);
+const teachesSession = (s: (typeof sessions)[number]) =>
+  (s.data.teachers ?? []).some((ref) => ref.id === person.id);
+const teachesLecture = (l: (typeof lectures)[number]) =>
+  (l.data.teachers ?? []).some((ref) => ref.id === person.id);
+const taughtSessions = sessions.filter(teachesSession).sort((a, b) => a.data.week - b.data.week);
+const taughtLectures = lectures.filter(teachesLecture).sort((a, b) => a.data.week - b.data.week);
 ---
 
-<ContentLayout
-  title={person.data.title}
-  description={description}
-  heroImage={person.data.photo ?? undefined}
-  heroImageAlt={photoAlt}
-  {...siteConfig}
->
-  <dl>
-    {roleLabel && (
-      <>
-        <dt>Role</dt>
-        <dd>{roleLabel}</dd>
-      </>
-    )}
-    {person.data.affiliation && (
-      <>
-        <dt>Affiliation</dt>
-        <dd>{person.data.affiliation}</dd>
-      </>
-    )}
-    {person.data.email && (
-      <>
-        <dt>Email</dt>
-        <dd>
-          <a href={`mailto:${person.data.email}`}>{person.data.email}</a>
-        </dd>
-      </>
-    )}
-    {person.data.url && (
-      <>
-        <dt>Web</dt>
-        <dd>
-          <a href={person.data.url}>{person.data.url}</a>
-        </dd>
-      </>
-    )}
-    {person.data.contact && (
-      <>
-        <dt>Contact</dt>
-        <dd>{person.data.contact}</dd>
-      </>
-    )}
-  </dl>
+<BaseLayout title={person.data.title} description={person.data.description} favicon={siteConfig.favicon}>
+  <section class="band band--ink wk-header">
+    <p class="eyebrow">People · {roleLabel}</p>
+    <h1 class="h-display">{person.data.title}</h1>
+    <p class="lead">{person.data.description}</p>
+    {person.data.photo && <img src={person.data.photo.src} alt={photoAlt ?? ""} class="person-photo" />}
+  </section>
 
-  <Content />
-</ContentLayout>
+  <section class="band band--paper">
+    <div class="bio">
+      <Content />
+    </div>
+
+    <dl class="person-facts">
+      <dt>Role</dt>
+      <dd>{roleLabel}</dd>
+      {
+        person.data.affiliation && (
+          <>
+            <dt>Affiliation</dt>
+            <dd>{person.data.affiliation}</dd>
+          </>
+        )
+      }
+      {
+        person.data.email && (
+          <>
+            <dt>Email</dt>
+            <dd>
+              <a href={`mailto:${person.data.email}`}>{person.data.email}</a>
+            </dd>
+          </>
+        )
+      }
+      {
+        person.data.url && (
+          <>
+            <dt>Web</dt>
+            <dd>
+              <a href={person.data.url}>{person.data.url}</a>
+            </dd>
+          </>
+        )
+      }
+      {
+        person.data.contact && (
+          <>
+            <dt>Contact</dt>
+            <dd>{person.data.contact}</dd>
+          </>
+        )
+      }
+    </dl>
+  </section>
+
+  {
+    (taughtSessions.length > 0 || taughtLectures.length > 0) && (
+      <section class="band band--soft" aria-labelledby="teaches-heading">
+        <div class="section-head">
+          <p class="eyebrow">On the timetable</p>
+          <h2 id="teaches-heading">What {person.data.title.split(" ").at(-1)} teaches</h2>
+        </div>
+        <ul class="teaches-list">
+          {taughtLectures.map((lecture) => (
+            <li>
+              <a href={withBase(`/lectures/${lecture.id}/`)}>
+                Week {lecture.data.week} lecture: {lecture.data.title}
+              </a>
+              <span class="teaches-list__date">{formatCourseDate(lecture.data.date)}</span>
+            </li>
+          ))}
+          {taughtSessions.map((session) => (
+            <li>
+              <a href={withBase(`/sessions/${session.id}/`)}>
+                Week {session.data.week}: {session.data.title}
+              </a>
+              <span class="teaches-list__date">{formatCourseDate(session.data.date)}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <section class="band band--paper">
+    <RelatedContent entry={person} collections={graphCollections} />
+    <p class="back-link">
+      <a href={withBase("/people/")}>← All people</a>
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .bio {
+    max-width: 68ch;
+  }
+
+  .person-photo {
+    margin-top: 24px;
+    max-width: 220px;
+    height: auto;
+  }
+
+  .person-facts {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--paper-line);
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    column-gap: 20px;
+    row-gap: 10px;
+  }
+
+  .person-facts dt {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-paper-dim);
+    margin: 0;
+  }
+
+  .person-facts dd {
+    margin: 0;
+  }
+
+  .teaches-list {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .teaches-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: var(--paper-soft);
+    border: 1px solid var(--paper-line);
+    padding: 14px 20px;
+  }
+
+  .teaches-list__date {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-paper-dim);
+    white-space: nowrap;
+  }
+
+  .back-link {
+    margin-top: 32px;
+  }
+
+  .back-link a {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 640px) {
+    .person-facts {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
