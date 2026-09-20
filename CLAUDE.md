@@ -83,6 +83,12 @@ failure mode, not a style preference:
   they can still change it. A flattering note in a file nobody reads back is
   worse than no review, because it looks like the rule was followed. Grade
   the log as if it will be read aloud.
+- **Every reply carries a short, honest line on that message's own prompt**
+  — clear and well-scoped, vague in a specific named way, or a large
+  approval that quietly settled undecided things. Not a separate review
+  pass at the end of a thread; one line, every message, on the prompt just
+  received. Genuine when it's earned, not manufactured criticism to look
+  rigorous — a clear prompt gets told it's clear.
 - This discipline is symmetric: I hold the user to compound-engineering
   practice the same way I hold myself to it, and I have skipped it in that
   direction before.
@@ -105,6 +111,13 @@ window run out mid-task and decide it instead.
 - **Patterns that worked** — reusable methodology worth repeating elsewhere.
 
 Check it before starting similar work; add to it after finishing any.
+
+**Every reply states, in one line, whether this interaction added a
+`LEARNINGS.md` entry and what it was** — e.g. "Learnings: added — GSAP
+retrigger gating pattern" or "Learnings: none this turn." Silence on this is
+not an option even when nothing qualified; a decision to skip it needs to be
+visible, not assumed. This is separate from the prompt-feedback line below —
+one is about the log, the other is about the ask.
 
 ## Agent team
 
