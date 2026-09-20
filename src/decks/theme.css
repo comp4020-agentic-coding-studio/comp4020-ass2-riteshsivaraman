@@ -1,10 +1,19 @@
 /* The deck stylesheet. It is one import plus one decision.
  *
- * astro-theme-university's deck.css derives every colour it uses from the
- * same --at-* brand tokens the site's own styles derive from, and
- * `brandCss: "/src/styles/notepad.css"` in astro.config.ts puts the notepad
- * palette behind those tokens. So a deck arrives already wearing the right
- * ink, and restating a colour here is how the two start to disagree.
+ * astro-theme-university's deck.css derives every colour it uses from --at-*
+ * brand tokens, most of them computed from just --at-primary/--at-secondary/
+ * --at-tertiary via relative-colour syntax (on-primary, divider, table
+ * headers, primary-tint, whiteboard inks). Those three tokens are the only
+ * ones that need setting for the whole deck to fall in line — restating the
+ * derived ones here is how a deck and the site start to disagree.
+ *
+ * This deck is re-skinned onto the site's own Night Terminal palette
+ * (`src/styles/tokens.css`), not the legacy "Kinetic Manifesto" identity
+ * `brandCss` still points `astro-theme-university`'s own Card/Callout
+ * components at (`src/styles/notepad.css`) — nothing renders through those
+ * components any more (Wave 3 moved every grid off them), but the config
+ * field itself is untouched here since removing it is a separate, riskier
+ * change outside this file's scope.
  *
  * The decision: deck.css assumes a dark surface. It declares
  * `color-scheme: dark` so that brand tokens written with `light-dark()`
@@ -12,17 +21,21 @@
  * `--at-dark-grey`. This deck is paper instead — the same page the site is
  * printed on, projected. Two reasons, and neither is decorative:
  *
- *   1. Coherence. The site's whole identity is ink on cream; a black deck
- *      linked from a cream week page reads as a different site, which is the
+ *   1. Coherence. The site's whole identity is ink on paper; a black deck
+ *      linked from a paper week page reads as a different site, which is the
  *      exact failure the rebrand exists to fix.
  *   2. Contrast, which is the load-bearing one. deck.css's standalone
  *      contract hard-codes dark-surface values for the tokens it consumes
  *      itself — `--at-text-secondary` as near-white ink at 78% alpha, for
  *      instance. Left alone on a light stage those would be invisible, and
- *      axe *throws the build*, which CI's deploy job re-runs. Flipping the
- *      scheme rather than repainting piecemeal means every `light-dark()`
- *      token in the brand file resolves to the arm that was checked against
- *      this background.
+ *      axe *throws the build*, which CI's deploy job re-runs.
+ *
+ * Because tokens.css's light/dark arms are two separate hard-coded blocks
+ * (not `light-dark()`), not custom properties this file can safely re-read
+ * live — the deck's "always paper" decision is expressed by copying the
+ * light arm's literal values below, the same way tokens.css itself hard-
+ * codes that arm under bare `:root`. If the page is toggled to dark theme,
+ * the deck still opens on paper: that is the point, not a bug.
  *
  * Everything below is scoped to `html:has(.reveal)` — higher specificity
  * than the `:root` these tokens are declared on, so the result does not
@@ -46,27 +59,34 @@ html:has(.reveal) {
   --r-heading-font: var(--at-font-mono);
   --r-code-font: var(--at-font-mono);
 
+  /* The three brand hues deck.css keys everything else off — Night
+     Terminal's claim/evidence/third-accent fills, light arm, as literals
+     (see the note above on why these can't just be var(--claim-fill) etc). */
+  --at-primary: #c2410c;
+  --at-secondary: #15803d;
+  --at-tertiary: #1d4ed8;
+
   /* The stage. Reveal's own variables, set from the site palette rather than
      from deck.css's greys. No pens left to choose from: one accent, used for
      the live/hover state the same way the ribbon's progress indicator uses
      it, not for every link. */
-  --r-background-color: var(--np-bone);
-  --r-main-color: var(--np-ink);
-  --r-heading-color: var(--np-ink);
-  --r-link-color: var(--np-ink);
-  --r-link-color-hover: var(--np-volt);
+  --r-background-color: #f5f2ea;
+  --r-main-color: #1c1712;
+  --r-heading-color: #1c1712;
+  --r-link-color: #1c1712;
+  --r-link-color-hover: var(--at-primary);
 
   /* deck.css consumes these two directly for blockquotes and table rules,
      with dark-surface values baked in for standalone use. */
-  --at-text-secondary: var(--np-ink2);
-  --at-divider: rgb(20 17 15 / 16%);
+  --at-text-secondary: #5a5245;
+  --at-divider: rgb(28 23 18 / 16%);
 
   /* The whiteboard overlay and the greys deck.css paints with. Inverted so
      any rule reaching for them lands on paper rather than punching a black
-     hole in a cream slide. */
-  --at-dark-grey: var(--np-ink);
-  --at-light-grey: var(--np-ink);
-  --astromotion-wb-bg: var(--np-bone-card);
+     hole in a light slide. */
+  --at-dark-grey: #1c1712;
+  --at-light-grey: #1c1712;
+  --astromotion-wb-bg: #faf8f2;
 }
 
 /* Code blocks: deck.css washes them with white at 5% alpha, which is a
@@ -74,8 +94,8 @@ html:has(.reveal) {
  * hairline the site's own cards use, so a code slide reads as a pasted-in
  * printout. */
 html:has(.reveal) .reveal pre {
-  background: rgb(20 17 15 / 5%);
-  border: 1px solid rgb(20 17 15 / 20%);
+  background: rgb(28 23 18 / 5%);
+  border: 1px solid rgb(28 23 18 / 20%);
 }
 
 /* Slide headings are typed, matching the site. deck.css sets the h1 as an
@@ -147,5 +167,5 @@ html:has(.reveal) .reveal :is(h1, h2, h3, h4, h5, h6) {
 /* The progress bar and controls read as the one accent, the same field the
  * ribbon deck's live-station state uses everywhere else. */
 html:has(.reveal) .reveal .progress {
-  color: var(--np-volt);
+  color: var(--at-primary);
 }

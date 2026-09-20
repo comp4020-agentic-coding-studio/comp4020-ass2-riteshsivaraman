@@ -52,7 +52,29 @@ const selectedWeek = weeks.find((w) => {
 <aside class="rail" id="rail">
   <div class="brand">
     <div>
-      <a class="brand__name" href={withBase("/")}>{siteConfig.name}</a>
+      <a
+        class="brand__logo"
+        href="https://slop.university/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Slop University (opens the university site in a new tab)"
+      >
+        <img
+          class="brand__logo-img brand__logo-img--light"
+          src={withBase("/brand/slop-university-gold-black.svg")}
+          alt="Slop University"
+          width="278"
+          height="43"
+        />
+        <img
+          class="brand__logo-img brand__logo-img--dark"
+          src={withBase("/brand/slop-university-gold-white.svg")}
+          alt="Slop University"
+          width="278"
+          height="43"
+        />
+      </a>
+      <a class="brand__home" href={withBase("/")}>← SLOP3841 course home</a>
       <div class="brand__sub">{siteConfig.licence}</div>
     </div>
     <button class="mobile-bar" id="railToggle" type="button" aria-expanded="false" aria-controls="rail">

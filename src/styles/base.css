@@ -91,17 +91,50 @@ svg {
   color: var(--evidence-text);
 }
 
-.brand__name {
-  font-family: var(--font-display);
-  font-weight: 900;
-  text-transform: uppercase;
-  font-size: 28px;
-  line-height: 0.92;
-  letter-spacing: 0.01em;
-  margin-top: 4px;
-  text-decoration: none;
-  color: var(--text-ink);
+.brand__logo {
   display: block;
+  width: 100%;
+  max-width: 210px;
+}
+
+.brand__logo-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.brand__logo-img--dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .brand__logo-img--light,
+:root:not([data-theme="light"]) .brand__logo-img--light {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .brand__logo-img--dark {
+    display: block;
+  }
+}
+
+:root[data-theme="dark"] .brand__logo-img--dark {
+  display: block;
+}
+
+.brand__home {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: var(--evidence-text);
+}
+
+.brand__home:hover {
+  text-decoration: underline;
 }
 
 .brand__sub {
@@ -293,8 +326,10 @@ svg {
    independent of `data-state`, so it can land on a past/current/upcoming
    tick alike and never gets confused with the calendar-driven pulse above. */
 .tick[data-selected="true"] {
-  outline: 2px solid var(--claim-fill);
-  outline-offset: 1px;
+  background: var(--claim-fill);
+  border-color: var(--claim-fill);
+  color: #fff;
+  font-weight: 700;
 }
 
 .rail-foot {
