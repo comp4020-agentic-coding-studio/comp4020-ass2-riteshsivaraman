@@ -500,3 +500,76 @@ above — the plan is signed off, the rest of the port comes next.
 - **Files:** `design/pilot-a/index.html`, `week-01.html`, `week-07.html`,
   `deck.html` edited; `resources.html`, `policies.html`, `support.html`,
   `assessments.html` created.
+
+## 2026-09-20 — Round-2 pilot-a fixes: stretch guard, rail scroll, real nav, real content
+
+Ritesh's round-2 feedback logged verbatim in `prompt-log.md`, handed off in
+`HANDOFF-round2.md`. Six items, run as orchestrator per that handoff: item 1
+kept as my own design work (the harder judgement call), items 5 fanned out
+to four parallel content agents (disjoint files, no shared writes), items 2/
+4/6 and the item-3 nav pass done directly since each is small and mechanical
+once item 1's file-level context was already loaded.
+
+- **Decision (item 1 — kinetic-engine stretch):** replaced the shared 78–96
+  `--kv-wdth` clamp on `.rot__say`/`#ldH` (`index.html`) and `.wh__t`/
+  `.act2__h`/`.ck__h` (week pages) with a per-element measured safe range —
+  `initGuards()` binary-steps each heading's own `--kv-wdth` outward from
+  rest until its measured line count would change, in both directions (the
+  round-1-known narrowing risk, and a second, previously unflagged widening
+  risk from `prefers-reduced-motion`'s static 112 override). Re-measured on
+  `document.fonts.ready` and on resize.
+- **Why:** the shared clamp was one number asserted safe for several
+  elements with different `max-width`s and wrap thresholds — it happened to
+  hold for some viewports and not others, which is exactly the bug
+  report. Ritesh asked for "the more robust one" between a global
+  re-clamp and a per-element measured approach; a global number is always a
+  guess about elements it wasn't measured against, a per-element guard is
+  not. See `LEARNINGS.md` for the full bug/fix pair.
+- **Rejected:** forcing `white-space:nowrap` on the affected headings —
+  would have silently killed their intentional multi-line wrapping at
+  narrow viewports, trading one bug for a worse, quieter one.
+- **Decision (item 2 — rail smooth-scroll):** rail links on `week-01.html`/
+  `week-07.html` now `preventDefault()` and call `lenis.scrollTo()`
+  (offsetting by the measured `--navh`) instead of the browser's default
+  instant anchor jump, falling back to `window.scrollTo({behavior:"smooth"})`
+  when Lenis or GSAP failed to load.
+- **Decision (item 3 — real site-wide nav):** built `weeks.html`, a 12-tile
+  grid reusing the `.wk` card component from the horizontal act (only weeks
+  01 and 07 link out, the rest stay plain `<article>`s since no other week
+  page exists yet). Masthead standardised to `Home · Weeks · Deck ·
+  Assessments` and colophon to `Home · People · Policies · Resources` across
+  every page except `deck.html` (full-viewport slideshow, masthead only by
+  design, unchanged). `Support` kept off both nav tiers, reached only from
+  Resources/Policies bodies, matching the plan recorded in the entry above.
+- **Decision (item 4 — native swipe on the pinned act):** above 900px the
+  `.act__view` strip stays `overflow:hidden` with GSAP driving `track`'s
+  transform (unchanged), but a `wheel` listener on the view now redirects
+  deltaX-dominant events (trackpad/mouse sideways swipe) into
+  `window.scrollBy(0, deltaX)`, which ScrollTrigger's existing scrub turns
+  back into lateral motion — one input source (vertical scroll position)
+  still drives the animation, so it never fights the pin.
+- **Rejected:** setting `overflow-x:auto` on the view and syncing `scrollLeft`
+  back into the GSAP timeline — two independently-writable scroll positions
+  for one animation, more failure surface for no visible benefit over
+  redirecting the gesture.
+- **Decision (item 6 — card DOM order):** swapped `.wk__t`/`.wk__d` order in
+  every `.wk` card (`index.html`, new `weeks.html`) so title now follows the
+  number, before the description — matches reading order. `.wk__t`'s
+  `margin:auto 0 0` (previously pinning title to the card's bottom when it
+  was the last child) was removed rather than moved to `.wk__d`, since
+  moving it would have split the flex free-space between two auto margins
+  and centred the block instead of just relocating the pin.
+- **Decision (item 5 — real content, already covered under "Site hierarchy"
+  above):** `assessments.html`, `policies.html`, `support.html`,
+  `resources.html` rewritten and `people.html` created, all transcribed
+  verbatim from `CURRICULUM.md` §4–5 by four parallel content agents, zero
+  shared files between them. `grep -ln "placeholder" design/pilot-a/*.html`
+  returns nothing.
+- **Files:** `design/pilot-a/index.html`, `week-01.html`, `week-07.html`,
+  `resources.html`, `policies.html`, `support.html`, `assessments.html`
+  edited; `design/pilot-a/people.html`, `weeks.html` created.
+- **Not yet done:** the user has not yet visually verified the item-1 fix or
+  the new nav — see the verification checklist handed over in-conversation
+  this session. No `pnpm check`/`check:evidence` run — pilot-a sits outside
+  the Astro build and its own checks per the harness's platform-facts
+  section.

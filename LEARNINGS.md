@@ -271,7 +271,41 @@ whether design X carries a *known, already-fixed* bug before porting it
 verbatim — fidelity to the bug is not the goal, fidelity to the design
 intent is, and the fix is usually already sitting in this file.
 
+**Status: open, this fix was insufficient.** Round-2 feedback (2026-09-20)
+reported the same symptom still live in `index.html`'s pinned rotator and
+the week pages' `.wh__t`/`.act2__h`/`.ck__h` headings. The 78–96 band is one
+global number; each of those headings has its own `max-width` (in `ch`) and
+wraps at a different width threshold, so no single band is guaranteed safe
+for all of them at every viewport — and `prefers-reduced-motion` separately
+jumps `--kv-wdth` to a *wider* 112 (past the rest value of 96), a second,
+previously unflagged direction for the same bug. Re-fixed by measuring each
+guarded element's own natural line count in the DOM (`scrollHeight` /
+computed `line-height`) and binary-stepping outward from rest until that
+count would actually change, instead of asserting one number covers every
+element — see "Per-element measured-safe-range beats a shared numeric
+clamp" below. The reusable lesson above (check for a known prior fix before
+porting) still holds; it just wasn't sufficient on its own here, because the
+prior fix's own clamp was itself unverified against every element it had to
+cover.
+
 ## Patterns that worked
+
+### Per-element measured-safe-range beats a shared numeric clamp
+
+When several elements share one scroll-driven CSS custom property but have
+different `max-width`/wrap behaviour, a single numeric band tuned against
+one of them (or against none, by eye) is not evidence it is safe for the
+others — each has its own line-break threshold. Instead, measure: read each
+element's natural `scrollHeight`-derived line count at rest, then step the
+driven value outward from rest in small increments, re-measuring after each
+step, and stop at the last value that did not change the line count. Store
+that per-element boundary and drive the actual animation frame-by-frame
+interpolating toward it, not toward the shared constant. Re-run the
+measurement after `document.fonts.ready` (a fallback font gives wrong
+baselines) and on resize (the safe range is container-width-dependent).
+Applied in `design/pilot-a/index.html`/`week-01.html`/`week-07.html`'s
+`initGuards()`/`safeStep()`/`lineCountOf()` — see the entry above this one
+for the bug it closes.
 
 ### To see a real mobile viewport when the window will not resize, use an iframe
 
