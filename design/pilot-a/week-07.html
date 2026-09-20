@@ -374,8 +374,9 @@ a{color:inherit}
   <a class="mast__code" href="index.html">SLOP <i>/ 3841</i></a>
   <nav class="mast__nav" aria-label="Main">
     <a href="index.html">Home</a>
-    <a href="week-07.html" aria-current="page">Week 07</a>
+    <a href="weeks.html" aria-current="page">Weeks</a>
     <a href="deck.html">Deck</a>
+    <a href="assessments.html">Assessments</a>
   </nav>
   <div class="mast__hud" aria-hidden="true">
     axes <b id="hudW">300</b><span>/</span><b id="hudX">96</b>
@@ -630,7 +631,8 @@ a{color:inherit}
       </div>
       <div>
         <p>Week 08 is the plausibility budget: peers red-team your materials for the weakest claim and time how long it takes to find it. Assessment 2 is due that Friday.</p>
-        <p class="m"><a href="index.html">Home</a> &middot; <a href="deck.html">Week 7 pitch</a> &middot; <a href="#lecture">Back to the lecture</a></p>
+        <p class="m"><a href="index.html">Home</a> &middot; <a href="weeks.html">Weeks</a> &middot; <a href="deck.html">Week 7 pitch</a> &middot; <a href="#lecture">Back to the lecture</a></p>
+        <p class="m"><a href="people.html">People</a> &middot; <a href="policies.html">Policies</a> &middot; <a href="resources.html">Resources</a></p>
       </div>
     </div>
     <div class="foot__strip">
@@ -663,6 +665,7 @@ a{color:inherit}
   // width axis clamped to a narrow band (was 128->56): a 72-unit swing
   // re-wrapped headings mid-scroll. 18 units still reads as motion.
   var W_REST = 300, W_MAX = 900, X_REST = 96, X_MIN = 78;
+  var W_REDUCED = 380, X_REDUCED_MAX = 112;
   var lastY = window.scrollY, smooth = 0;
 
   /* ---------- masthead height -> --navh -------------------- */
@@ -673,6 +676,54 @@ a{color:inherit}
   measureNav();
   window.addEventListener("resize", measureNav);
 
+  /* ---------- per-element line-count guard -----------------
+     Same reasoning as index.html: .wh__t/.act2__h/.ck__h wrap by
+     max-width + text-wrap:balance rather than staying nowrap, so one
+     global wdth swing can flip their line count at some viewport widths
+     even inside the already-narrowed 78-96 band. Measure each heading's
+     own resting line count and step outward until it would actually
+     change, instead of asserting one number is safe for all of them. */
+  var GUARD_SELECTOR = ".wh__t, .act2__h, .ck__h";
+  var guarded = [];
+
+  function lineCountOf(el){
+    var lh = parseFloat(getComputedStyle(el).lineHeight) ||
+             (parseFloat(getComputedStyle(el).fontSize) * 0.8);
+    return Math.max(1, Math.round(el.scrollHeight / lh));
+  }
+
+  function safeStep(el, natural, testWght, from, to, step){
+    var safe = from;
+    for (var v = from; (step < 0 ? v >= to : v <= to); v += step){
+      el.style.setProperty("--kv-wght", testWght);
+      el.style.setProperty("--kv-wdth", v);
+      if (lineCountOf(el) !== natural) break;
+      safe = v;
+    }
+    return safe;
+  }
+
+  function initGuards(){
+    guarded = Array.prototype.map.call(document.querySelectorAll(GUARD_SELECTOR), function(el){
+      el.style.removeProperty("--kv-wght");
+      el.style.removeProperty("--kv-wdth");
+      var natural = lineCountOf(el);
+      var min = safeStep(el, natural, W_MAX, X_REST, X_MIN, -2);
+      var max = safeStep(el, natural, W_REDUCED, X_REST, X_REDUCED_MAX, 2);
+      el.style.setProperty("--kv-wdth", REDUCED ? max : X_REST);
+      if (REDUCED) el.style.setProperty("--kv-wght", W_REDUCED);
+      else el.style.removeProperty("--kv-wght");
+      return { el: el, min: min, max: max };
+    });
+  }
+  initGuards();
+  var guardResizeT;
+  window.addEventListener("resize", function(){
+    clearTimeout(guardResizeT);
+    guardResizeT = setTimeout(initGuards, 200);
+  });
+  document.fonts && document.fonts.ready.then(initGuards);
+
   function tick(){
     var y = scrollY();
     var vel = Math.abs(y - lastY); lastY = y;
@@ -682,6 +733,9 @@ a{color:inherit}
     var x = X_REST + (X_MIN - X_REST) * smooth;
     root.style.setProperty("--kv-wght", w.toFixed(0));
     root.style.setProperty("--kv-wdth", x.toFixed(1));
+    guarded.forEach(function(g){
+      g.el.style.setProperty("--kv-wdth", (X_REST + (g.min - X_REST) * smooth).toFixed(1));
+    });
     if (hudW) hudW.textContent = w.toFixed(0);
     if (hudX) hudX.textContent = x.toFixed(0);
     if (prog) {
@@ -730,6 +784,21 @@ a{color:inherit}
   window.addEventListener("scroll", requestMarkRail, {passive:true});
   if (lenis) lenis.on("scroll", requestMarkRail);
   markRail();
+
+  // Rail links are same-page anchors; left to the browser default they jump
+  // instantly, which reads as broken next to Lenis smoothing every other
+  // scroll on this page. Route the click through Lenis instead, offsetting
+  // by the sticky masthead height so the target section isn't hidden under it.
+  railLinks.forEach(function(a){
+    a.addEventListener("click", function(e){
+      var target = document.querySelector(a.getAttribute("href"));
+      if (!target) return;
+      e.preventDefault();
+      var navh = parseFloat(getComputedStyle(root).getPropertyValue("--navh")) || 0;
+      if (lenis) lenis.scrollTo(target, { offset: -navh - 12 });
+      else window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - navh - 12, behavior: REDUCED ? "auto" : "smooth" });
+    });
+  });
 
   /* ---------- checklist ----------------------------------- */
   var boxes = Array.prototype.slice.call(document.querySelectorAll(".ck__box"));
