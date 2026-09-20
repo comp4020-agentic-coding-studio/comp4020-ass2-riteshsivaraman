@@ -1059,3 +1059,13 @@ in this repo). This document carries 45% of the mark and is exactly the
 kind of first-person, curricular content the harness rules say isn't mine
 to draft unprompted — reported to the user rather than filled in. Ship
 gate is blocked on this until resolved.
+
+**Resolved:** the user wrote `PROCESS.md` themselves — a real first-person
+account (what was built, the coherence/vagueness/reference-vs-style
+lessons, the CLAUDE.md prompt-discipline additions) citing nine commits.
+Verified all nine resolve with `git cat-file -e` and reran `pnpm
+check:evidence`: clean. Full `pnpm check` also reran clean (42 pages, 0
+axe violations, 0 broken links, 11/11 tests). Committed as `6eae5a9`,
+ship-kit files still excluded. Deck re-skin and cross-page consistency
+were already done earlier in this same Wave 4 round — with this fixed,
+Wave 4 and the ship gate are both clear.
