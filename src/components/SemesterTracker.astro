@@ -214,11 +214,10 @@ const statusText =
 
 <style>
   .tracker {
-    margin-block: var(--at-spacing-2xl);
-    padding: var(--at-spacing-lg);
-    border: 1px solid var(--at-divider);
-    border-radius: var(--at-border-radius);
-    background: var(--at-bg-alt);
+    margin-block: 40px;
+    padding: 28px;
+    border: 1px solid var(--paper-line);
+    background: var(--ink-soft);
   }
 
   .tracker h2 {
@@ -226,34 +225,34 @@ const statusText =
   }
 
   .tracker-status {
-    margin-block: 0 var(--at-spacing-lg);
-    color: var(--at-text-secondary);
+    margin-block: 0 20px;
+    color: var(--text-paper-dim);
   }
 
   .tracker-meter {
     display: grid;
-    gap: var(--at-spacing-xs);
-    margin-block-end: var(--at-spacing-lg);
+    gap: 6px;
+    margin-block-end: 20px;
   }
 
   .tracker-meter-label {
-    font-family: var(--at-font-mono);
-    font-size: var(--at-font-size-sm);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--at-text);
+    color: var(--text-paper);
   }
 
   .tracker-meter progress {
     inline-size: 100%;
     block-size: 0.5rem;
-    accent-color: var(--at-accent);
+    accent-color: var(--evidence-fill);
   }
 
   .tracker-list {
     display: grid;
-    gap: var(--at-spacing-xs);
+    gap: 6px;
     margin: 0;
     padding: 0;
     list-style: none;
@@ -266,26 +265,25 @@ const statusText =
   @media (width >= 34rem) {
     .tracker-list {
       grid-template-columns: 1fr 1fr;
-      gap: var(--at-spacing-xs) var(--at-spacing-md);
+      gap: 6px 20px;
     }
   }
 
   .tracker-item {
     display: flex;
     align-items: baseline;
-    gap: var(--at-spacing-sm);
-    padding: var(--at-spacing-xs) var(--at-spacing-sm);
-    border-inline-start: 3px solid var(--at-divider);
-    border-radius: 0 var(--at-border-radius) var(--at-border-radius) 0;
+    gap: 10px;
+    padding: 6px 10px;
+    border-inline-start: 3px solid var(--ink-line);
   }
 
   .tracker-item[data-state="past"] {
-    border-inline-start-color: var(--at-border);
+    border-inline-start-color: var(--paper-line);
   }
 
   .tracker-item[data-state="current"] {
-    border-inline-start-color: var(--at-accent);
-    background: var(--at-accent-soft);
+    border-inline-start-color: var(--evidence-fill);
+    background: var(--paper);
   }
 
   .tracker-link {
@@ -293,12 +291,13 @@ const statusText =
     flex: 1 1 auto;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 0 var(--at-spacing-sm);
+    gap: 0 10px;
     min-inline-size: 0;
+    text-decoration: none;
   }
 
   .tracker-week {
-    font-family: var(--at-font-mono);
+    font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
     font-weight: 600;
     white-space: nowrap;
@@ -310,23 +309,23 @@ const statusText =
 
   .tracker-date {
     flex: 0 0 100%;
-    font-size: var(--at-font-size-xs);
-    color: var(--at-text-muted);
+    font-size: 12.5px;
+    color: var(--text-paper-dim);
   }
 
   /* The state is never carried by colour alone: every item also says it. */
   .tracker-flag {
     flex: 0 0 auto;
-    font-family: var(--at-font-mono);
-    font-size: var(--at-font-size-xs);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--at-text-muted);
+    color: var(--text-paper-dim);
     white-space: nowrap;
   }
 
   .tracker-item[data-state="current"] .tracker-flag {
     font-weight: 600;
-    color: var(--at-text);
+    color: var(--text-paper);
   }
 </style>

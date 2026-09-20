@@ -1,141 +1,129 @@
 ---
 import { getPublishedCollection } from "astro-course-university/content";
-import Callout from "astro-theme-university/components/Callout.astro";
-import Card from "astro-theme-university/components/Card.astro";
-import CardGrid from "astro-theme-university/components/CardGrid.astro";
-import ContentLayout from "astro-theme-university/layouts/ContentLayout.astro";
 import { withBase } from "astro-theme-university/url";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ClaimStamp from "../components/ClaimStamp.astro";
 import SemesterTracker from "../components/SemesterTracker.astro";
 import { courseMeta } from "../course-config";
 import { formatCourseDate } from "../lib/dates";
 import { siteConfig } from "../site-config";
 
-// No hero artwork: the gateway this course provisions exposes only chat
-// models, so the site commits to a type-and-CSS treatment instead of stock
-// imagery. `heroImage` is optional in ContentLayout.
-
-const sessions = await getPublishedCollection("sessions");
-const assessments = await getPublishedCollection("assessments");
+const sessions = (await getPublishedCollection("sessions")).sort((a, b) => a.data.week - b.data.week);
+const assessments = (await getPublishedCollection("assessments")).sort((a, b) => a.data.week - b.data.week);
 const people = await getPublishedCollection("people");
 
 const person = (slug: string) => people.find((p) => p.id === slug);
+const firstWeek = sessions[0];
 
-// The teases are each node's own `description:`, read from the content rather
-// than rewritten here — a homepage that paraphrases its own pages drifts from
-// them by week three.
-const FEATURED = [1, 6, 9];
-const featuredWeeks = sessions
-  .filter((s) => FEATURED.includes(s.data.week))
-  .sort((a, b) => a.data.week - b.data.week);
-const capstone = assessments.find((a) => a.id === "04-capstone-applications");
+// `format`/`term`/`termGloss`/`streams` come through courseNodeSchema's
+// `.loose()` passthrough (src/content.config.ts), so Astro/Zod types them as
+// `unknown` at the call site — cast here rather than widen the shared schema
+// from a page outside this task's write scope (same approach StreamBands.astro
+// already takes for `streams`).
+interface SessionExtra {
+  format?: string;
+  term?: string;
+  termGloss?: string;
+  streams?: { name: string; slug: string; focus?: string }[];
+}
+const extra = (s: (typeof sessions)[number]) => s.data as unknown as SessionExtra;
 
-const weights = [...assessments]
-  .sort((a, b) => a.data.week - b.data.week)
-  .map((a) => a.data.weight);
-const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+const dueByWeek = new Map(assessments.map((a) => [a.data.week, a]));
+const totalWeight = assessments.reduce((sum, a) => sum + a.data.weight, 0);
 
 // Streams are a curricular fact, not content nodes: the names and taglines are
-// fixed by the course spec, but the convenor's name comes from their page so
-// the two can never disagree.
+// fixed by the course spec, but the convenor's name and the week-1 focus line
+// come from real content so the two can never disagree.
 const streams = [
   {
     name: "Technical Practice",
+    slug: "technical",
     tagline:
       "For the fields where the performance is competence, and someone will eventually ask you to open a terminal in front of them.",
     convenor: "anselm-pike",
   },
   {
     name: "Creative and Communications Practice",
+    slug: "creative",
     tagline:
       "For the fields where the performance is taste, and the portfolio is both the evidence and the alibi.",
     convenor: "nadia-ferrante",
   },
   {
     name: "Commercial and Public Practice",
+    slug: "commercial",
     tagline:
       "For the fields where the performance is judgement, and nobody will ever ask to see the spreadsheet.",
     convenor: "sunil-raman",
   },
-];
+].map((stream, i) => ({
+  ...stream,
+  n: i + 1,
+  focus: firstWeek && extra(firstWeek).streams?.find((s) => s.slug === stream.slug)?.focus,
+}));
+
+// Glossary teaser: the first three weeks' own term-of-the-week, not rewritten.
+const glossPreview = sessions.slice(0, 3);
+
+const ladderColors = ["var(--claim-fill)", "var(--accent-3-fill)", "var(--ink-line)", "var(--evidence-fill)"];
 ---
 
-<div class="reading-progress" aria-hidden="true" role="presentation">
-  <div class="reading-progress__fill" id="reading-progress-fill"></div>
-</div>
-
-<ContentLayout
+<BaseLayout
   title={`${courseMeta.code}: ${courseMeta.title}`}
   description={courseMeta.description}
-  {...siteConfig}
+  favicon={siteConfig.favicon}
 >
-  <p class="kv kv-bulge tagline-stamp" aria-hidden="true">Twelve weeks of held nerve.</p>
+  <section class="band band--ink hero">
+    <div>
+      <p class="eyebrow hero__eyebrow">
+        {courseMeta.session} {courseMeta.year} · Level {courseMeta.level} · No field prerequisite
+      </p>
+      <h1 class="h-display">{courseMeta.title}</h1>
+      <p class="hero__sub">Twelve weeks of held nerve.</p>
+      <div class="cta-row">
+        {
+          firstWeek && (
+            <a class="btn btn--solid" href={withBase(`/sessions/${firstWeek.id}/`)}>
+              Start at Week 01
+            </a>
+          )
+        }
+        <a class="btn" href={withBase("/policies/")}>Read the policies</a>
+      </div>
+    </div>
+    <ClaimStamp
+      claim="I am a safe, competent hire."
+      evidence="Three shipped repos, two references who'll take a call, one on-time delivery under real deadline pressure. The claim survives — this is what a truthfloor looks like once someone checks it."
+    />
+  </section>
 
-  <ul class="course-tags" aria-label="Course tags">
-    {courseMeta.tags.map((tag) => <li>{tag}</li>)}
-  </ul>
-
-  <p class="premise">
-    Everybody you will ever interview with is performing a role they grew into.
-    This course has you do it deliberately, name each move while you are making
-    it, and hold one line for twelve weeks: <strong data-field><span class="field-bg" aria-hidden="true"></span><span class="field-text">framing what is true is
-    professional practice; claiming what is not is fraud.</span></strong> Every technique
-    taught here lives on one side of that line.
-  </p>
-
-  <section class="orientation" aria-labelledby="orientation-heading">
-    <h2 id="orientation-heading">The course, stated plainly</h2>
-    <p
-      class="live-counter"
-      id="live-counter"
-      aria-hidden="true"
-      data-start-date={courseMeta.startDate}
-      data-end-date={courseMeta.endDate}
-    ></p>
+  <section class="band band--soft">
+    <ul class="course-tags" aria-label="Course tags">
+      {courseMeta.tags.map((tag) => <li>{tag}</li>)}
+    </ul>
+    <p class="premise">
+      Everybody you will ever interview with is performing a role they grew into. This
+      course has you do it deliberately, name each move while you are making it, and hold
+      one line for twelve weeks: framing what is true is professional practice; claiming
+      what is not is fraud. Every technique taught here lives on one side of that line.
+    </p>
     <dl class="facts">
-      <div>
-        <dt>Course code</dt>
-        <dd>{courseMeta.code}</dd>
-      </div>
-      <div>
-        <dt>Level</dt>
-        <dd>{courseMeta.level}, undergraduate</dd>
-      </div>
-      <div>
-        <dt>Teaching period</dt>
-        <dd>
-          {courseMeta.session} {courseMeta.year}, {formatCourseDate(courseMeta.startDate)} to {
-            formatCourseDate(courseMeta.endDate)
-          }
-        </dd>
-      </div>
       <div>
         <dt>Structure</dt>
         <dd>
-          Twelve teaching weeks. One lecture a week, shared by everyone; one tutorial a
-          week, run separately in each stream. A teaching break falls between weeks 6 and
-          7.
+          Twelve teaching weeks, one shared lecture and one stream tutorial each, with a
+          break between weeks 6 and 7.
         </dd>
       </div>
       <div>
         <dt>Streams</dt>
-        <dd>
-          Three. You choose one in week 1 by how your target roles screen you, not by what
-          your degree is called. Attending another stream's tutorial is encouraged and
-          never assessed.
-        </dd>
-      </div>
-      <div>
-        <dt>Prerequisite</dt>
-        <dd>
-          None. No field prerequisite, no prior applications, no portfolio you are
-          embarrassed by that would disqualify you.
-        </dd>
+        <dd>Three. Chosen in week 1 by how your target roles screen you, not your degree.</dd>
       </div>
       <div>
         <dt>Assessment</dt>
         <dd>
-          {assessments.length} pieces, weighted {weights.join(" + ")} = {totalWeight}%. Full
-          briefs and criteria on the <a href={withBase("/assessments/")}>assessment page</a>.
+          {assessments.length} pieces, weighted {assessments.map((a) => a.data.weight).join(" + ")} = {totalWeight}%.
+          Full briefs on the <a href={withBase("/assessments/")}>assessment page</a>.
         </dd>
       </div>
       <div>
@@ -147,382 +135,154 @@ const streams = [
         </dd>
       </div>
     </dl>
+    <SemesterTracker />
   </section>
 
-  <SemesterTracker />
-
-  <section aria-labelledby="start-here-heading">
-    <h2 id="start-here-heading">Four pages that show what actually happens</h2>
-    <p>
-      Everything is one click from the navigation. These four are the ones worth opening
-      first, because they are where the course stops describing itself and starts running.
-    </p>
-
-    <CardGrid columns={2}>
+  <section class="band band--paper" aria-labelledby="streams-heading">
+    <p class="eyebrow">Three streams, one lecture theatre</p>
+    <h2 id="streams-heading">Choose by how the field screens you</h2>
+    <div class="streams-grid">
       {
-        featuredWeeks.map((week) => (
-          <Card
-            headingLevel="h3"
-            title={`Week ${week.data.week}: ${week.data.title}`}
-            href={`/sessions/${week.id}/`}
-          >
-            {week.data.description && <p>{week.data.description}</p>}
-          </Card>
+        streams.map((stream) => (
+          <div class="stream-card">
+            <p class="stream-card__n">Stream {String(stream.n).padStart(2, "0")} of 03</p>
+            <h3>{stream.name}</h3>
+            <p>{stream.tagline}</p>
+            {stream.focus && <p class="stream-card__focus">Week 1 focus: {stream.focus}</p>}
+            <p class="stream-card__convenor">
+              Convened by <a href={withBase(`/people/${stream.convenor}/`)}>
+                {person(stream.convenor)?.data.title ?? stream.convenor}
+              </a>.
+            </p>
+          </div>
         ))
       }
-      {
-        capstone && (
-          <Card
-            headingLevel="h3"
-            title={capstone.data.title}
-            href={`/assessments/${capstone.id}/`}
-          >
-            {capstone.data.description && <p>{capstone.data.description}</p>}
-            <p>
-              <small>
-                Worth {capstone.data.weight}% · graded on the process record, never on
-                whether anyone said yes
-              </small>
-            </p>
-          </Card>
-        )
-      }
-    </CardGrid>
-
-    <p class="deck-note">
-      Week 6 is the flagship. Its lecture ships as slides rather than a page, because two
-      versions of the same artefact side by side is a slide and not a paragraph:{" "}
-      <a href={withBase("/decks/week-06-varnish/")}>Varnish, and How Much Is Too Much</a>.
-    </p>
+    </div>
   </section>
 
-  <section aria-labelledby="streams-heading">
-    <h2 id="streams-heading">Three streams, one lecture theatre</h2>
-    <p>
-      The streams do not partition by discipline — a health-informatics student and a civil
-      engineer land in the same room. They partition by how the field screens candidates,
-      because that is what you are preparing for.
-    </p>
-    <ul class="streams">
+  <section class="band band--soft" aria-labelledby="weeks-heading">
+    <p class="eyebrow">The twelve weeks</p>
+    <h2 id="weeks-heading">Where the semester goes</h2>
+    <div class="week-grid">
       {
-        streams.map((stream) => {
-          const convenor = person(stream.convenor);
+        sessions.map((session) => {
+          const due = dueByWeek.get(session.data.week);
+          const big = session.data.week === 1 || session.data.week === 6;
           return (
-            <li>
-              <h3 class={`stream-heading stream-heading--${stream.convenor}`}>{stream.name}</h3>
-              <p class="stream-tagline">{stream.tagline}</p>
-              <p class="stream-convenor">
-                Convened by{" "}
-                <a href={withBase(`/people/${stream.convenor}/`)}>
-                  {convenor?.data.title ?? stream.convenor}
-                </a>
-                .
-              </p>
-            </li>
+            <a
+              class={`wk${big ? " wk--big" : ""}${due ? " wk--due" : ""}`}
+              href={withBase(`/sessions/${session.id}/`)}
+            >
+              <span class="wk__n">Week {String(session.data.week).padStart(2, "0")}</span>
+              <span class="wk__t">{session.data.title}</span>
+              {extra(session).format && <span class="wk__tag">{extra(session).format}</span>}
+              {due && <span class="wk__flag">{due.data.weight}% due</span>}
+            </a>
           );
         })
       }
-    </ul>
+    </div>
   </section>
 
-  <Callout type="info">
-    <p>
-      <strong>The fine print, which is load-bearing.</strong> This course teaches framing, not
-      fabrication, and the difference is not a slogan — it decides what you may put in an
-      outreach message, what a Varnish Note has to admit, and who may be asked to sit on the
-      other side of a practice interview. Where that line falls, who has consented to what,
-      and what happens when somebody crosses it are all set out on the{" "}
-      <a href={withBase("/policies/")}>policies page</a>, along with extensions and the
-      people to ask.
-    </p>
-  </Callout>
-</ContentLayout>
-
-<script is:inline data-astro-rerun>
-  (function () {
-    /* ---------- reading progress bar --------------------------------
-     * rAF-throttled scroll listener; fixed hairline filled in --at-accent.
-     * Decorative only (aria-hidden on the wrapper in markup), so no
-     * announcement policy is needed here. */
-    var fill = document.getElementById("reading-progress-fill");
-    if (fill) {
-      var ticking = false;
-      var update = function () {
-        ticking = false;
-        var doc = document.documentElement;
-        var max = doc.scrollHeight - doc.clientHeight;
-        var pct = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-        fill.style.transform = "scaleX(" + pct + ")";
-      };
-      var onScroll = function () {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(update);
-      };
-      window.addEventListener("scroll", onScroll, { passive: true });
-      window.addEventListener("resize", onScroll, { passive: true });
-      update();
-    }
-
-    /* ---------- live week/date counter ------------------------------
-     * Computed from the course's own start/end dates, not hardcoded.
-     * Visual-only chrome: aria-hidden in markup, no live region, because
-     * the fact itself is already stated in the .facts dl below it. */
-    var counter = document.getElementById("live-counter");
-    if (counter) {
-      var DAY = 86400000;
-      var WEEK = 7 * DAY;
-      var toUTC = function (iso) {
-        var p = iso.split("-").map(Number);
-        return Date.UTC(p[0], p[1] - 1, p[2]);
-      };
-      var start = toUTC(counter.getAttribute("data-start-date") || "");
-      var end = toUTC(counter.getAttribute("data-end-date") || "");
-      var render = function () {
-        var now = new Date();
-        var today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
-        var text;
-        if (today < start) {
-          var days = Math.round((start - today) / DAY);
-          text = days === 0
-            ? "Teaching starts today."
-            : "Teaching starts in " + days + (days === 1 ? " day." : " days.");
-        } else if (today > end + WEEK) {
-          text = "Teaching finished this semester.";
-        } else {
-          var week = Math.min(12, Math.floor((today - start) / WEEK) + 1);
-          text = "Currently week " + week + " of 12.";
-        }
-        counter.textContent = text;
-      };
-      render();
-      window.setInterval(render, 60000);
-    }
-
-    /* ---------- accent-field wipe reveal ----------------------------
-     * scaleX transform mask, triggered once by IntersectionObserver.
-     * Renders already-revealed under reduced motion via the CSS branch
-     * below; no JS branch needed since .lit only adds the class either
-     * way and the transition duration collapses to ~0 there. */
-    var fields = document.querySelectorAll("[data-field]");
-    if (fields.length) {
-      if ("IntersectionObserver" in window) {
-        var fo = new IntersectionObserver(
-          function (entries) {
-            entries.forEach(function (entry) {
-              if (entry.isIntersecting) {
-                entry.target.classList.add("lit");
-                fo.unobserve(entry.target);
-              }
-            });
-          },
-          { threshold: 0.6 },
-        );
-        fields.forEach(function (f) {
-          fo.observe(f);
-        });
-      } else {
-        fields.forEach(function (f) {
-          f.classList.add("lit");
-        });
+  <section class="band band--ink" aria-labelledby="ladder-heading">
+    <p class="eyebrow">Assessment ladder</p>
+    <h2 id="ladder-heading">{assessments.length} pieces, {totalWeight}% total</h2>
+    <div class="ladder-bar">
+      {
+        assessments.map((a, i) => (
+          <div class="ladder-seg" style={`width:${a.data.weight}%; background:${ladderColors[i % ladderColors.length]}`}>
+            {a.data.weight}%
+          </div>
+        ))
       }
-    }
+    </div>
+    <div class="assess-grid">
+      {
+        assessments.map((a) => (
+          <a class="assess-card" href={withBase(`/assessments/${a.id}/`)}>
+            <span class="assess-card__w">{a.data.weight}%</span>
+            <h3>{a.data.title}</h3>
+            <p>Due week {a.data.week} · {formatCourseDate(a.data.due)}</p>
+          </a>
+        ))
+      }
+    </div>
+  </section>
 
-    /* ---------- text scramble / resolve on the h1 -------------------
-     * Selects the library-rendered <h1> after render. Run-token guard so
-     * a re-trigger (e.g. astro:page-load on back/forward nav) can never
-     * race two loops writing competing glyphs to the same node. */
-    var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    var heading = document.querySelector(".at-main h1");
-    if (heading && !reduced) {
-      var GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ/#%&*+=—";
-      var final = heading.dataset.scrambleFinal || (heading.dataset.scrambleFinal = heading.textContent || "");
-      var run = (heading.dataset.scrambleRun = String(Number(heading.dataset.scrambleRun || "0") + 1));
-      var n = final.length;
-      var total = 26;
-      var order = final.split("").map(function (_, i) {
-        return i / n;
-      });
-      var frames = 0;
-      var step = function () {
-        if (heading.dataset.scrambleRun !== run) return;
-        var p = frames / total;
-        var out = "";
-        for (var i = 0; i < n; i++) {
-          var ch = final[i];
-          if (ch === " " || ch === ":") {
-            out += ch;
-            continue;
-          }
-          out += p > order[i] + 0.22 ? ch : GLYPHS[(Math.random() * GLYPHS.length) | 0];
-        }
-        heading.textContent = out;
-        frames++;
-        if (frames <= total) requestAnimationFrame(step);
-        else heading.textContent = final;
-      };
-      step();
-    }
-  })();
-</script>
+  <section class="band band--soft" aria-labelledby="gloss-heading">
+    <p class="eyebrow">Glossary, in progress</p>
+    <h2 id="gloss-heading">The vocabulary builds week by week</h2>
+    <div class="gloss-row">
+      {
+        glossPreview.map((session) => {
+          const { term, termGloss } = extra(session);
+          return term ? (
+            <div class="gloss-card">
+              <p class="gloss-card__term">{term}</p>
+              <p>{termGloss}</p>
+            </div>
+          ) : null;
+        })
+      }
+    </div>
+    <p><a href={withBase("/glossary/")}>See every term defined so far →</a></p>
+  </section>
+
+  <section class="band band--paper">
+    <p class="fine-print">
+      <strong>The fine print, which is load-bearing.</strong> This course teaches framing,
+      not fabrication, and the difference decides what you may put in an outreach message,
+      what a Varnish Note has to admit, and who may be asked to sit on the other side of a
+      practice interview. Where that line falls, who has consented to what, and what
+      happens when somebody crosses it are all set out on the{" "}
+      <a href={withBase("/policies/")}>policies page</a>.
+    </p>
+  </section>
+</BaseLayout>
 
 <style>
-  /* ---- reading progress bar (decorative, aria-hidden in markup) -------- */
-  .reading-progress {
-    position: fixed;
-    inset: 0 0 auto 0;
-    height: 3px;
-    z-index: 80;
-    background: transparent;
-    pointer-events: none;
-  }
-
-  .reading-progress__fill {
-    height: 100%;
-    width: 100%;
-    background: var(--at-accent);
-    transform: scaleX(0);
-    transform-origin: left center;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .reading-progress__fill {
-      transition: none;
-    }
-  }
-
-  /* ---- tagline stamp: short, hand-authored, safe for .kv's nowrap lock -- */
-  .tagline-stamp {
-    margin-block: 0 var(--at-spacing-lg);
-    color: var(--at-text-secondary);
-    font-size: clamp(1.1rem, 4vw, 1.6rem);
-  }
-
-  /* ---- accent-field wipe reveal ----------------------------------------
-   * .field-bg is an absolutely positioned plate behind the phrase, scaled
-   * to 0 on the inline axis and revealed via scaleX on `.lit` (added by the
-   * IntersectionObserver in the page script). Reduced motion renders the
-   * end state immediately rather than animating into it. */
-  [data-field] {
-    position: relative;
-    display: inline-block;
-    padding-inline: 0.1em;
-    margin-inline: -0.1em;
-  }
-
-  .field-bg {
-    position: absolute;
-    inset: -0.05em -0.02em;
-    z-index: 0;
-    background: var(--at-accent);
-    transform: scaleX(0);
-    transform-origin: left center;
-    transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .field-text {
-    position: relative;
-    z-index: 1;
-  }
-
-  [data-field].lit .field-bg {
-    transform: scaleX(1);
-  }
-
-  [data-field].lit .field-text {
-    color: var(--at-bg);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .field-bg {
-      transition: none;
-    }
-  }
-
-  /* ---- live week/date counter: visual chrome only, aria-hidden --------- */
-  .live-counter {
-    margin-block: 0 var(--at-spacing-md);
-    padding-block: 0.3rem 0;
-    color: var(--at-accent);
-    font-family: var(--at-font-mono);
-    font-size: var(--at-font-size-sm);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-
-  /* ---- per-stream fixed axis bias: distinct at rest, no animation ------
-   * Same wght/wdth axes the live signature drives, fixed rather than
-   * scroll-linked, so the three streams read as typographically distinct
-   * even when nothing is moving. Direction is a settled design decision:
-   * technical = narrow + heavy, creative = wide + light, commercial = mid. */
-  .stream-heading {
-    font-family: var(--at-font-display);
-  }
-
-  .stream-heading--anselm-pike {
-    font-variation-settings:
-      "wght" 750,
-      "wdth" 85;
-  }
-
-  .stream-heading--nadia-ferrante {
-    font-variation-settings:
-      "wght" 450,
-      "wdth" 96;
-  }
-
-  .stream-heading--sunil-raman {
-    font-variation-settings:
-      "wght" 600,
-      "wdth" 90;
+  .hero__eyebrow {
+    color: var(--evidence-text);
   }
 
   .course-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-block: 0 2rem;
+    gap: 8px;
+    margin: 0 0 24px;
     padding: 0;
     list-style: none;
   }
 
-  /* Filing tags, not pills --- the one hardcoded radius on the site, and it
-     survived the rebrand because it never read `--at-border-radius`. Typed and
-     boxed to match the rest of the institutional apparatus. */
   .course-tags li {
-    padding: 0.2rem 0.6rem;
-    border: 1px solid var(--at-border);
-    color: var(--at-text-secondary);
-    background: transparent;
-    font-family: var(--at-font-mono);
-    font-size: 0.75rem;
+    padding: 4px 10px;
+    border: 1px solid var(--paper-line);
+    color: var(--text-paper-dim);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
   .premise {
-    padding-inline-start: var(--at-spacing-md);
-    border-inline-start: 3px solid var(--at-accent);
+    max-width: 62ch;
+    padding-inline-start: 20px;
+    border-inline-start: 3px solid var(--evidence-fill);
+    font-size: 17px;
   }
 
-  .orientation {
-    margin-block: var(--at-spacing-2xl);
-  }
-
-  /* Deliberately a definition list rather than a prose paragraph: this is the
-     block a marker scans for the institutional facts, and a scan wants labels
-     in a column. */
   .facts {
     display: grid;
-    gap: var(--at-spacing-md);
-    margin: 0;
+    gap: 16px;
+    margin: 32px 0 0;
+    max-width: 60rem;
   }
 
   .facts > div {
     display: grid;
-    gap: var(--at-spacing-xs);
-    padding-block-end: var(--at-spacing-md);
-    border-block-end: 1px solid var(--at-divider);
+    gap: 4px;
+    padding-block-end: 16px;
+    border-block-end: 1px solid var(--paper-line);
   }
 
   .facts > div:last-child {
@@ -533,52 +293,240 @@ const streams = [
   @media (width >= 40rem) {
     .facts > div {
       grid-template-columns: 11rem 1fr;
-      gap: var(--at-spacing-md);
+      gap: 16px;
     }
   }
 
   .facts dt {
-    font-size: var(--at-font-size-sm);
+    font-family: var(--font-mono);
+    font-size: 12px;
     font-weight: 600;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: var(--at-text-secondary);
+    color: var(--text-paper-dim);
   }
 
   .facts dd {
     margin: 0;
   }
 
-  .deck-note {
-    padding: var(--at-spacing-md);
-    border: 1px dashed var(--at-border);
-    border-radius: var(--at-border-radius);
-  }
-
-  .streams {
+  /* ---------- streams ---------- */
+  .streams-grid {
     display: grid;
-    gap: var(--at-spacing-lg);
-    margin-block: var(--at-spacing-lg);
-    padding: 0;
-    list-style: none;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 32px;
   }
 
-  .streams > li {
-    padding-inline-start: var(--at-spacing-md);
-    border-inline-start: 3px solid var(--at-border);
+  .stream-card {
+    background: var(--paper-soft);
+    border: 1px solid var(--paper-line);
+    padding: 30px 26px;
   }
 
-  .streams h3 {
-    margin-block: 0 var(--at-spacing-xs);
+  .stream-card__n {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-paper-dim);
+    margin: 0 0 10px;
   }
 
-  .stream-tagline {
-    margin-block: 0;
+  .stream-card h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
   }
 
-  .stream-convenor {
-    margin-block: var(--at-spacing-xs) 0;
-    font-size: var(--at-font-size-sm);
-    color: var(--at-text-secondary);
+  .stream-card__focus {
+    border-left: 3px solid var(--evidence-fill);
+    padding-left: 12px;
+    font-size: 14.5px;
+    color: var(--text-paper-dim);
+  }
+
+  .stream-card__convenor {
+    font-size: 13.5px;
+    color: var(--text-paper-dim);
+  }
+
+  @media (max-width: 900px) {
+    .streams-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- week grid ---------- */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .wk {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid var(--paper-line);
+    background: var(--paper);
+    text-decoration: none;
+    color: var(--text-paper);
+    min-height: 108px;
+  }
+
+  .wk:hover,
+  .wk:focus-visible {
+    border-color: var(--evidence-fill);
+  }
+
+  .wk--big {
+    grid-column: span 2;
+  }
+
+  .wk--due {
+    border-color: var(--claim-fill);
+  }
+
+  .wk__n {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-paper-dim);
+  }
+
+  .wk__t {
+    font-weight: 600;
+    font-size: 15px;
+    flex: 1;
+  }
+
+  .wk__tag {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    color: var(--text-paper-dim);
+  }
+
+  .wk__flag {
+    align-self: flex-start;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--claim-text);
+    font-weight: 600;
+  }
+
+  @media (max-width: 900px) {
+    .week-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .wk--big {
+      grid-column: span 2;
+    }
+  }
+
+  /* ---------- assessment ladder ---------- */
+  .ladder-bar {
+    display: flex;
+    height: 34px;
+    margin: 28px 0;
+    border: 1px solid var(--paper);
+  }
+
+  .ladder-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .assess-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .assess-card {
+    display: block;
+    padding: 20px;
+    border: 1px solid var(--ink-line);
+    text-decoration: none;
+    color: var(--text-ink);
+  }
+
+  .assess-card:hover,
+  .assess-card:focus-visible {
+    border-color: var(--text-ink);
+  }
+
+  .assess-card__w {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--evidence-text);
+  }
+
+  .assess-card h3 {
+    margin: 8px 0 6px;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 16px;
+  }
+
+  .assess-card p {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--text-ink-dim);
+  }
+
+  @media (max-width: 900px) {
+    .assess-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- glossary teaser ---------- */
+  .gloss-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 32px 0 24px;
+  }
+
+  .gloss-card {
+    padding: 20px;
+    background: var(--paper);
+    border: 1px solid var(--paper-line);
+  }
+
+  .gloss-card__term {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    font-size: 15px;
+    margin: 0 0 8px;
+    color: var(--claim-text);
+  }
+
+  .gloss-card p:not(.gloss-card__term) {
+    font-size: 13.5px;
+    color: var(--text-paper-dim);
+    margin: 0;
+  }
+
+  @media (max-width: 900px) {
+    .gloss-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .fine-print {
+    max-width: 62ch;
+    font-size: 15px;
   }
 </style>

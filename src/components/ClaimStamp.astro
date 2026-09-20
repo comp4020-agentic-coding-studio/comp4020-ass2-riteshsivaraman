@@ -1,0 +1,52 @@
+---
+/**
+ * The claim/evidence "stamp" — the course's own audit exercise, made
+ * interactive. Starts stamped CLAIM; clicking swaps it to EVIDENCE and
+ * reveals the evidence text, styling the claim as struck-through rather
+ * than deleting it, since the point of the exercise is that the claim is
+ * still there, just no longer resting on nothing.
+ *
+ * Each instance gets its own id (crypto.randomUUID at build time) so the
+ * page can host more than one without collisions, and the toggle script is
+ * scoped to `[data-claim-stamp]` rather than a global function, matching
+ * the pattern the theme toggle and SemesterTracker already use.
+ */
+interface Props {
+  label?: string;
+  claim: string;
+  evidence: string;
+}
+
+const { label = "Sample audit — try it", claim, evidence } = Astro.props;
+const id = `stamp-${crypto.randomUUID().slice(0, 8)}`;
+---
+
+<div class="stampcard" data-audited="false" data-claim-stamp id={id}>
+  <div class="stampcard__label">{label}</div>
+  <p class="stampcard__claim">&ldquo;{claim}&rdquo;</p>
+  <span class="stamp" data-stamp-mark>Claim</span>
+  <div class="stampcard__evidence">Evidence: {evidence}</div>
+  <button class="stamp-toggle" type="button" data-stamp-toggle aria-controls={id}>
+    Show me →
+  </button>
+</div>
+
+<script is:inline data-astro-rerun>
+  (function () {
+    document.querySelectorAll("[data-claim-stamp]").forEach(function (card) {
+      var btn = card.querySelector("[data-stamp-toggle]");
+      var mark = card.querySelector("[data-stamp-mark]");
+      if (!btn || card.dataset.stampWired) return;
+      card.dataset.stampWired = "true";
+      btn.addEventListener("click", function () {
+        var on = card.getAttribute("data-audited") === "true";
+        card.setAttribute("data-audited", on ? "false" : "true");
+        card.classList.remove("thump");
+        void card.offsetWidth;
+        card.classList.add("thump");
+        btn.textContent = on ? "Show me →" : "Revert claim";
+        if (mark) mark.textContent = on ? "Claim" : "Evidence";
+      });
+    });
+  })();
+</script>
