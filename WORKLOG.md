@@ -1014,3 +1014,48 @@ this window (`window.innerWidth` stayed 1512 after a reported-successful
 
 Still open: `SHIP_INSTRUCTIONS.md`/`.claude-ship-kit/` remain untouched.
 Wave 4 (deck re-skin, final cross-page pass, final ship) not yet started.
+
+## Wave 4: nav home link, external logo, cell fill correction, deck re-skin
+
+Second feedback round, actioned in full:
+
+- Nav corner: "SLOP UNIVERSITY" text swapped for a linked logo image
+  (`brand__logo`) pointing at the real `https://slop.university/` in a new
+  tab, using the two horizontal SVGs self-hosted from that site (CC-BY-4.0,
+  gold-on-black for light theme, gold-on-white for dark, downloaded with
+  the user's explicit permission via AskUserQuestion). A separate
+  `brand__home` link ("← SLOP3841 course home") sits beneath it, pointing
+  at the site root — the literal missing piece from the prior round.
+- Tracker cell fix: `.tick[data-selected="true"]` changed from an outline
+  ring to a solid `background: var(--claim-fill)` fill with white text —
+  direct correction of a misread ("highlight" was taken as border, meant
+  as fill).
+- Deck re-skin (`src/decks/theme.css`): found, while reading deck.css, that
+  most of its `--at-*` tokens derive automatically from just
+  `--at-primary`/`--at-secondary`/`--at-tertiary` via relative-colour CSS —
+  so the whole deck re-skins onto Night Terminal's light-arm palette by
+  overriding those three plus the handful of Reveal `--r-*` variables,
+  rather than restating every derived token. Also closes the last remaining
+  thread of the Wave 3 dual-brand-identity bug: `theme.css` was the only
+  file still pulling colour through `notepad.css`'s legacy `--np-*`
+  tokens; `brandCss`/`notepad.css` itself deliberately left in place
+  (out of scope, lower-risk to leave than remove).
+- Cross-page consistency: confirmed already satisfied by Wave 0/1
+  architecture (Nav/Footer both source links from `siteConfig.links`;
+  `404.md` inherits the full layout via `defaultLayout`) — no new edits
+  needed.
+
+Build: `pnpm check` green — 42 pages, 0 axe violations, 0 broken links,
+11/11 tests. Visual check at desktop, dark theme, and 390×844 (iframe
+technique) confirmed the logo swaps correctly by theme, the home link
+renders, and the tracker cell is now a solid fill in both themes.
+Committed as `ed02441`, ship-kit files excluded per standing instruction.
+
+**`pnpm check:evidence` then failed** — surfaced a pre-existing, unrelated
+gap: `PROCESS.md` is still the unfilled starter template (literal
+`<!-- TEMPLATE -->` comment still present, no real first-person content,
+citing two fake example commit hashes `a1b2c3d`/`e4f5a6b` that don't exist
+in this repo). This document carries 45% of the mark and is exactly the
+kind of first-person, curricular content the harness rules say isn't mine
+to draft unprompted — reported to the user rather than filled in. Ship
+gate is blocked on this until resolved.

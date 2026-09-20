@@ -520,3 +520,28 @@ latter touches nav config and the broken-links-checker gotcha. Asked both
 in one round; got "not equally sized" for the streams issue and "display
 wording only" for the rename. Good prompt overall — the one gap was a
 literal truncation, not an ambiguity in the request itself.
+
+## 2026-09-20 — second feedback round: home link, external logo, cell fill, budget
+
+**Context:** immediately following the six-point round above; nav/logo work
+was still incomplete after that round's first pass.
+
+**Prompt:** "Still missing a home navigation to get to the home page. For
+slop university in the corner, also use its logo and link it to the actual
+slop university page. https://slop.university/ But below that there should
+be a link to the home page or landing page of the course. dont commit the
+ship instructions. continue ith wave 4. also for highlighting the cells, i
+really meant fill the cell, not highlight the border. we have $10 dollars
+of credit left, you can complete within that."
+
+Six items, all concrete and actionable — no truncation, no vague constraint
+left unnumbered (the budget was given a real figure, not "quick" or "soon").
+One item was a direct correction of previously-shipped work: "highlight"
+had been read as an outline/border treatment; the user's actual intent,
+stated plainly this time, was a solid fill — worth remembering that
+"highlight" is ambiguous vocabulary in this project going forward. The $10
+figure is a real number to plan against, not a vibe, and correctly pushed
+this round toward direct execution over further agent dispatch. Asked one
+clarifying question before acting (which logo variant(s) to self-host,
+since downloading a file requires explicit permission) rather than guessing
+— the user answered "both" and that was actioned as given.
